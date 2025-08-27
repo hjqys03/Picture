@@ -1,12 +1,12 @@
 payload:
-  - "*.lan"
-  - "*.localdomain"
-  - "*.example"
-  - "*.invalid"
-  - "*.localhost"
-  - "*.test"
-  - "*.local"
-  - "*.home.arpa"
+  - '*.lan'
+  - '*.localdomain'
+  - '*.example'
+  - '*.invalid'
+  - '*.localhost'
+  - '*.test'
+  - '*.local'
+  - '*.home.arpa'
   - time.*.com
   - time.*.gov
   - time.*.edu.cn
@@ -26,8 +26,8 @@ payload:
   - ntp5.*.com
   - ntp6.*.com
   - ntp7.*.com
-  - "*.time.edu.cn"
-  - "*.ntp.org.cn"
+  - '*.time.edu.cn'
+  - '*.ntp.org.cn'
   - +.pool.ntp.org
   - time1.cloud.tencent.com
   - stun.*.*
@@ -35,17 +35,17 @@ payload:
   - swscan.apple.com
   - mesu.apple.com
   - music.163.com
-  - "*.music.163.com"
-  - "*.126.net"
+  - '*.music.163.com'
+  - '*.126.net'
   - musicapi.taihe.com
   - music.taihe.com
   - songsearch.kugou.com
   - trackercdn.kugou.com
-  - "*.kuwo.cn"
+  - '*.kuwo.cn'
   - api  -jooxtt.sanook.com
   - api.joox.com
   - y.qq.com
-  - "*.y.qq.com"
+  - '*.y.qq.com'
   - streamoc.music.tc.qq.com
   - mobileoc.music.tc.qq.com
   - isure.stream.qqmusic.qq.com
@@ -53,20 +53,20 @@ payload:
   - aqqmusic.tc.qq.com
   - amobile.music.tc.qq.com
   - localhost.ptlogin2.qq.com
-  - "*.msftconnecttest.com"
-  - "*.msftncsi.com"
-  - "*.xiami.com"
-  - "*.music.migu.cn"
+  - '*.msftconnecttest.com'
+  - '*.msftncsi.com'
+  - '*.xiami.com'
+  - '*.music.migu.cn'
   - music.migu.cn
   - +.wotgame.cn
   - +.wggames.cn
   - +.wowsgame.cn
   - +.wargaming.net
-  - "*.*.*.srv.nintendo.net"
-  - "*.*.stun.playstation.net"
+  - '*.*.*.srv.nintendo.net'
+  - '*.*.stun.playstation.net'
   - xbox.*.*.microsoft.com
-  - "*.*.xboxlive.com"
-  - "*.ipv6.microsoft.com"
+  - '*.*.xboxlive.com'
+  - '*.ipv6.microsoft.com'
   - teredo.*.*.*
   - teredo.*.*
   - speedtest.cros.wr.pvp.net

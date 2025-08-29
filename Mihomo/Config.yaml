@@ -1,0 +1,226 @@
+############################################## - ⚓️ 锚点区开始 - ##############################################
+# 锚点 - 筛选组
+FilterSelect: &FilterSelect '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG|日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK|台|🇼🇸|🇹🇼|TW|tai|TPE|TSA|KHH|美|🇺🇸|US|USA|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(尼日利亚|排除2|5x)).*$'
+FilterOther: &FilterOther '^(?!.*(DIRECT|美|港|坡|台|新|日|韩|奥|比|保|克罗地亚|塞|捷|丹|爱沙|芬|法|德|希|匈|爱尔|意|拉|立|卢|马其它|荷|波|葡|罗|斯洛伐|斯洛文|西|瑞|英|🇭🇰|🇼🇸|🇹🇼|🇸🇬|🇯🇵|🇰🇷|🇺🇸|🇬🇧|🇦🇹|🇧🇪|🇨🇿|🇩🇰|🇫🇮|🇫🇷|🇩🇪|🇮🇪|🇮🇹|🇱🇹|🇱🇺|🇳🇱|🇵🇱|🇸🇪|HK|TW|SG|JP|KR|US|GB|CDG|FRA|AMS|MAD|BCN|FCO|MUC|BRU|HKG|TPE|TSA|KHH|SIN|XSP|NRT|HND|KIX|CTS|FUK|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD|LHR|LGW))'
+FilterAll: &FilterAll '^(?!.*(DIRECT|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author))'
+FilterHK: &FilterHK '^(?=.*(?i)(港|🇭🇰|HK|Hong|HKG))(?!.*(排除1|排除2|5x)).*$'
+FilterTW: &FilterTW '^(?=.*(?i)(台|🇼🇸|🇹🇼|TW|tai|TPE|TSA|KHH))(?!.*(排除1|排除2|5x)).*$'
+FilterJP: &FilterJP '^(?=.*(?i)(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK))(?!.*(尼日利亚|排除2|5x)).*$'
+FilterSG: &FilterSG '^(?=.*(?i)(坡|🇸🇬|SG|Sing|SIN|XSP))(?!.*(排除1|排除2|5x)).*$'
+FilterKR: &FilterKR '^(?=.*(?i)(韩|🇰🇷|韓|首尔|南朝鲜|KR|KOR|Korea|South))(?!.*(排除1|排除2|5x)).*$'
+FilterUS: &FilterUS '^(?=.*(?i)(美|🇺🇸|US|USA|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD))(?!.*(Plus|Australia|5x)).*$'
+# 锚点 - 选择组
+SelectProxy: &SelectProxy {type: select, proxies: ['Proxies','Direct','🇭🇰 香港自动','🇹🇼 台湾自动','🇯🇵 日本自动','🇸🇬 狮城自动','🇺🇸 美国自动']}
+SelectAll: &SelectAll {type: select, proxies: ['🇭🇰 香港自动','🇹🇼 台湾自动','🇯🇵 日本自动','🇸🇬 狮城自动','🇺🇸 美国自动']}
+# 锚点 - 规则集
+DomainMrs: &DomainMrs {type: http, interval: 86400, behavior: domain, format: mrs}
+DomainText: &DomainText {type: http, interval: 86400, behavior: domain, format: text}
+DomainYaml: &DomainYaml {type: http, interval: 86400, behavior: domain, format: yaml}
+IPcidrMrs: &IPcidrMrs {type: http, interval: 86400, behavior: ipcidr, format: mrs}
+IPcidrText: &IPcidrText {type: http, interval: 86400, behavior: ipcidr, format: text}
+IPcidrYaml: &IPcidrYaml {type: http, interval: 86400, behavior: ipcidr, format: yaml}
+ClassicalText: &ClassicalText {type: http, interval: 86400, behavior: classical, format: text}
+ClassicalYaml: &ClassicalYaml {type: http, interval: 86400, behavior: classical, format: yaml}
+# 锚点 - 远程订阅组
+PProviders: &PProviders {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 600}, filter: *FilterAll}
+############################################## - ⚓️ 锚点区结束 - ##############################################
+
+# 远程订阅组
+proxy-providers:
+  机场1: {<<: *PProviders, url: 'Clash订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
+  机场2: {<<: *PProviders, url: 'Clash订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
+
+# ==================== 核心配置 ====================
+# 基础配置
+port: 7890
+socks-port: 7891
+mixed-port: 7892
+redir-port: 9797
+tproxy-port: 9898
+mode: rule
+log-level: debug
+ipv6: true
+allow-lan: true
+bind-address: '*'
+unified-delay: true
+tcp-concurrent: true
+global-client-fingerprint: chrome
+find-process-mode: strict
+
+# 管理面板配置
+external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip'
+external-ui: ./zashboard
+external-controller: 0.0.0.0:9090
+secret: 'Password'
+
+# 配置存储
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# 域名嗅探配置
+sniffer:
+  enable: true
+  force-dns-mapping: false
+  parse-pure-ip: false
+  override-destination: false
+  sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
+  force-domain: ['+.v2ex.com']
+  skip-domain: [Mijia.Cloud.com]
+  skip-src-address: [192.168.0.3/32]
+  skip-dst-address: [192.168.0.3/32]
+
+# DNS配置
+dns:
+  enable: true
+  ipv6: true
+  prefer-h3: true
+  cache-algorithm: arc
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter: ['rule-set:Fakeip_Filter']
+  default-nameserver: [223.5.5.5, 119.29.29.29]
+  nameserver: ['https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query', 'tls://dns.alidns.com', 'tls://dot.pub']
+
+# TUN模式配置
+tun:
+  enable: true
+  mtu: 1500
+  device: Mihomo
+  stack: system
+  dns-hijack: ['any:53', 'tcp://any:53']
+  auto-route: true
+  strict-route: true
+  auto-redirect: false
+  auto-detect-interface: true
+
+# 策略组
+proxy-groups:
+  - {name: 'Proxies', <<: *SelectAll, include-all: true, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Proxy.png'}
+  - {name: 'EHentai', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Ehviewer.png'}
+  - {name: 'Telegram', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Telegram.png'}
+  - {name: 'Twitter', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Twitter.png'}
+  - {name: 'Emby', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Emby.png'}
+  - {name: 'YouTube', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/YouTube.png'}
+  - {name: 'TikTok', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/TikTok.png'}
+  - {name: 'OpenAI', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
+  - {name: '游戏平台', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Game.png'}
+  - {name: '游戏下载', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Game.png'}
+  - {name: 'Google', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Google.png'}
+  - {name: 'Microsoft', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Microsoft.png'}
+  - {name: '台湾网站', <<: *SelectProxy, include-all: true, filter: *FilterTW, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Taiwan.png'}
+  - {name: '日本网站', <<: *SelectProxy, include-all: true, filter: *FilterJP, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Japan.png'}
+  - {name: '国外网站', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/United_Nations.png'}
+  - {name: '国内网站', type: select, include-all: true, proxies: ['Direct','Proxies'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/China.png'}
+  - {name: '漏网之鱼', type: select, include-all: true, proxies: ['Proxies','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Final.png'}
+  - {name: 'GLOBAL', type: select, include-all: true, proxies: ['Proxies','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','游戏平台','游戏下载','Google','Microsoft','台湾网站','日本网站','国外网站','国内网站','漏网之鱼','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
+  # 基础策略组
+  - {name: 'Direct', type: select, proxies: ['DIRECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png', hidden: true}
+  - {name: 'Reject', type: select, proxies: ['REJECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png', hidden: true}
+  # 自动策略组
+  - {name: '🇭🇰 香港自动', type: url-test, include-all: true, filter: *FilterHK, hidden: true}
+  - {name: '🇹🇼 台湾自动', type: url-test, include-all: true, filter: *FilterTW, hidden: true}
+  - {name: '🇯🇵 日本自动', type: url-test, include-all: true, filter: *FilterJP, hidden: true}
+  - {name: '🇸🇬 狮城自动', type: url-test, include-all: true, filter: *FilterSG, hidden: true}
+  - {name: '🇺🇸 美国自动', type: url-test, include-all: true, filter: *FilterUS, hidden: true}
+
+# 远程规则集
+rule-providers:
+  Telegram_ip:       {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs'}
+  Twitter_ip:        {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs'}
+  Private_ip:        {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs'}
+  CN_ip:             {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs'}
+  Telegram_Domain:   {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs'}
+  Twitter_Domain:    {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs'}
+  Private_Domain:    {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs'}
+  CN_Domain:         {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs'}
+  Pixiv:             {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs'}
+  Speedtest:         {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs'}
+  CopyManga:         {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/copymanga.mrs'}
+  OpenAI:            {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs'}
+  Gemini:            {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google-gemini.mrs'}
+  DLsite:            {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/dlsite.mrs'}
+  Bahamut:           {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bahamut.mrs'}
+  EHentai:           {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs'}
+  AdBlock_ADS:       {<<: *DomainMrs, url: 'https://raw.gitmirror.com/217heidai/adblockfilters/main/rules/adblockmihomo.mrs'}
+  Proxy_Domain:      {<<: *DomainYaml, url: 'https://raw.gitmirror.com/Loyalsoldier/clash-rules/release/proxy.txt'}
+  Fakeip_Filter:     {<<: *DomainYaml, url: 'https://raw.gitmirror.com/hjqys03/Picture/main/Rules/Domain/Fakeip_Filter.yaml'}
+  Google:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Google/Google_No_Resolve.yaml'}
+  Google_FCM:        {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/GoogleFCM/GoogleFCM_No_Resolve.yaml'}
+  Microsoft:         {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml'}
+  DMM:               {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/DMM/DMM_No_Resolve.yaml'}
+  Emby:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml'}
+  Line:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Line/Line_No_Resolve.yaml'}
+  BiliBili:          {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili_No_Resolve.yaml'}
+  YouTube:           {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube_No_Resolve.yaml'}
+  TikTok:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml'}
+  DouYin:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/DouYin/DouYin.yaml'}
+  Game:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/Game_No_Resolve.yaml'}
+  GameDownload:      {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownload/GameDownload.yaml'}
+  GameDownloadCN:    {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownloadCN/GameDownloadCN.yaml'}
+
+# 路由规则
+rules:
+  - RULE-SET,AdBlock_ADS,Reject
+  - RULE-SET,Google_FCM,Proxies
+  - DOMAIN-SUFFIX,bookwalker.jp,日本网站
+  - DOMAIN-SUFFIX,fantia.jp,日本网站
+  - DOMAIN-SUFFIX,fantia.tw,日本网站
+  - DOMAIN-SUFFIX,fantia.com,日本网站
+  - RULE-SET,DLsite,日本网站
+  - RULE-SET,DMM,日本网站
+  - RULE-SET,Pixiv,日本网站
+  - RULE-SET,Line,日本网站
+  - DOMAIN-SUFFIX,bookwalker.com.tw,台湾网站
+  - DOMAIN-SUFFIX,pubu.tw,台湾网站
+  - DOMAIN-SUFFIX,pubu.com,台湾网站
+  - DOMAIN-SUFFIX,pubu.com.tw,台湾网站
+  - DOMAIN-SUFFIX,readmoo.com,台湾网站
+  - DOMAIN-SUFFIX,readmoo.tw,台湾网站
+  - DOMAIN-SUFFIX,readmoo.com,台湾网站
+  - DOMAIN-KEYWORD,readmoo,台湾网站
+  - DOMAIN-SUFFIX,manhuagui.com,台湾网站
+  - DOMAIN-SUFFIX,hamreus.com,台湾网站
+  - DOMAIN-SUFFIX,mhgui.com,台湾网站
+  - RULE-SET,Bahamut,台湾网站
+  - DOMAIN-SUFFIX,afdian.com,国外网站
+  - DOMAIN-SUFFIX,afdiancdn.com,国外网站
+  - DOMAIN-SUFFIX,hanime1.me,国外网站
+  - DOMAIN-SUFFIX,vdownload.hembed.com,国外网站
+  - DOMAIN-SUFFIX,komiic.com,国外网站
+  - DOMAIN-SUFFIX,2dfan.com,国外网站
+  - DOMAIN-SUFFIX,cangku.moe,国外网站
+  - DOMAIN-SUFFIX,workupload.com,国外网站
+  - RULE-SET,Speedtest,国外网站
+  - RULE-SET,CopyManga,国外网站
+  - DOMAIN,www.zaimanhua.com,国内网站
+  - DOMAIN,manhua.zaimanhua.com,国内网站
+  - DOMAIN-SUFFIX,zaimanhua.com,国内网站
+  - RULE-SET,DouYin,国内网站
+  - RULE-SET,BiliBili,国内网站
+  - RULE-SET,EHentai,EHentai
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,Gemini,OpenAI
+  - RULE-SET,Telegram_Domain,Telegram
+  - RULE-SET,Twitter_Domain,Twitter
+  - RULE-SET,GameDownload,游戏下载
+  - RULE-SET,GameDownloadCN,游戏下载
+  - RULE-SET,Game,游戏平台
+  - RULE-SET,YouTube,YouTube
+  - RULE-SET,Emby,Emby
+  - RULE-SET,Google,Google
+  - RULE-SET,Microsoft,Microsoft
+  - DOMAIN-KEYWORD,japan,日本网站
+  - DOMAIN-SUFFIX,jp,日本网站
+  - DOMAIN-KEYWORD,taiwan,台湾网站
+  - DOMAIN-SUFFIX,tw,台湾网站
+  - RULE-SET,Proxy_Domain,国外网站
+  - RULE-SET,Private_Domain,Direct
+  - RULE-SET,CN_Domain,国内网站
+  - RULE-SET,Telegram_ip,Telegram,no-resolve
+  - RULE-SET,Twitter_ip,Twitter,no-resolve
+  - RULE-SET,Private_ip,Direct,no-resolve
+  - RULE-SET,CN_ip,国内网站,no-resolve
+  - MATCH,漏网之鱼

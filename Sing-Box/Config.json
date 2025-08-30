@@ -20,8 +20,7 @@
         "disable_cache": false,
         "disable_expire": false,
         "independent_cache": true,
-        "strategy": "prefer_ipv4"
-  },
+        "strategy": "prefer_ipv4"},
   "inbounds": [
         {"tag": "dns-in", "type": "direct", "listen": "::", "listen_port": 1053},
         {"tag": "http-in", "type": "http", "listen": "::", "listen_port": 7890},

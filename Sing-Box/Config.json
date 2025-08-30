@@ -1,0 +1,34 @@
+{
+  "providers": [
+    {"tag": "机场1", "type": "http", "url": "订阅链接", "path": "./providers/机场1.json", "update_interval": "24h", "download_detour": "🎯 全球直连", "health_check": {"enabled": true, "url": "https://www.gstatic.com/generate_204", "interval": "10m"}, "filter": "^(?!.*(DIRECT|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author))"},
+    {"tag": "机场2", "type": "http", "url": "订阅链接", "path": "./providers/机场2.json", "update_interval": "24h", "download_detour": "🎯 全球直连", "health_check": {"enabled": true, "url": "https://www.gstatic.com/generate_204", "interval": "10m"}, "filter": "^(?!.*(DIRECT|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author))"}],
+  "log": {"disabled": false, "level": "info", "output": "singbox.log", "timestamp": true},
+  "experimental": {
+        "clash_api": {"default_mode": "rule", "external_controller": "0.0.0.0:9090", "external_ui_download_url": "https://gh-proxy.com/https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip", "external_ui": "./zashboard", "secret": "SingBox_Password", "access_control_allow_origin": ["*"], "access_control_allow_private_network": true},
+        "cache_file": {"enabled": true, "path": "cache.db", "store_fakeip": true}},
+  "dns": {
+        "servers": [
+            {"tag": "local", "type": "local"},
+            {"tag": "DIRECT-DNS", "type": "https","detour": "🎯 全球直连", "server": "dns.alidns.com", "domain_resolver": "local"},
+            {"tag": "PROXY-DNS", "type": "https","detour": "🚀 节点选择", "server": "cloudflare-dns.com", "domain_resolver": "local"},
+            {"tag": "FAKEIP-DNS", "type": "fakeip", "inet4_range": "198.18.0.0/15", "inet6_range": "fc00::/18"}],
+        "rules": [
+            {"clash_mode": "direct", "server": "DIRECT-DNS"},
+            {"clash_mode": "global", "server": "PROXY-DNS"},
+            {"query_type": ["A", "AAAA"], "server": "FAKEIP-DNS"}],
+        "final": "PROXY-DNS",
+        "disable_cache": false,
+        "disable_expire": false,
+        "independent_cache": true,
+        "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+        {"tag": "dns-in", "type": "direct", "listen": "::", "listen_port": 1053},
+        {"tag": "http-in", "type": "http", "listen": "::", "listen_port": 7890},
+        {"tag": "socks-in", "type": "socks", "listen": "::", "listen_port": 7891},
+        {"tag": "redirect-in", "type": "redirect", "listen": "::", "listen_port": 9797},
+        {"tag": "tproxy-in", "type": "tproxy", "listen": "::", "listen_port": 9898},
+        {"tag": "tun-in", "type": "tun", "interface_name": "singbox", "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"], "stack": "system", "mtu": 9000, "auto_route": true, "strict_route": true, "auto_redirect": false}],
+  "outbounds": [],
+  "route": {}
+}

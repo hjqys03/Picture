@@ -81,7 +81,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter: ['rule-set:Fakeip_Filter']
   default-nameserver: [223.5.5.5, 119.29.29.29]
-  nameserver: ['https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query'， 'tls://dns.alidns.com', 'tls://dot.pub']
+  nameserver: ['https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query']
 
 # TUN模式配置
 tun:

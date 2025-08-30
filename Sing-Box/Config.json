@@ -9,8 +9,8 @@
   "dns": {
         "servers": [
             {"tag": "local", "type": "local"},
-            {"tag": "DIRECT-DNS", "type": "https"， "detour": "🎯 全球直连", "server": "dns.alidns.com", "domain_resolver": "local"},
-            {"tag": "PROXY-DNS", "type": "https"， "detour": "🚀 节点选择", "server": "cloudflare-dns.com", "domain_resolver": "local"},
+            {"tag": "DIRECT-DNS", "type": "https", "detour": "🎯 全球直连", "server": "dns.alidns.com", "domain_resolver": "local"},
+            {"tag": "PROXY-DNS", "type": "https", "detour": "🚀 节点选择", "server": "cloudflare-dns.com", "domain_resolver": "local"},
             {"tag": "FAKEIP-DNS", "type": "fakeip", "inet4_range": "198.18.0.0/15", "inet6_range": "fc00::/18"}],
         "rules": [
             {"clash_mode": "direct", "server": "DIRECT-DNS"},

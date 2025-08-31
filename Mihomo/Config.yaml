@@ -38,7 +38,7 @@ mixed-port: 7892
 redir-port: 9797
 tproxy-port: 9898
 mode: rule
-log-level: debug
+log-level: warning
 ipv6: true
 allow-lan: true
 bind-address: '*'
@@ -74,7 +74,7 @@ sniffer:
 dns:
   enable: true
   ipv6: true
-  prefer-h3: true
+  prefer-h3: false
   listen: 0.0.0.0:1053
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16

@@ -48,7 +48,7 @@ global-client-fingerprint: chrome
 find-process-mode: strict
 
 # 管理面板配置
-external-ui-url: 'https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip'
+external-ui-url: 'https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip'
 external-ui: ./zashboard
 external-controller: 0.0.0.0:9090
 secret: 'Password'

@@ -22,7 +22,7 @@ IPcidrYaml: &IPcidrYaml {type: http, interval: 86400, behavior: ipcidr, format: 
 ClassicalText: &ClassicalText {type: http, interval: 86400, behavior: classical, format: text}
 ClassicalYaml: &ClassicalYaml {type: http, interval: 86400, behavior: classical, format: yaml}
 # 锚点 - 远程订阅组
-PProviders: &PProviders {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 600}, filter: *FilterAll}
+PProviders: &PProviders {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 300}, filter: *FilterAll}
 ############################################## - ⚓️ 锚点区结束 - ##############################################
 
 # 远程订阅组
@@ -115,7 +115,7 @@ proxy-groups:
   - {name: '漏网之鱼', type: select, include-all: true, proxies: ['Proxies','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Final.png'}
   - {name: 'GLOBAL', type: select, include-all: true, proxies: ['Proxies','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','游戏平台','游戏下载','Google','Microsoft','台湾网站','日本网站','全球代理','全球直连','漏网之鱼','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
   # 基础策略组
-  - {name: 'Direct', type: select, proxies: ['DIRECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png', hidden: true}
+  - {name: 'Direct', type: select, proxies: ['DIRECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png', url: 'https://www.gstatic.com/generate_204', interval: 300, hidden: true}
   - {name: 'Reject', type: select, proxies: ['REJECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png', hidden: true}
   # 自动策略组
   - {name: '🇭🇰 香港自动', type: url-test, include-all: true, filter: *FilterHK, hidden: true}

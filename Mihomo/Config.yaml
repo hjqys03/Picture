@@ -148,7 +148,6 @@ rule-providers:
   Twitter:           {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml'}
   DMM:               {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/DMM/DMM_No_Resolve.yaml'}
   Emby:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml'}
-  Line:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Line/Line_No_Resolve.yaml'}
   BiliBili:          {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili_No_Resolve.yaml'}
   YouTube:           {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube_No_Resolve.yaml'}
   TikTok:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml'}
@@ -175,7 +174,6 @@ rules:
   - RULE-SET,DLsite,日本网站
   - RULE-SET,DMM,日本网站
   - RULE-SET,Pixiv,日本网站
-  - RULE-SET,Line,日本网站
   - DOMAIN-SUFFIX,manhuagui.com,台湾网站
   - DOMAIN-SUFFIX,hamreus.com,台湾网站
   - DOMAIN-SUFFIX,mhgui.com,台湾网站

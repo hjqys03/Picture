@@ -161,6 +161,25 @@ rule-providers:
 rules:
   - RULE-SET,AdBlock_ADS,Reject
   - RULE-SET,Google_FCM,Proxies
+  - RULE-SET,EHentai,EHentai
+  - RULE-SET,Telegram,Telegram
+  - RULE-SET,Twitter,Twitter
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,Gemini,OpenAI
+  - RULE-SET,GameDownload,游戏下载
+  - RULE-SET,GameDownloadCN,游戏下载
+  - RULE-SET,Game,游戏平台
+  - RULE-SET,YouTube,YouTube
+  - DOMAIN-SUFFIX,dandanplay.net,Emby
+  - DOMAIN,cas.dandanplay.net,Emby
+  - DOMAIN,api.dandanplay.net,Emby
+  - DOMAIN,neo.iflya321.com,Emby
+  - DOMAIN,embyplus.org,Emby
+  - DOMAIN,media.nijigem.by,Emby
+  - DOMAIN,emby.zn.al,Emby
+  - DOMAIN,lite.cn2gias.uk,Emby
+  - RULE-SET,Emby,Emby
   - DOMAIN-SUFFIX,bookwalker.jp,日本网站
   - DOMAIN-SUFFIX,fantia.jp,日本网站
   - DOMAIN-SUFFIX,fantia.tw,日本网站
@@ -196,23 +215,8 @@ rules:
   - DOMAIN-SUFFIX,zaimanhua.com,全球直连
   - RULE-SET,DouYin,全球直连
   - RULE-SET,BiliBili,全球直连
-  - RULE-SET,EHentai,EHentai
-  - RULE-SET,Telegram,Telegram
-  - RULE-SET,Twitter,Twitter
-  - RULE-SET,TikTok,TikTok
-  - RULE-SET,OpenAI,OpenAI
-  - RULE-SET,Gemini,OpenAI
-  - RULE-SET,GameDownload,游戏下载
-  - RULE-SET,GameDownloadCN,游戏下载
-  - RULE-SET,Game,游戏平台
-  - RULE-SET,YouTube,YouTube
-  - RULE-SET,Emby,Emby
   - RULE-SET,Google,Google
   - RULE-SET,Microsoft,Microsoft
-  - DOMAIN-KEYWORD,japan,日本网站
-  - DOMAIN-SUFFIX,jp,日本网站
-  - DOMAIN-KEYWORD,taiwan,台湾网站
-  - DOMAIN-SUFFIX,tw,台湾网站
   - RULE-SET,Proxy_Domain,全球代理
   - RULE-SET,Private_Domain,Direct
   - RULE-SET,CN_Domain,全球直连

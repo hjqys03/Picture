@@ -67,14 +67,14 @@ sniffer:
   sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
   force-domain: ['+.v2ex.com']
   skip-domain: [Mijia.Cloud.com]
-  skip-src-address: [192.168.0.3/32]
-  skip-dst-address: [192.168.0.3/32]
+  skip-src-address: [192.168.0.2/32]
+  skip-dst-address: [192.168.0.2/32]
 
 # DNS配置
 dns:
   enable: true
   ipv6: true
-  prefer-h3: false
+  prefer-h3: true
   listen: 0.0.0.0:1053
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16

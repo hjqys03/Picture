@@ -30,7 +30,6 @@ proxy-providers:
   机场1: {<<: *PProviders, url: 'Clash订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
   机场2: {<<: *PProviders, url: 'Clash订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
 
-# ==================== 核心配置 ====================
 # 基础配置
 port: 7890
 socks-port: 7891
@@ -86,8 +85,8 @@ dns:
 tun:
   enable: true
   mtu: 1500
+  stack: gvisor
   device: Mihomo
-  stack: system
   dns-hijack: ['any:53', 'tcp://any:53']
   auto-route: true
   strict-route: true

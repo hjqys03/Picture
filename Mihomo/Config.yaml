@@ -38,8 +38,8 @@ redir-port: 9797
 tproxy-port: 9898
 mode: rule
 log-level: warning
-ipv6: true
-allow-lan: true
+ipv6: false
+allow-lan: false
 bind-address: '*'
 unified-delay: true
 tcp-concurrent: true
@@ -70,7 +70,7 @@ sniffer:
 # DNS配置
 dns:
   enable: true
-  ipv6: true
+  ipv6: false
   prefer-h3: false
   use-hosts: false
   listen: 0.0.0.0:1053

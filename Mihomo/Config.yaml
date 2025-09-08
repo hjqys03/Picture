@@ -147,10 +147,8 @@ rule-providers:
   Twitter:           {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml'}
   DMM:               {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/DMM/DMM_No_Resolve.yaml'}
   Emby:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Emby/Emby.yaml'}
-  BiliBili:          {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili_No_Resolve.yaml'}
   YouTube:           {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube_No_Resolve.yaml'}
   TikTok:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml'}
-  DouYin:            {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/DouYin/DouYin.yaml'}
   Game:              {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/Game_No_Resolve.yaml'}
   GameDownload:      {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownload/GameDownload.yaml'}
   GameDownloadCN:    {<<: *ClassicalYaml, url: 'https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/GameDownloadCN/GameDownloadCN.yaml'}
@@ -182,8 +180,6 @@ rules:
   - DOMAIN,www.zaimanhua.com,全球直连
   - DOMAIN,manhua.zaimanhua.com,全球直连
   - DOMAIN-SUFFIX,zaimanhua.com,全球直连
-  - RULE-SET,DouYin,全球直连
-  - RULE-SET,BiliBili,全球直连
   - RULE-SET,Google,Google
   - RULE-SET,Microsoft,Microsoft
   - RULE-SET,Proxy_Domain,全球代理

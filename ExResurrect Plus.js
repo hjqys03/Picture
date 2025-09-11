@@ -314,7 +314,7 @@
                                 <img src="${icon}" />
                                 <a href="${generateTorrentLink(glisting, j)}">${torrent.name}</a>
                             </div>
-                            <div style="display:flex; align-items:baseline; min-width:220px; margin-left:5px;">
+                            <div style="display:flex; align-items:baseline; min-width:225px; margin-left:5px;">
                                 <div style="flex:1; text-align:right; font-weight:bold;">文件大小：</div>
                                 <div style="flex:1; text-align:center;">${getPrettyFileSize(torrent.fsize)}</div>
                             </div>
@@ -326,7 +326,7 @@
                                 <img src="${icon}" style="visibility:hidden;" />
                                 <a href="magnet:?xt=urn:btih:${torrent.hash}">磁力链接</a>
                             </div>
-                            <div style="display:flex; align-items:baseline; min-width:220px; margin-left:5px;">
+                            <div style="display:flex; align-items:baseline; min-width:225px; margin-left:5px;">
                                 <div style="flex:1; text-align:right; font-weight:bold;">发布时间：</div>
                                 <div style="flex:1; text-align:center;">${getTimestampDateString(torrent.added * 1000)}</div>
                             </div>

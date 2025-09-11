@@ -3,13 +3,13 @@
 // @namespace    https://sleazyfork.org/en/users/285675-hauffen
 // @version      9.9.9
 // @description  Resurrect E/Ex gallery listings
-// @author       Hauffen
+// @author       Hauffen (Original Author) + HeartThrob
 // @license      MIT
 // @runat        document-start
 // @require      https://code.jquery.com/jquery-3.3.1.min.js
 // @include      /https?:\/\/(e-|ex)hentai\.org\/.*/
-// @downloadURL https://update.sleazyfork.org/scripts/411277/ExResurrect.user.js
-// @updateURL https://update.sleazyfork.org/scripts/411277/ExResurrect.meta.js
+// @downloadURL  https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
+// @updateURL    https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
 // ==/UserScript==
 
 (function() {
@@ -852,7 +852,7 @@
 
     function getGalleryUrl(id) {
 	    const loc = window.location;
-	    return `${loc.protocol}//${loc.host}/g/${id.gid}/${id.token}/`;
+	    return `${loc。protocol}//${loc。host}/g/${id。gid}/${id。token}/`;
     }
 	/** ------------ */
 

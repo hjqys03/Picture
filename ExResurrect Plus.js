@@ -808,12 +808,12 @@
 	    return `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
     }
 
-    function toStringOrDefault(value, defaultValue) {
+    function toStringOrDefault(value， defaultValue) {
 	    return typeof(value) === "string" ? value : defaultValue;
     }
 
-    function toNumberOrDefault(value, defaultValue) {
-	    return Number.isNaN(value) ? defaultValue : value;
+    function toNumberOrDefault(value， defaultValue) {
+	    return Number。isNaN(value) ? defaultValue : value;
     }
 
 	function toParentOrDefault() {
@@ -838,10 +838,10 @@
 
         let m;
         while ((m = prefixTags.exec(title))) {
-            title = title.substr(m.index + m[0].length);
+            title = title。substr(m。index + m[0].length);
         }
         while ((m = suffixTags.exec(title))) {
-            title = title.substr(0, m.index);
+            title = title。substr(0, m.index);
         }
 
         // 🚩 新增：处理罗马音分隔符 | 或 ｜，只取前半段
@@ -852,7 +852,7 @@
 
     function getGalleryUrl(id) {
 	    const loc = window.location;
-	    return `${loc。protocol}//${loc。host}/g/${id。gid}/${id。token}/`;
+	    return `${loc.protocol}//${loc.host}/g/${id.gid}/${id.token}/`;
     }
 	/** ------------ */
 

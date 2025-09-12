@@ -119,11 +119,11 @@ proxy-groups:
   - {name: 'Direct', type: select, hidden: true, proxies: ['DIRECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png', url: 'https://www.gstatic.com/generate_204', interval: 300}
   - {name: 'Reject', type: select, hidden: true, proxies: ['REJECT','REJECT-DROP'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png'}
   # 自动策略组
-  - {name: '🇭🇰 香港自动', type: url-test, include-all: true, filter: *FilterHK, hidden: true}
-  - {name: '🇹🇼 台湾自动', type: url-test, include-all: true, filter: *FilterTW, hidden: true}
-  - {name: '🇯🇵 日本自动', type: url-test, include-all: true, filter: *FilterJP, hidden: true}
-  - {name: '🇸🇬 狮城自动', type: url-test, include-all: true, filter: *FilterSG, hidden: true}
-  - {name: '🇺🇸 美国自动', type: url-test, include-all: true, filter: *FilterUS, hidden: true}
+  - {name: '🇭🇰 香港自动', type: url-test, hidden: true, include-all: true, filter: *FilterHK}
+  - {name: '🇹🇼 台湾自动', type: url-test, hidden: true, include-all: true, filter: *FilterTW}
+  - {name: '🇯🇵 日本自动', type: url-test, hidden: true, include-all: true, filter: *FilterJP}
+  - {name: '🇸🇬 狮城自动', type: url-test, hidden: true, include-all: true, filter: *FilterSG}
+  - {name: '🇺🇸 美国自动', type: url-test, hidden: true, include-all: true, filter: *FilterUS}
 
 # 远程规则集
 rule-providers:

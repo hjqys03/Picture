@@ -23,44 +23,50 @@
 
     if (spl[3] != 'g') return;
 
-    // E-Hentai 分类颜色
-    const categoryColorsEH = {
-        "misc":       "#707070",
-        "doujinshi":  "#fc4e4e",
-        "manga":      "#e78c1a",
-        "artist cg":  "#c7bf07",
-        "game cg":    "#1a9317",
-        "image set":  "#2756aa",
-        "cosplay":    "#8800c3",
-        "asian porn": "#b452a5",
-        "non-h":      "#0f9ebd",
-        "western":    "#5dc13b"
-    };
+    // 分类名 → ctX 对照表
+    function getCtClass(category) {
+        if (!category) return "ct0";
+        const cat = category.toLowerCase().replace(/\s+/g, "");
+        switch (cat) {
+            case "misc": return "ct1";
+            case "doujinshi": return "ct2";
+            case "manga": return "ct3";
+            case "artistcg": return "ct4";
+            case "gamecg": return "ct5";
+            case "imageset": return "ct6";
+            case "cosplay": return "ct7";
+            case "asianporn": return "ct8";
+            case "non-h": return "ct9";
+            case "western": return "cta";
+            default: return "ct0"; // 默认黑色
+        }
+    }
 
-    // ExHentai 分类颜色
-    const categoryColorsEX = {
-        "misc":       "#777777",
-        "doujinshi":  "#9E2720",
-        "manga":      "#DB6C24",
-        "artist cg":  "#D38F1D",
-        "game cg":    "#6A936D",
-        "image set":  "#325CA2",
-        "cosplay":    "#6A32A2",
-        "asian porn": "#A23282",
-        "non-h":      "#5FA9CF",
-        "western":    "#AB9F60"
-    };
-
-    // 根据站点选择颜色表
-    const categoryColors = location.host.includes("exhentai.org")
-    ? categoryColorsEX
-    : categoryColorsEH;
-
-    // 获取分类对应的颜色
+    // 根据 ctX 获取分类颜色
     function getCategoryColor(glisting) {
-        let cat = (glisting.category || "").toLowerCase().trim();
-        cat = cat.replace(/\s+/g, " "); // 去掉多余空格
-        return categoryColors[cat] || "#ccc";
+        const ctClass = getCtClass(glisting.category);
+
+        // ⚠️ 特判 ct0，直接返回黑色
+        if (ctClass === "ct0") {
+            return "#000000";
+        }
+
+        // 动态创建元素获取样式
+        const el = document.createElement("div");
+        el.className = ctClass;
+        document.body.appendChild(el);
+        const style = getComputedStyle(el);
+
+        // 优先取 borderColor
+        let color = style.borderColor;
+
+        // 如果 borderColor 不可用，退回 backgroundColor
+        if (!color || color === "transparent" || color === "rgba(0, 0, 0, 0)") {
+            color = style.backgroundColor;
+        }
+
+        document.body.removeChild(el);
+        return color || "#ccc";
     }
 
     function gotonext() {};
@@ -161,7 +167,7 @@
             <div id="gd1" style="display:flex; justify-content:center; align-items:center; width:250px; height:354px;">
                 <img src="${glisting.thumb}"
                      style="max-width:100%; max-height:95%; object-fit:contain;
-                     border:2px solid ${categoryColor}; border-radius:6px;
+                     border:2px solid ${categoryColor}; border-radius:10px;
                      box-shadow:0 0 8px ${categoryColor};">
             </div>
             </div>
@@ -363,7 +369,7 @@
 
         $('#gd1 > div').css({
             "border": "2px solid " + categoryColor,
-            "border-radius": "6px",
+            "border-radius": "10px", // 更改封面圆角
             "box-shadow": "0 0 8px " + categoryColor
         });
         generateTags(glisting);

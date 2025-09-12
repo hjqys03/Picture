@@ -503,13 +503,7 @@
         var menu = $(`<div id="menu" style="font-weight:bold; font-size:10pt; display:flex; flex-wrap:wrap; gap:6px; justify-content:center;"></div>`);
 
         // ==== E-Hentai 搜索 ====
-        menu.append(`
-            <span class="search-btn"><img src="${icon}">
-                <a href="/?f_search=${shortEncodedEH}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
-            </span>
-        `);
-
-        // E-Hentai 作者搜索
+        // 先作者
         if (useEhAuthors && validEhAuthors.length > 0) {
             let authorTitle = validEhAuthors.length > 1
                 ? "艺术家标签搜索：" + validEhAuthors.map(a => a.name).join(" / ")
@@ -531,14 +525,15 @@
                 </span>
             `);
         }
-
-        // ==== LANraragi 搜索 ====
+        // 再标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
+                <a href="/?f_search=${shortEncodedEH}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
             </span>
         `);
 
+        // ==== LANraragi (MyEL) 搜索 ====
+        // 作者
         if (validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
@@ -549,15 +544,15 @@
                 </span>
             `);
         }
-
-        // ==== HDoujin 搜索 ====
+        // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="https://hdoujin.org/browse?s=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
+                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
             </span>
         `);
 
-        // HDoujin 作者搜索
+        // ==== HDoujin 搜索 ====
+        // 作者
         if (useEhAuthors && validEhAuthors.length > 0) {
             let authorTitle = validEhAuthors.length > 1
                 ? "艺术家标签搜索：" + validEhAuthors.map(a => a.name).join(" / ")
@@ -579,13 +574,15 @@
                 </span>
             `);
         }
-
-        // ==== 绅士漫画 搜索 ====
+        // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="https://www.wnacg.com/search/?q=${shortEncoded}&f=_all&s=create_time_DESC&syn=yes" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (绅士漫画)</a>
+                <a href="https://hdoujin.org/browse?s=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
             </span>
         `);
+
+        // ==== 绅士漫画 搜索 ====
+        // 作者
         if (validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
@@ -596,6 +593,12 @@
                 </span>
             `);
         }
+        // 标题
+        menu.append(`
+            <span class="search-btn"><img src="${icon}">
+                <a href="https://www.wnacg.com/search/?q=${shortEncoded}&f=_all&s=create_time_DESC&syn=yes" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (绅士漫画)</a>
+            </span>
+        `);
 
         // ==== DLsite 搜索 ====
         menu.append(`

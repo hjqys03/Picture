@@ -9,8 +9,6 @@
 // @runat        document-start
 // @require      https://code.jquery.com/jquery-3.3.1.min.js
 // @include      /https?:\/\/(e-|ex)hentai\.org\/.*/
-// @downloadURL  https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
-// @updateURL    https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
 // ==/UserScript==
 
 (function() {

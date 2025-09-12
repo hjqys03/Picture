@@ -9,8 +9,6 @@
 // @runat        document-start
 // @require      https://code.jquery.com/jquery-3.3.1.min.js
 // @include      /https?:\/\/(e-|ex)hentai\.org\/.*/
-// @downloadURL  https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
-// @updateURL    https://raw.githubusercontent.com/hjqys03/Picture/refs/heads/main/ExResurrect%20Plus.js
 // ==/UserScript==
 
 (function() {
@@ -954,49 +952,62 @@
 (function(){
     function applyCategoryBorders(){
         document.querySelectorAll('.gl1t').forEach(gallery=>{
-            const catDiv = gallery.querySelector('.cs'); // 分类色的小块
-            const coverBox = gallery.querySelector('.gl3t'); // 封面容器
+            const catDiv = gallery.querySelector('.cs'); // 分类色的小块（左上角的彩条）
+            const coverBox = gallery.querySelector('.gl3t'); // 封面容器（缩略图外层）
             if (!catDiv || !coverBox) return;
 
-            // 获取分类颜色
-            let color = getComputedStyle(catDiv).borderColor;
-            if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') {
-                color = getComputedStyle(catDiv).backgroundColor || '#999';
+            let color;
+
+            // ⚠️ 特判：ct0 → 直接用黑色
+            // - ct0 通常表示默认分类（可能是“Misc”或未分类）
+            // - 这里固定写死为黑色，避免和其他分类混淆
+            if (catDiv.classList.contains('ct0')) {
+                color = '#000000'; // 纯黑
+            } else {
+                // 一般情况：先取 borderColor，如果没有就用 backgroundColor
+                color = getComputedStyle(catDiv).borderColor;
+
+                // 处理透明色：有些分类可能 border 是透明的
+                if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') {
+                    color = getComputedStyle(catDiv).backgroundColor || '#999'; // 兜底灰色
+                }
             }
 
-            // ==== 样式应用 ====
+            // ==== 样式应用部分 ====
 
-            // 1. 外描边（不会影响排版大小）
-            // - outline:2px solid color → 颜色边框，厚度由 2px 控制
-            // - 增大 px 值 → 描边更粗
-            // - 减小 px 值 → 描边更细
-            // - 如果想要完全去掉描边，可以把它设成 'none'
+            // 1. 描边（使用 outline，不会撑大容器）
+            // - outline:2px solid color → 外描边，颜色跟分类色一致
+            // - px 值越大，描边越粗
+            // - 如果觉得描边多余，可以改成 'none'
             coverBox.style.outline = '2px solid ' + color;
 
-            // 2. outlineOffset → 控制描边与元素本身的间距
-            // - 正值：描边往外扩，比如 3px 就会离本体有 3px 空隙
-            // - 负值：描边往内压，会盖住边缘
-            // - 0px：贴着本体
+            // 2. outlineOffset → 控制描边距离
+            // - 0px = 紧贴封面
+            // - 正值 = 往外扩，描边会离封面有空隙
+            // - 负值 = 往内压，会覆盖在封面边缘上
             coverBox.style.outlineOffset = '0px';
 
-            // 3. 阴影效果（box-shadow）
-            // - 格式：x偏移 y偏移 模糊值 扩散值 颜色
-            // - x/y 偏移：控制阴影方向（0 0 = 四周都均匀）
-            // - 模糊值(12px)：数值越大，阴影越柔和、范围越大
-            // - 扩散值(3px)：正值让阴影更大更明显，负值让阴影缩小
-            //   建议调 3~6px，会比较显眼
-            // - 颜色：这里用分类色，所以和分类标签一致
+            // 3. 阴影（box-shadow）
+            // 格式：x偏移 y偏移 模糊值 扩散值 颜色
+            // - x/y 偏移 → 控制阴影方向（0 0 = 四周均匀）
+            // - 模糊值(12px) → 阴影柔和程度，数值越大越柔和
+            // - 扩散值(3px) → 阴影的范围，数值越大越明显
+            // 👉 建议：调大扩散值（比如 6px），能让效果更显眼
             coverBox.style.boxShadow = `0 0 10px 1px ${color}`;
 
-            // 4. border 保持原样，不去改它的圆角/边框
-            //   如果你改成 border 就会撑大容器，导致图片移动
+            // 4. 保持原有 border，不改圆角
+            // - 这样可以保留站点本身的设计风格
             coverBox.style.border = 'none';
         });
     }
 
-    // 监听 DOM 变化，动态应用
+    // 监听 DOM 变化（懒加载/翻页时重新应用）
     new MutationObserver(applyCategoryBorders)
         .observe(document.body, {childList:true, subtree:true});
+
+    // 页面加载完成时应用一次
     window.addEventListener('load', applyCategoryBorders);
+
+    // 初始化执行
     applyCategoryBorders();
 })();

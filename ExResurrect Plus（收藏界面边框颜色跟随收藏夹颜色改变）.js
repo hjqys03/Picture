@@ -77,16 +77,20 @@
                     return;
                 }
 
-
                 // 找到所属分类色
                 const catDiv = document.querySelector('.cs');
                 let color = '#999';
-                if (catDiv) {
+
+                // ⚠️ 特判 ct0，直接返回黑色
+                if (catDiv && catDiv.classList.contains('ct0')) {
+                    color = '#000000';
+                } else if (catDiv) {
                     color = getComputedStyle(catDiv).borderColor;
                     if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') {
                         color = getComputedStyle(catDiv).backgroundColor || '#999';
                     }
                 }
+
                 div.style.borderRadius = '8px';
                 div.style.overflow = 'hidden';
                 div.style.border = '2px solid ' + color;

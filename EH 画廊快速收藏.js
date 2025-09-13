@@ -164,13 +164,17 @@ var stylesheet =`
 #gdf > .favnote {
     float: right !important;
     cursor: pointer;
+    display: block;
     width: 16px;
     height: 16px;
-    margin-right: 5px;
-    position: relative;
+    margin: 0 2px;
+    position: relative;      /* 伪元素定位基准 */
     top: 1px;
     z-index: 20;
     opacity: 0.5;
+    padding: 0;
+    box-sizing: content-box;
+    line-height: 0;
 }
 
 #gdf > .favnote:hover {
@@ -178,7 +182,12 @@ var stylesheet =`
 }
 
 #gdf > .favnote:after {
-    opacity: 0;
+    position: absolute;
+    left: 20px;
+    top: 0;
+    width: 50px;
+    content: "查看备注";
+    display: none;   /* 默认不显示 */
 }
 
 #gdf > .favnote:hover:after {

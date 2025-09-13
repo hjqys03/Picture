@@ -503,7 +503,7 @@
                 let text = $(this).text().trim();
                 let ehs = $(this).attr("ehs-tag");
                 let displayName = text && text.length > 0 ? text : (ehs ? ehs : id);
-                            artists.push({ id, name: displayName });
+                artists.push({ id, name: displayName });
             });
 
             // 如果一开始全是英文，则监听翻译脚本修改 DOM
@@ -602,7 +602,7 @@
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
                 </span>
             `);
-}
+        }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
@@ -636,7 +636,7 @@
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
                 </span>
             `);
-}
+        }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")

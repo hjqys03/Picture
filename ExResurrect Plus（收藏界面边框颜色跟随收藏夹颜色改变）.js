@@ -1039,3 +1039,71 @@
     // 初始化执行
     applyCategoryBorders();
 })();
+
+// === 点击封面复制链接功能（BBCode + 手指指针版） ===
+(function() {
+    function copyTextToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("已复制论坛格式:\n" + text);
+            console.log("✅ 已复制:", text);
+        }).catch(err => {
+            console.error("❌ 复制失败:", err);
+        });
+    }
+
+    function getCoverUrl(el) {
+        if (!el) return null;
+        if (el.tagName === "IMG" && el.src) return el.src;
+        if (el.style && el.style.backgroundImage) {
+            let m = el.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+            if (m) return m[1];
+        }
+        return null;
+    }
+
+    function placeOverlay() {
+        const cover = document.querySelector("#gd1 img, #gd1 > div");
+        if (!cover) return;
+
+        const url = getCoverUrl(cover);
+        if (!url) return;
+
+        const rect = cover.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+
+        const galleryUrl = location.href;
+        const bbcode = `[url=${galleryUrl}][img]${url}[/img][/url]`;
+
+        let overlay = document.querySelector("#cover-copy-overlay");
+        if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.id = "cover-copy-overlay";
+            overlay.style.position = "fixed";
+            overlay.style.cursor = "pointer"; // 手指指针
+            overlay.style.zIndex = 99999;
+            overlay.style.background = "rgba(0,0,0,0)";
+            overlay.addEventListener("click", e => {
+                e.preventDefault();
+                e.stopPropagation();
+                copyTextToClipboard(bbcode);
+            });
+            document.body.appendChild(overlay);
+        }
+
+        overlay.style.top = rect.top + "px";
+        overlay.style.left = rect.left + "px";
+        overlay.style.width = rect.width + "px";
+        overlay.style.height = rect.height + "px";
+    }
+
+    window.addEventListener("load", placeOverlay);
+    window.addEventListener("resize", placeOverlay);
+    window.addEventListener("scroll", placeOverlay);
+    new MutationObserver(placeOverlay).observe(document.body, {childList:true, subtree:true});
+    setInterval(placeOverlay, 1000);
+
+    const img = document.querySelector("#gd1 img");
+    if (img) {
+        img.addEventListener("load", placeOverlay);
+    }
+})();

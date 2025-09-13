@@ -33,6 +33,7 @@ const config = {
 
 // Colors
 var color;
+var hotkeyInit = false;
 
 // 从网页 .gm 元素获取颜色
 function getGMColors() {

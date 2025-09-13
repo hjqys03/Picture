@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ExResurrect Plus
 // @namespace    https://e-hentai.org/?f_cats=0
-// @version      6.6.6
+// @version      6.6.18
 // @icon         https://exhentai.org/favicon.ico
 // @description  Resurrect E/Ex gallery listings
 // @author       Hauffen (Original Author) + HeartThrob
@@ -452,6 +452,20 @@
     }
 
     function generateSearchLink(glisting) {
+
+    // === 检查屏蔽标签（other:anthology, other:goudoushi）===
+    function hasBlockedTags() {
+        let blocked = false;
+        $('a[id^="ta_other:"]').each(function () {
+            let id = $(this).attr("id").substring(9); // 去掉 "ta_other:"
+            if (id === "anthology" || id === "goudoushi") {
+                blocked = true;
+            }
+        });
+        return blocked;
+    }
+    const blockArtistButtons = hasBlockedTags();
+
         $('#menu').remove(); // 防止重复
 
         var isEx = window.location.hostname.indexOf("exhentai") >= 0;
@@ -471,22 +485,50 @@
         var shortEncodedDLsite = encodeURIComponent(shortTitle).replace(/%20/g, "+");
 
         // ===== 从 taglist 提取 E-Hentai 专用艺术家 =====
-        function getEhArtists() {
-            let artists = [];
-            $('#gd4 #taglist .tc').each(function () {
-                if ($(this).text().includes("艺术家:")) {
-                    $(this).next("td").find("a[title^='a:']").each(function () {
-                        let tag = $(this).attr("title"); // 例如 "a:sunaba_yuu"
-                        if (tag && tag.startsWith("a:")) {
-                            let id = tag.substring(2); // sunaba_yuu
-                            let displayName = $(this).attr("lang") === "zh-hans"
-                            ? $(this).text().trim() // 优先中文翻译
-                            : id; // 否则用 id
-                            artists.push({ id, name: displayName });
-                        }
-                    });
+        function hasBlockTags() {
+            let blocked = false;
+            $('a[id^="ta_other:"]').each(function () {
+                let id = $(this).attr("id").substring(9);
+                if (id === "anthology" || id === "goudoushi") {
+                    blocked = true;
                 }
             });
+            return blocked;
+        }
+
+        function getEhArtists() {
+            let artists = [];
+            $('a[id^="ta_artist:"]').each(function () {
+                let id = $(this).attr("id").substring(10);
+                let text = $(this).text().trim();
+                let ehs = $(this).attr("ehs-tag");
+                let displayName = text && text.length > 0 ? text : (ehs ? ehs : id);
+                artists.push({ id, name: displayName });
+            });
+
+            // 如果一开始全是英文，则监听翻译脚本修改 DOM
+            if (artists.length > 0 && artists.every(a => a.name === a.id)) {
+                const observer = new MutationObserver(() => {
+                    let newArtists = [];
+                    $('a[id^="ta_artist:"]').each(function () {
+                        let id = $(this).attr("id").substring(10);
+                        let text = $(this).text().trim();
+                        let ehs = $(this).attr("ehs-tag");
+                        let displayName = text && text.length > 0 ? text : (ehs ? ehs : id);
+                        newArtists.push({ id, name: displayName });
+                    });
+                    if (newArtists.some(a => a.name !== a.id)) {
+                        console.log("🎨 翻译脚本生效，更新艺术家:", newArtists);
+                        observer.disconnect();
+                        // 更新菜单提示，涵盖 E-Hentai / HDoujin
+                        $('#menu .author-btn-eh a, #menu .author-btn-hdoujin a').each(function() {
+                            $(this).attr("title", "艺术家标签搜索：" + newArtists.map(a => a.name).join(" / "));
+                        });
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+            }
+
             return artists.length > 0 ? artists : null;
         }
         var ehAuthors = getEhArtists();
@@ -554,21 +596,25 @@
                 ? "艺术家标签搜索：" + validEhAuthors.map(a => a.name).join(" / ")
                 : "艺术家标签搜索：" + validEhAuthors[0].name;
 
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-eh"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
                 </span>
             `);
+        }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
 
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-eh-backup"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
                 </span>
             `);
+        }
         }
         // 再标题
         menu.append(`
@@ -584,21 +630,25 @@
                 ? "艺术家标签搜索：" + validEhAuthors.map(a => a.name).join(" / ")
                 : "艺术家标签搜索：" + validEhAuthors[0].name;
 
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-hdoujin"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
                 </span>
             `);
+        }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
 
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-hdoujin-backup"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
                 </span>
             `);
+        }
         }
         // 标题
         menu.append(`
@@ -613,11 +663,13 @@
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-wnacg"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (绅士漫画)</a>
                 </span>
             `);
+        }
         }
         // 标题
         menu.append(`
@@ -646,11 +698,13 @@
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
+            if (!blockArtistButtons) {
             menu.append(`
                 <span class="search-btn author-btn-lrr"><img src="${icon}">
                     <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (LANraragi)</a>
                 </span>
             `);
+        }
         }
         // 标题
         menu.append(`

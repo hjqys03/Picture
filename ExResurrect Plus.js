@@ -68,6 +68,37 @@
         return color || "#ccc";
     }
 
+    // === 给阅读页缩略图加圆角 + 分类描边 + 阴影 ===
+    (function(){
+        function applyThumbnailBorders() {
+            document.querySelectorAll('#gdt a > div > div').forEach(div => {
+                // 跳过已经包含文字说明的缩略图容器（例如“第 XXX 页：xxx.jpg”）
+                if (div.textContent && div.textContent.trim().startsWith('第') && div.textContent.includes('页：')) {
+                    return;
+                }
+
+
+                // 找到所属分类色
+                const catDiv = document.querySelector('.cs');
+                let color = '#999';
+                if (catDiv) {
+                    color = getComputedStyle(catDiv).borderColor;
+                    if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') {
+                        color = getComputedStyle(catDiv).backgroundColor || '#999';
+                    }
+                }
+                div.style.borderRadius = '8px';
+                div.style.overflow = 'hidden';
+                div.style.border = '2px solid ' + color;
+                div.style.boxShadow = '0 0 8px ' + color;
+                div.style.transition = 'all 0.3s ease';
+            });
+        }
+        new MutationObserver(applyThumbnailBorders).observe(document.body, {childList:true, subtree:true});
+        window.addEventListener('load', applyThumbnailBorders);
+        applyThumbnailBorders();
+    })();
+
     function gotonext() {};
 
         // Override the default function to prevent redirect

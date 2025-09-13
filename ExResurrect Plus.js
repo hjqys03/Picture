@@ -316,7 +316,18 @@
         });
         // Try to generate torrent links
         if (glisting.torrentcount > 0) {
-            $(`<div id="torrents" style="border-top:1px solid #000; padding: 5px 10px 5px 10px;">
+            // 动态获取 .gm 的边框颜色
+            const gm = document.querySelector(".gm");
+            let gmColor = "#000";
+            if (gm) {
+                const c = getComputedStyle(gm).borderColor;
+                if (c && c !== "transparent") {
+                    gmColor = c;
+                }
+            }
+
+            // 用 gmColor 作为 border-top 颜色
+            $(`<div id="torrents" style="border-top:1px solid ${gmColor}; padding: 5px 10px 5px 10px;">
                 <p><span class="halp" title="如果种子链接无效，请尝试磁力链接">可能有效的种子：</span></p>
             </div>`).appendTo('.gm');
 
@@ -950,7 +961,7 @@
         position: relative;
         display: inline-block;
         width: 100%;
-        border-top: 1px solid #000;
+        border-top: 1px solid currentColor;
     }
     .menuControl {
         border: none;
@@ -981,6 +992,24 @@
         background: rgba(0,0,0,0.4);
     }
     </style>`).appendTo('head');
+
+// === 同步 #menu border-top 颜色为 .gm 的 borderColor ===
+(function syncMenuBorderColor(){
+    function apply(){
+        const gm = document.querySelector(".gm");
+        const menu = document.querySelector("#menu");
+        if (gm && menu) {
+            const color = getComputedStyle(gm).borderColor;
+            if (color && color !== "transparent") {
+                menu.style.borderTop = "1px solid " + color;
+            }
+        }
+    }
+    new MutationObserver(apply).observe(document.body, {childList:true,subtree:true});
+    window.addEventListener("load", apply);
+    apply();
+})();
+
 })();
 
 // === 分类色边框应用到 .gl3t 容器 ===

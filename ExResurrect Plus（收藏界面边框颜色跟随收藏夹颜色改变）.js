@@ -577,25 +577,6 @@
             </span>
         `);
 
-        // ==== LANraragi (MyEL) 搜索 ====
-        // 作者
-        if (validBackupAuthors.length > 0) {
-            let authorTitle = validBackupAuthors.length > 1
-                ? "艺术家搜索：" + validBackupAuthors.join(" / ")
-                : "艺术家搜索：" + validBackupAuthors[0];
-            menu.append(`
-                <span class="search-btn author-btn-lrr"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (MyEL)</a>
-                </span>
-            `);
-        }
-        // 标题
-        menu.append(`
-            <span class="search-btn"><img src="${icon}">
-                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
-            </span>
-        `);
-
         // ==== HDoujin 搜索 ====
         // 作者
         if (useEhAuthors && validEhAuthors.length > 0) {
@@ -656,6 +637,25 @@
         menu.append(`
             <span class="search-btn fanza-btn"><img src="${icon}">
                 <a href="javascript:void(0)" title="标题搜索：${shortTitle} (同时搜索 FANZA同人 和 FANZAブックス)">标题搜索 (FANZA)</a>
+            </span>
+        `);
+
+        // ==== LANraragi (MyEL) 搜索 ====
+        // 作者
+        if (validBackupAuthors.length > 0) {
+            let authorTitle = validBackupAuthors.length > 1
+                ? "艺术家搜索：" + validBackupAuthors.join(" / ")
+                : "艺术家搜索：" + validBackupAuthors[0];
+            menu.append(`
+                <span class="search-btn author-btn-lrr"><img src="${icon}">
+                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (LANraragi)</a>
+                </span>
+            `);
+        }
+        // 标题
+        menu.append(`
+            <span class="search-btn"><img src="${icon}">
+                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (LANraragi)</a>
             </span>
         `);
 

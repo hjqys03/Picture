@@ -787,12 +787,34 @@
                     </span>
                 `);
             } else if (catDiv.classList.contains('ct0')) {
-                // 私有 → 双开 FANZA同人 + FANZAブックス
-                menu.append(`
-                    <span class="search-btn fanza-btn" data-mode="both"><img src="${icon}">
-                        <a href="javascript:void(0)" title="标题搜索 (FANZA同人 + FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
-                    </span>
-                `);
+                // 私有分类：根据标签判断
+                let hasAnthology = tags.other && tags.other.includes("anthology");
+                let hasGoudoushi = tags.other && tags.other.includes("goudoushi");
+
+                if (hasAnthology) {
+                    // other:anthology → FANZAブックス
+                    const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + shortEncoded;
+                    menu.append(`
+                        <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
+                            <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
+                        </span>
+                    `);
+                } else if (hasGoudoushi) {
+                    // other:goudoushi → FANZA同人
+                    const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + shortEncoded;
+                    menu.append(`
+                        <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
+                            <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZA同人)：${shortTitle}">标题搜索 (FANZA)</a>
+                        </span>
+                    `);
+                } else {
+                    // 默认 → 双开 FANZA同人 + FANZAブックス
+                    menu.append(`
+                        <span class="search-btn fanza-btn" data-mode="both"><img src="${icon}">
+                            <a href="javascript:void(0)" title="标题搜索 (FANZA同人 + FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
+                        </span>
+                    `);
+                }
             }
         }
 

@@ -788,19 +788,22 @@
                 `);
             } else if (catDiv.classList.contains('ct0')) {
                 // 私有分类：根据标签判断
-                let hasAnthology = tags.other && tags.other.includes("anthology");
-                let hasGoudoushi = tags.other && tags.other.includes("goudoushi");
+                let hasAnthology  = tags.other && tags.other.includes("anthology");
+                let hasTankoubon  = tags.other && tags.other.includes("tankoubon");
+                let hasGoudoushi  = tags.other && tags.other.includes("goudoushi");
+                let hasSoushuuhen = tags.other && tags.other.includes("soushuuhen");
+                let hasParody     = tags.parody && tags.parody.length > 0;
 
-                if (hasAnthology) {
-                    // other:anthology → FANZAブックス
+                if (hasAnthology || hasTankoubon) {
+                    // 选集 / 单行本 → FANZAブックス
                     const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + shortEncoded;
                     menu.append(`
                         <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
                             <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
                         </span>
                     `);
-                } else if (hasGoudoushi) {
-                    // other:goudoushi → FANZA同人
+                } else if (hasGoudoushi || hasSoushuuhen || hasParody) {
+                    // 合作本 / 总集篇 / 原作:* → FANZA同人
                     const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + shortEncoded;
                     menu.append(`
                         <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
@@ -1119,8 +1122,8 @@
             title = title.substr(0, m.index);
         }
 
-        // 🚩 新增：处理罗马音/日语分隔符 | ｜ + ，只取前半段
-        title = title.split(/[\|｜\+]/)[0].trim();
+        // 🚩 新增：处理罗马音/日语分隔符 | ｜ ︱ + ，只取前半段
+        title = title.split(/[\|｜︱\+]/)[0].trim();
 
         return title;
     }

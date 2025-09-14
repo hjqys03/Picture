@@ -597,24 +597,44 @@
                 : "艺术家标签搜索：" + validEhAuthors[0].name;
 
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-eh"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
-                </span>
-            `);
-        }
+                if (validEhAuthors.length === 1) {
+                    // ✅ 单作者 → 直接真实链接（中键可用）
+                    menu.append(`
+                        <span class="search-btn author-btn-eh"><img src="${icon}">
+                            <a href="/?f_search=${encodeURIComponent('"artist:' + validEhAuthors[0].id + '"')}" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
+                        </span>
+                    `);
+                } else {
+                    // ⚠️ 多作者 → 保持 JS 打开多个
+                    menu.append(`
+                        <span class="search-btn author-btn-eh"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
+                        </span>
+                    `);
+                }
+            }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
 
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-eh-backup"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
-                </span>
-            `);
-        }
+                if (validBackupAuthors.length === 1) {
+                    menu.append(`
+                        <span class="search-btn author-btn-eh-backup"><img src="${icon}">
+                            <a href="/?f_search=${encodeURIComponent('"' + validBackupAuthors[0] + '"')}" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
+                        </span>
+                    `);
+                } else {
+                    menu.append(`
+                        <span class="search-btn author-btn-eh-backup"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
+                        </span>
+                    `);
+                }
+            }
         }
         // 再标题
         menu.append(`
@@ -631,24 +651,42 @@
                 : "艺术家标签搜索：" + validEhAuthors[0].name;
 
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-hdoujin"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
-                </span>
-            `);
-        }
+                if (validEhAuthors.length === 1) {
+                    menu.append(`
+                        <span class="search-btn author-btn-hdoujin"><img src="${icon}">
+                            <a href="https://hdoujin.org/browse?s=${encodeURIComponent("artist:" + validEhAuthors[0].id)}" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
+                        </span>
+                    `);
+                } else {
+                    menu.append(`
+                        <span class="search-btn author-btn-hdoujin"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
+                        </span>
+                    `);
+                }
+            }
         } else if (!useEhAuthors && validBackupAuthors.length > 0) {
             let authorTitle = validBackupAuthors.length > 1
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
 
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-hdoujin-backup"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
-                </span>
-            `);
-        }
+                if (validBackupAuthors.length === 1) {
+                    menu.append(`
+                        <span class="search-btn author-btn-hdoujin-backup"><img src="${icon}">
+                            <a href="https://hdoujin.org/browse?s=${encodeURIComponent(validBackupAuthors[0])}" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
+                        </span>
+                    `);
+                } else {
+                    menu.append(`
+                        <span class="search-btn author-btn-hdoujin-backup"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
+                        </span>
+                    `);
+                }
+            }
         }
         // 标题
         menu.append(`
@@ -664,31 +702,26 @@
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-wnacg"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (绅士漫画)</a>
-                </span>
-            `);
-        }
+                if (validBackupAuthors.length === 1) {
+                    menu.append(`
+                        <span class="search-btn author-btn-wnacg"><img src="${icon}">
+                            <a href="https://www.wnacg.com/search/?q=${encodeURIComponent(validBackupAuthors[0])}&f=_all&s=create_time_DESC&syn=yes" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (绅士漫画)</a>
+                        </span>
+                    `);
+                } else {
+                    menu.append(`
+                        <span class="search-btn author-btn-wnacg"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (绅士漫画)</a>
+                        </span>
+                    `);
+                }
+            }
         }
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
                 <a href="https://www.wnacg.com/search/?q=${shortEncoded}&f=_all&s=create_time_DESC&syn=yes" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (绅士漫画)</a>
-            </span>
-        `);
-
-        // ==== DLsite 搜索 ====
-        menu.append(`
-            <span class="search-btn"><img src="${icon}">
-                <a href="https://www.dlsite.com/maniax/fsr/=/language/jp/sex_category%5B0%5D/male/keyword/${shortEncodedDLsite}/" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (DLsite)</a>
-            </span>
-        `);
-
-        // ==== FANZA 搜索 ====
-        menu.append(`
-            <span class="search-btn fanza-btn"><img src="${icon}">
-                <a href="javascript:void(0)" title="标题搜索：${shortTitle} (同时搜索 FANZA同人 和 FANZAブックス)">标题搜索 (FANZA)</a>
             </span>
         `);
 
@@ -699,68 +732,137 @@
                 ? "艺术家搜索：" + validBackupAuthors.join(" / ")
                 : "艺术家搜索：" + validBackupAuthors[0];
             if (!blockArtistButtons) {
-            menu.append(`
-                <span class="search-btn author-btn-lrr"><img src="${icon}">
-                    <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (LANraragi)</a>
-                </span>
-            `);
-        }
+                if (validBackupAuthors.length === 1) {
+                    menu.append(`
+                        <span class="search-btn author-btn-lrr"><img src="${icon}">
+                            <a href="http://192.168.10.2:3000/?q=${encodeURIComponent(validBackupAuthors[0])}" 
+                            target="_blank" title="${authorTitle}">艺术家搜索 (MyEL)</a>
+                        </span>
+                    `);
+                } else {
+                    menu.append(`
+                        <span class="search-btn author-btn-lrr"><img src="${icon}">
+                            <a href="javascript:void(0)" title="${authorTitle}">艺术家搜索 (MyEL)</a>
+                        </span>
+                    `);
+                }
+            }
         }
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (LANraragi)</a>
+                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
             </span>
         `);
+
+        // ==== DLsite & FANZA 搜索 ====
+        // 只有 doujinshi (ct2)、manga (ct3)、私有 (ct0) 时才显示
+        const catDiv = document.querySelector('#gdc .cs');
+        if (catDiv && (catDiv.classList.contains('ct2') || catDiv.classList.contains('ct3') || catDiv.classList.contains('ct0'))) {
+
+            // ---- DLsite ----
+            menu.append(`
+                <span class="search-btn"><img src="${icon}">
+                    <a href="https://www.dlsite.com/maniax/fsr/=/language/jp/sex_category%5B0%5D/male/keyword/${shortEncodedDLsite}/" 
+                    target="_blank" 
+                    title="标题搜索：${shortTitle}">标题搜索 (DLsite)</a>
+                </span>
+            `);
+
+            // ---- FANZA ----
+            if (catDiv.classList.contains('ct2')) {
+                // 同人志
+                const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + shortEncoded;
+                menu.append(`
+                    <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
+                        <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZA同人)：${shortTitle}">标题搜索 (FANZA)</a>
+                    </span>
+                `);
+            } else if (catDiv.classList.contains('ct3')) {
+                // 漫画
+                const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + shortEncoded;
+                menu.append(`
+                    <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
+                        <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
+                    </span>
+                `);
+            } else if (catDiv.classList.contains('ct0')) {
+                // 私有 → 双开 FANZA同人 + FANZAブックス
+                menu.append(`
+                    <span class="search-btn fanza-btn" data-mode="both"><img src="${icon}">
+                        <a href="javascript:void(0)" title="标题搜索 (FANZA同人 + FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
+                    </span>
+                `);
+            }
+        }
 
         // 插入菜单
         $('.gm').first().append(menu);
 
         // ===== 点击事件绑定 =====
-        // FANZA
-        $('#menu').on('click', '.fanza-btn a', function () {
+        // FANZA → 私有分类双开
+        $('#menu').on('click', '.fanza-btn a', function (e) {
+            const mode = $(this).closest('.fanza-btn').data('mode');
             const keyword = encodeURIComponent(getShortTitle(glisting.title_jpn || glisting.title));
-            window.open("https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + keyword + "/", "_blank");
-            window.open("https://book.dmm.co.jp/search/?searchstr=" + keyword, "_blank");
+
+            if (mode === "both") {
+                // ⚠️ 只有私有 (ct0) 用双开，拦截默认行为
+                e.preventDefault();
+                window.open("https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + keyword + "/", "_blank");
+                window.open("https://book.dmm.co.jp/search/?searchstr=" + keyword, "_blank");
+            }
+            // 其他情况 (doujin / books) → 单链接 <a href=...>，不用拦截，浏览器自己打开
         });
 
         // E-Hentai → 标签作者
-        $('#menu').on('click', '.author-btn-eh a', function () {
+        $('#menu').on('click', '.author-btn-eh a', function (e) {
+            if (validEhAuthors.length <= 1) return; // ✅ 单作者 → 真实链接，不拦截
+            e.preventDefault(); // ⚠️ 多作者 → JS 多开
             validEhAuthors.forEach(author => {
                 window.open("/?f_search=" + encodeURIComponent('"artist:' + author.id + '"'), "_blank");
             });
         });
 
         // E-Hentai → 标题作者
-        $('#menu').on('click', '.author-btn-eh-backup a', function () {
+        $('#menu').on('click', '.author-btn-eh-backup a', function (e) {
+            if (validBackupAuthors.length <= 1) return;
+            e.preventDefault();
             validBackupAuthors.forEach(author => {
                 window.open("/?f_search=" + encodeURIComponent('"' + author + '"'), "_blank");
             });
         });
 
         // LANraragi
-        $('#menu').on('click', '.author-btn-lrr a', function () {
+        $('#menu').on('click', '.author-btn-lrr a', function (e) {
+            if (validBackupAuthors.length <= 1) return;
+            e.preventDefault();
             validBackupAuthors.forEach(author => {
                 window.open("http://192.168.10.2:3000/?q=" + encodeURIComponent(author), "_blank");
             });
         });
 
         // 绅士漫画
-        $('#menu').on('click', '.author-btn-wnacg a', function () {
+        $('#menu').on('click', '.author-btn-wnacg a', function (e) {
+            if (validBackupAuthors.length <= 1) return;
+            e.preventDefault();
             validBackupAuthors.forEach(author => {
                 window.open("https://www.wnacg.com/search/?q=" + encodeURIComponent(author) + "&f=_all&s=create_time_DESC&syn=yes", "_blank");
             });
         });
 
-        // HDoujin → 标签作者（artist:xxx，无引号）
-        $('#menu').on('click', '.author-btn-hdoujin a', function () {
+        // HDoujin → 标签作者
+        $('#menu').on('click', '.author-btn-hdoujin a', function (e) {
+            if (validEhAuthors.length <= 1) return;
+            e.preventDefault();
             validEhAuthors.forEach(author => {
                 window.open("https://hdoujin.org/browse?s=" + encodeURIComponent("artist:" + author.id), "_blank");
             });
         });
 
-        // HDoujin → 标题作者（直接名字，无引号）
-        $('#menu').on('click', '.author-btn-hdoujin-backup a', function () {
+        // HDoujin → 标题作者
+        $('#menu').on('click', '.author-btn-hdoujin-backup a', function (e) {
+            if (validBackupAuthors.length <= 1) return;
+            e.preventDefault();
             validBackupAuthors.forEach(author => {
                 window.open("https://hdoujin.org/browse?s=" + encodeURIComponent(author), "_blank");
             });

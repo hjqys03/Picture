@@ -261,8 +261,8 @@
         .replaceAll(PATTERN_TITLE_PREFIX, "")
         .replaceAll(PATTERN_TITLE_SUFFIX, "");
 
-    // ✅ 日语 / 罗马音 → 都遇到 | ｜ + 才截断
-    const separateIndex = extractTitle.search(/\||｜|\+/);
+    // ✅ 日语 / 罗马音 → 遇到 | ｜ ︱ + 才截断
+    const separateIndex = extractTitle.search(/\||｜|︱|\+/);
     if (separateIndex >= 0) {
         extractTitle = extractTitle.slice(0, separateIndex).trim();
     }

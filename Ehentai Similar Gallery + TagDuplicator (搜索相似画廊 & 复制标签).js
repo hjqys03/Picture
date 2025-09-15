@@ -304,7 +304,7 @@
     })
   );
 
-  // 第二行：IMTG-ALL / IMTG-PAS
+  // 第二行：TAG-ALL / TAG-PAS
   const row2 = document.createElement("p");
   row2.className = "g2";
   const img2 = document.createElement("img");
@@ -313,11 +313,11 @@
   row2.appendChild(document.createTextNode(" "));
 
   row2.appendChild(
-    addLink({ text: "IMTG-ALL", onClick: () => start(), title: "导入所有标签" })
+    addLink({ text: "TAG-ALL", onClick: () => start(), title: "导入所有标签" })
   );
   row2.append(" / ");
   row2.appendChild(
-    addLink({ text: "IMTG-PAS", onClick: () => start_gt(), title: "导入确定标签" })
+    addLink({ text: "TAG-PAS", onClick: () => start_gt(), title: "导入确定标签" })
   );
 
   // 添加到侧边栏

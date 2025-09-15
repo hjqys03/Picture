@@ -73,8 +73,15 @@
         function applyThumbnailBorders() {
             document.querySelectorAll('#gdt a > div > div').forEach(div => {
                 // 跳过已经包含文字说明的缩略图容器（例如“第 XXX 页：xxx.jpg”）
-                if (div.textContent && div.textContent.trim().startsWith('第') && div.textContent.includes('页：')) {
-                    return;
+                if (div.textContent) {
+                    const txt = div.textContent.trim();
+                    if (
+                        (txt.startsWith('第') && txt.includes('页')) ||   // 中文页码
+                        /^Page\s+\d+/i.test(txt) ||                      // 英文 Page X
+                        /\.(jpe?g|png|gif|webp)$/i.test(txt)             // 纯文件名
+                    ) {
+                        return;
+                    }
                 }
 
                 // 找到所属分类色

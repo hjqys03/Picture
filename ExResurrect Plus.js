@@ -98,10 +98,10 @@
                     }
                 }
 
-                div.style.borderRadius = '8px';
+                div.style.borderRadius = '8px'; // 预览图圆角效果
                 div.style.overflow = 'hidden';
-                div.style.border = '2px solid ' + color;
-                div.style.boxShadow = '0 0 8px ' + color;
+                div.style.border = '2px solid ' + color; // 预览图描边效果
+                div.style.boxShadow = '0 0 8px ' + color; // 预览图阴影效果
                 div.style.transition = 'all 0.3s ease';
             });
         }

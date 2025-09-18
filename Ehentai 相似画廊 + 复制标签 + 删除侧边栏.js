@@ -15,7 +15,7 @@
   "use strict";
 
   // =============== 脚本一核心函数 ===============
-  var exclude_namespaces = ["language", "reclass"];
+  var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
   var prompt_map = {
     "zh-CN": "请输入要导入tag的画廊地址",
     "en-US": "please input the link of the gallery you want to import tags from",
@@ -110,6 +110,7 @@
   }
 
   function subtract_tags(current_tags, tags_to_add) {
+    // 标签黑名单（不复制以下的标签）
     const blacklist = [
       "extraneous ads",
       "full censorship",

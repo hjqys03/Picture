@@ -358,7 +358,7 @@
   const observer = new MutationObserver(() => removeLoadComicNodes(sideBar));
   observer.observe(sideBar, { childList: true, subtree: true });
 
-  // 可选：1秒后断开
-  setTimeout(() => observer.disconnect(), 1000);
+  // 可选：5秒后断开
+  setTimeout(() => observer.disconnect(), 5000);
 
 })();

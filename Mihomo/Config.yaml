@@ -96,7 +96,7 @@ tun:
 # 策略组
 proxy-groups:
   - {name: 'Proxies', <<: *SelectAll, include-all: true, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Proxy.png'}
-  - {name: 'EHentai', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Ehviewer.png'}
+  - {name: 'EHentai', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Exhentai.png'}
   - {name: 'Telegram', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Telegram.png'}
   - {name: 'Twitter', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Twitter.png'}
   - {name: 'Emby', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Emby.png'}
@@ -105,6 +105,7 @@ proxy-groups:
   - {name: 'OpenAI', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
   - {name: '游戏平台', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Game.png'}
   - {name: '游戏下载', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Game.png'}
+  - {name: 'Cloudflare', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Cloudflare.png'}
   - {name: 'Google', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Google.png'}
   - {name: 'Microsoft', <<: *SelectProxy, include-all: true, filter: *FilterSelect, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Microsoft.png'}
   - {name: '台湾网站', <<: *SelectProxy, include-all: true, filter: *FilterTW, icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Taiwan.png'}
@@ -114,7 +115,7 @@ proxy-groups:
   - {name: '漏网之鱼', type: select, proxies: ['Proxies','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Final.png'}
   - {name: 'WebRTC', type: select, hidden: true, proxies: ['Reject','Proxies','Direct'], icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/WebRTC.png'}
   - {name: '广告拦截', type: select, hidden: true, proxies: ['Reject','Proxies','Direct'], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Adblock.png'}
-  - {name: 'GLOBAL', type: select, include-all: true, proxies: ['Proxies','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','游戏平台','游戏下载','Google','Microsoft','台湾网站','日本网站','全球代理','全球直连','漏网之鱼','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
+  - {name: 'GLOBAL', type: select, include-all: true, proxies: ['Proxies','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','游戏平台','游戏下载','Cloudflare','Google','Microsoft','台湾网站','日本网站','全球代理','全球直连','漏网之鱼','Direct'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
   # 基础策略组
   - {name: 'Direct', type: select, hidden: true, proxies: ['DIRECT'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png', url: 'https://www.gstatic.com/generate_204', interval: 300}
   - {name: 'Reject', type: select, hidden: true, proxies: ['REJECT','REJECT-DROP'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png'}
@@ -127,8 +128,10 @@ proxy-groups:
 
 # 远程规则集
 rule-providers:
+  Cloudflare_ip:     {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cloudflare.mrs'}
   Private_ip:        {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs'}
   CN_ip:             {<<: *IPcidrMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs'}
+  Cloudflare_Domain: {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cloudflare.mrs'}
   Private_Domain:    {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs'}
   CN_Domain:         {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs'}
   Pixiv:             {<<: *DomainMrs, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs'}
@@ -187,9 +190,11 @@ rules:
   - DOMAIN-SUFFIX,zaimanhua.com,全球直连
   - RULE-SET,Google,Google
   - RULE-SET,Microsoft,Microsoft
+  - RULE-SET,Cloudflare_Domain,Cloudflare
   - RULE-SET,Proxy_Domain,全球代理
   - RULE-SET,Private_Domain,Direct
   - RULE-SET,CN_Domain,全球直连
+  - RULE-SET,Cloudflare_ip,Cloudflare,no-resolve
   - RULE-SET,Private_ip,Direct,no-resolve
   - RULE-SET,CN_ip,全球直连,no-resolve
   - MATCH,漏网之鱼

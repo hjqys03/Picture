@@ -361,4 +361,10 @@
   // 可选：5秒后断开
   setTimeout(() => observer.disconnect(), 5000);
 
+  // ================== 移除 newtagfield 的 maxlength 限制 ==================
+  const tagField = document.getElementById("newtagfield");
+  if (tagField) {
+    tagField.removeAttribute("maxlength"); // 移除 maxlength
+  }
+
 })();

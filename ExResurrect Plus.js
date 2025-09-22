@@ -279,6 +279,10 @@
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
                         <a id="dl_gdl">Gallery-DL JSON</a>
                     </p>
+                    <p class="g2">
+                        <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
+                        <a id="copy_tags" href="#">复制画廊标签</a>
+                    </p>
                 </div>
                 <div class="c"></div>
             </div>
@@ -333,6 +337,51 @@
             this.target = '_blank';
             this.download = 'info.json';
         });
+
+        // 复制标签按钮绑定
+        $('#copy_tags').on('click', function (e) {
+            e.preventDefault();
+
+            // 跳过复制的标签类别（命名空间）
+            const exclude_namespaces = ["language", "reclass"];
+
+            // 标签黑名单（按标签内容过滤）
+            const blacklist = [
+                "extraneous ads",
+                "full censorship",
+                "mosaic censorship",
+                "scanmark",
+                "rough translation",
+                "watermarked",
+            ];
+
+            let tagsText = [];
+
+            // 遍历所有 tag <a>
+            $('#taglist a').each(function () {
+                let id = $(this).attr('id'); // 例如 ta_female:big breasts
+                if (!id) return;
+
+                let fullTag = id.replace(/^ta_/, ''); // → female:big breasts
+                let [ns, tagName] = fullTag.split(':');
+
+                // 跳过整个命名空间
+                if (exclude_namespaces.includes(ns)) return;
+
+                // 跳过黑名单里的单个标签
+                if (blacklist.includes(tagName)) return;
+
+                tagsText.push(fullTag);
+            });
+
+            let finalText = tagsText.join(',');
+            navigator.clipboard.writeText(finalText).then(() => {
+                alert("✅ 已复制标签：\n" + finalText);
+            }).catch(err => {
+                console.error("❌ 复制失败:", err);
+            });
+        });
+
         // Try to generate torrent links
         if (glisting.torrentcount > 0) {
             // 动态获取 .gm 的边框颜色

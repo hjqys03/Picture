@@ -286,6 +286,18 @@
         </div>
         `);
         $('body').append(listing);
+
+        // 只在删除画廊时添加 gwrd
+        if (dead) {
+            const gd4 = document.querySelector("#gd4");
+            if (gd4) {
+                // 追加 gwrd
+                const gwrd = document.createElement("div");
+                gwrd.id = "gwrd";
+                gd4.appendChild(gwrd);
+            }
+        }
+
         // Generate taglist table
         var taglist = "<table><tbody>";
         for (const namespace in tags) {
@@ -608,7 +620,7 @@
                     // ✅ 单作者 → 直接真实链接（中键可用）
                     menu.append(`
                         <span class="search-btn author-btn-eh"><img src="${icon}">
-                            <a href="/?f_search=${encodeURIComponent('"artist:' + validEhAuthors[0].id + '"')}" 
+                            <a href="/?f_search=${encodeURIComponent('artist:"' + validEhAuthors[0].id + '$"')}"
                             target="_blank" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
                         </span>
                     `);
@@ -661,7 +673,7 @@
                 if (validEhAuthors.length === 1) {
                     menu.append(`
                         <span class="search-btn author-btn-hdoujin"><img src="${icon}">
-                            <a href="https://hdoujin.org/browse?s=${encodeURIComponent("artist:" + validEhAuthors[0].id)}" 
+                            <a href="https://hdoujin.org/browse?s=${encodeURIComponent("artist:^" + validEhAuthors[0].id + "$")}"
                             target="_blank" title="${authorTitle}">艺术家搜索 (HDoujin)</a>
                         </span>
                     `);
@@ -851,7 +863,7 @@
             if (validEhAuthors.length <= 1) return; // ✅ 单作者 → 真实链接，不拦截
             e.preventDefault(); // ⚠️ 多作者 → JS 多开
             validEhAuthors.forEach(author => {
-                window.open("/?f_search=" + encodeURIComponent('"artist:' + author.id + '"'), "_blank");
+                window.open("/?f_search=" + encodeURIComponent('artist:"' + author.id + '$"'), "_blank");
             });
         });
 
@@ -887,7 +899,7 @@
             if (validEhAuthors.length <= 1) return;
             e.preventDefault();
             validEhAuthors.forEach(author => {
-                window.open("https://hdoujin.org/browse?s=" + encodeURIComponent("artist:" + author.id), "_blank");
+                window.open("https://hdoujin.org/browse?s=" + encodeURIComponent("artist:^" + author.id + "$"), "_blank");
             });
         });
 

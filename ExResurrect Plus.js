@@ -209,7 +209,8 @@
                 <img src="${glisting.thumb}"
                      style="max-width:100%; max-height:95%; object-fit:contain;
                      border:2px solid ${categoryColor}; border-radius:10px;
-                     box-shadow:0 0 8px ${categoryColor};">
+                     box-shadow:0 0 8px ${categoryColor};
+                     transition: all 0.3s ease;">
             </div>
             </div>
             <div id="gd2">
@@ -483,7 +484,8 @@
         $('#gd1 > div').css({
             "border": "2px solid " + categoryColor,
             "border-radius": "10px", // 更改封面圆角
-            "box-shadow": "0 0 8px " + categoryColor
+            "box-shadow": "0 0 8px " + categoryColor,
+            "transition": "all 0.3s ease" // 过渡效果
         });
         generateTags(glisting);
         var listing = $(`

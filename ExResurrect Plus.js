@@ -545,15 +545,6 @@
         var shortTitle = glisting.title_jpn ? getShortTitle(glisting.title_jpn) : getShortTitle(glisting.title);
         var fullTitle = glisting.title_jpn ? glisting.title_jpn : glisting.title;
 
-        // 站内搜索加引号
-        var shortEncodedEH = encodeURIComponent('"' + shortTitle + '"');
-
-        // 外站搜索保持原样
-        var shortEncoded = encodeURIComponent(shortTitle);
-
-        // 给 DLsite 专用：空格改成 +
-        var shortEncodedDLsite = encodeURIComponent(shortTitle).replace(/%20/g, "+");
-
         // ===== 从 taglist 提取 E-Hentai 专用艺术家 =====
         function hasBlockTags() {
             let blocked = false;
@@ -709,7 +700,7 @@
         // 再标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="/?f_search=${shortEncodedEH}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
+                <a href="/?f_search=${encodeURIComponent('"' + shortTitle + '"')}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
             </span>
         `);
 
@@ -761,7 +752,7 @@
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="https://hdoujin.org/browse?s=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
+                <a href="https://hdoujin.org/browse?s=${encodeURIComponent('^' + shortTitle + '$')}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
             </span>
         `);
 
@@ -791,7 +782,7 @@
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="https://www.wnacg.com/search/?q=${shortEncoded}&f=_all&s=create_time_DESC&syn=yes" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (绅士漫画)</a>
+                <a href="https://www.wnacg.com/search/?q=${encodeURIComponent(shortTitle)}&f=_all&s=create_time_DESC&syn=yes" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (绅士漫画)</a>
             </span>
         `);
 
@@ -821,7 +812,7 @@
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="http://192.168.10.2:3000/?q=${shortEncoded}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
+                <a href="http://192.168.10.2:3000/?q=${encodeURIComponent(shortTitle)}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (MyEL)</a>
             </span>
         `);
 
@@ -833,7 +824,7 @@
             // ---- DLsite ----
             menu.append(`
                 <span class="search-btn"><img src="${icon}">
-                    <a href="https://www.dlsite.com/maniax/fsr/=/language/jp/sex_category%5B0%5D/male/keyword/${shortEncodedDLsite}/" 
+                    <a href="https://www.dlsite.com/maniax/fsr/=/language/jp/sex_category%5B0%5D/male/keyword/${encodeURIComponent(shortTitle).replace(/%20/g, "+")}/" 
                     target="_blank" 
                     title="标题搜索：${shortTitle}">标题搜索 (DLsite)</a>
                 </span>
@@ -842,7 +833,7 @@
             // ---- FANZA ----
             if (catDiv.classList.contains('ct2')) {
                 // 同人志
-                const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + shortEncoded;
+                const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + encodeURIComponent(shortTitle);
                 menu.append(`
                     <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
                         <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZA同人)：${shortTitle}">标题搜索 (FANZA)</a>
@@ -850,7 +841,7 @@
                 `);
             } else if (catDiv.classList.contains('ct3')) {
                 // 漫画
-                const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + shortEncoded;
+                const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + encodeURIComponent(shortTitle);
                 menu.append(`
                     <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
                         <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
@@ -866,7 +857,7 @@
 
                 if (hasAnthology || hasTankoubon) {
                     // 选集 / 单行本 → FANZAブックス
-                    const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + shortEncoded;
+                    const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + encodeURIComponent(shortTitle);
                     menu.append(`
                         <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
                             <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
@@ -874,7 +865,7 @@
                     `);
                 } else if (hasGoudoushi || hasSoushuuhen || hasParody) {
                     // 合作本 / 总集篇 / 原作:* → FANZA同人
-                    const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + shortEncoded;
+                    const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + encodeURIComponent(shortTitle);
                     menu.append(`
                         <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
                             <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZA同人)：${shortTitle}">标题搜索 (FANZA)</a>

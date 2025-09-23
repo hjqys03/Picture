@@ -33,7 +33,7 @@
   }
 
   function buildHdoujinUrl(title) {
-    return "https://hdoujin.org/browse?s=" + encodeURIComponent(`^${title}$`);
+    return "https://hdoujin.org/browse?s=" + encodeURIComponent(`^${title}`);
   }
 
   // ====== 添加按钮 ======

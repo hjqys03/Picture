@@ -266,7 +266,7 @@
                 <div id="gd5">
                     <p class="g3 gsp">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
-                        <a href="">画廊不可用</a>
+                        <a href="#">画廊不可用</a>
                     </p>
                     <p class="g2 gsp">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
@@ -278,11 +278,11 @@
                     </p>
                     <p class="g2">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
-                        <a id="dl_ehdl">E-HDL JSON</a>
+                        <a id="dl_ehdl" href="#">E-HDL JSON</a>
                     </p>
                     <p class="g2">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
-                        <a id="dl_gdl">Gallery-DL JSON</a>
+                        <a id="dl_gdl" href="#">Gallery-DL JSON</a>
                     </p>
                 </div>
                 <div class="c"></div>

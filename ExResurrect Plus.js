@@ -270,6 +270,10 @@
                     </p>
                     <p class="g2 gsp">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
+                        <a id="copy_tags" href="#">复制标签</a>
+                    </p>
+                    <p class="g2">
+                        <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
                         <a id="dl_eze" href="#">EZE JSON</a>
                     </p>
                     <p class="g2">
@@ -279,10 +283,6 @@
                     <p class="g2">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
                         <a id="dl_gdl">Gallery-DL JSON</a>
-                    </p>
-                    <p class="g2">
-                        <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
-                        <a id="copy_tags" href="#">复制画廊标签</a>
                     </p>
                 </div>
                 <div class="c"></div>

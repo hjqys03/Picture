@@ -241,9 +241,9 @@
     if ((!galleryTitleEN && !galleryTitleJP) || !sideBar) return;
 
     const PATTERN_TITLE_PREFIX =
-          /^(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|(?:~[^~]*~)|\s+)*/g;
+          /^(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|\s+)*/g;
     const PATTERN_TITLE_SUFFIX =
-          /(?:\s+ch.[\s\d-]+)?(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|(?:~[^~]*~)|\s+)*$/gi;
+          /(?:\s+ch.[\s\d-]+)?(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|\s+)*$/gi;
 
     let extractTitle;
     let isJapanese = false;

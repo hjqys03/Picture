@@ -14,9 +14,9 @@
 
   // ====== 标题清洗逻辑 ======
   const PATTERN_TITLE_PREFIX =
-    /^(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|(?:~[^~]*~)|\s+)*/g;
+        /^(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|\s+)*/g;
   const PATTERN_TITLE_SUFFIX =
-    /(?:\s+ch.[\s\d-]+)?(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|(?:~[^~]*~)|\s+)*$/gi;
+        /(?:\s+ch.[\s\d-]+)?(?:(?:\([^)]*\))|(?:\[[^\]]*\])|(?:\{[^}]*\})|\s+)*$/gi;
 
   function cleanTitle(raw) {
     if (!raw) return "";
@@ -33,7 +33,7 @@
   }
 
   function buildHdoujinUrl(title) {
-    return "https://hdoujin.org/browse?s=" + encodeURIComponent(`^${title}$`);
+    return "https://hdoujin.org/browse?s=" + encodeURIComponent(`^${title}`);
   }
 
   // ====== 添加按钮 ======

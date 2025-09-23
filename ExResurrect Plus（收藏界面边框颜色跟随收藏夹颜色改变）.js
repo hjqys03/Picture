@@ -266,7 +266,7 @@
                 <div id="gd5">
                     <p class="g3 gsp">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />
-                        <a href="#">画廊不可用</a>
+                        <a><span class="halp" title="画廊已被移除，无法查看内容">画廊不可用</span></a>
                     </p>
                     <p class="g2 gsp">
                         <img src="` + (window.location.hostname.indexOf("exhentai") >= 0 ? "https://exhentai.org/img/mr.gif" : "https://ehgt.org/g/mr.gif") + `" />

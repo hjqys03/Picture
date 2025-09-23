@@ -752,7 +752,7 @@
         // 标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="https://hdoujin.org/browse?s=${encodeURIComponent('^' + shortTitle)}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
+                <a href="https://hdoujin.org/browse?s=${encodeURIComponent('^' + shortTitle + '$')}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (HDoujin)</a>
             </span>
         `);
 

@@ -854,24 +854,40 @@
                 let hasTankoubon  = tags.other && tags.other.includes("tankoubon");
                 let hasGoudoushi  = tags.other && tags.other.includes("goudoushi");
                 let hasSoushuuhen = tags.other && tags.other.includes("soushuuhen");
-                let hasParody     = tags.parody && tags.parody.length > 0;
 
-                if (hasAnthology || hasTankoubon) {
-                    // 选集 / 单行本 → FANZAブックス
-                    const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + encodeURIComponent(shortTitle);
-                    menu.append(`
-                        <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
-                            <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
-                        </span>
-                    `);
-                } else if (hasGoudoushi || hasSoushuuhen || hasParody) {
-                    // 合作本 / 总集篇 / 原作:* → FANZA同人
+                // 🚩 新增：标题是否包含 [社团名 (作者)]
+                let titleHasCircle = /^\[[^\]]+\([^)]*\)\]/.test(glisting.title) 
+                                || /^\[[^\]]+\([^)]*\)\]/.test(glisting.title_jpn || "");
+
+                // 🚩 新增：标题是否是 [作者名]
+                let titleHasAuthorOnly = /^\[[^()\]]+\]/.test(glisting.title) 
+                                    || /^\[[^()\]]+\]/.test(glisting.title_jpn || "");
+
+                // 🚩 新增：是否存在 原作: 标签
+                let hasParody = tags.parody && tags.parody.length > 0;
+
+                // 🚩 新增：是否存在 社团: 标签
+                let hasGroupTag = tags.group && tags.group.length > 0;
+
+                // === FANZA 判断逻辑 ===
+                if (titleHasCircle || hasGroupTag || hasGoudoushi || hasSoushuuhen || hasParody) {
+                    // 强制 FANZA 同人
                     const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + encodeURIComponent(shortTitle);
                     menu.append(`
                         <span class="search-btn fanza-btn" data-mode="doujin"><img src="${icon}">
                             <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZA同人)：${shortTitle}">标题搜索 (FANZA)</a>
                         </span>
                     `);
+
+                } else if (hasAnthology || hasTankoubon || titleHasAuthorOnly || !hasGroupTag) {
+                    // 选集 / 单行本 / 作者名开头 / 没有 group → FANZAブックス
+                    const fanzaUrl = "https://book.dmm.co.jp/search/?searchstr=" + encodeURIComponent(shortTitle);
+                    menu.append(`
+                        <span class="search-btn fanza-btn" data-mode="books"><img src="${icon}">
+                            <a href="${fanzaUrl}" target="_blank" title="标题搜索 (FANZAブックス)：${shortTitle}">标题搜索 (FANZA)</a>
+                        </span>
+                    `);
+
                 } else {
                     // 默认 → 双开 FANZA同人 + FANZAブックス
                     menu.append(`

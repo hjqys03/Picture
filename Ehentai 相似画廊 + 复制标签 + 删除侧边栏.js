@@ -112,6 +112,7 @@
   function subtract_tags(current_tags, tags_to_add) {
     // 标签黑名单（不复制以下的标签）
     const blacklist = [
+      "original",
       "extraneous ads",
       "full censorship",
       "mosaic censorship",

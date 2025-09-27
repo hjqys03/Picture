@@ -314,11 +314,11 @@
   row2.appendChild(document.createTextNode(" "));
 
   row2.appendChild(
-    addLink({ text: "TAG-ALL", onClick: () => start(), title: "导入所有标签" })
+    addLink({ text: "TAG-PAS", onClick: () => start_gt(), title: "导入确定标签" })
   );
   row2.append(" / ");
   row2.appendChild(
-    addLink({ text: "TAG-PAS", onClick: () => start_gt(), title: "导入确定标签" })
+    addLink({ text: "TAG-ALL", onClick: () => start(), title: "导入所有标签" })
   );
 
   // 添加到侧边栏

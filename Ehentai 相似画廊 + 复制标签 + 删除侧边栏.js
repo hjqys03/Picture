@@ -109,8 +109,8 @@
     }
   }
 
+  // 标签黑名单（输入链接时使用）
   function subtract_tags(current_tags, tags_to_add) {
-    // 标签黑名单（不复制以下的标签）
     const blacklist = [
       "original",
       "extraneous ads",
@@ -118,7 +118,7 @@
       "mosaic censorship",
       "scanmark",
       "rough translation",
-      "watermarked",
+      "watermarked"
     ];
     var ret = {};
     for (let namespace in tags_to_add) {
@@ -131,6 +131,24 @@
       }
       for (let tag of tags_to_add[namespace]) {
         if (!blacklist.includes(tag)) {
+          ret[namespace].push(tag);
+        }
+      }
+    }
+    return ret;
+  }
+
+  // 空链接时的简化过滤（只屏蔽 original 和 rough translation）
+  function subtract_tags_minimal(tags_to_add) {
+    const blacklist_minimal = [
+      "original",
+      "rough translation"
+    ];
+    var ret = {};
+    for (let namespace in tags_to_add) {
+      ret[namespace] = [];
+      for (let tag of tags_to_add[namespace]) {
+        if (!blacklist_minimal.includes(tag)) {
           ret[namespace].push(tag);
         }
       }
@@ -194,11 +212,12 @@
     // 🚫 如果点了取消 → 不执行
     if (url === null) return;
 
-    // ✅ 如果输入空字符串 → 导入当前画廊标签，不过滤黑名单
+    // 空字符串 → 只过滤 original 和 rough translation
     if (url.trim() === "") {
       get_source_async(window.location.href, function (text) {
         var tags_current = parse_tags(text);
-        fill_tag_field(tags_current);
+        var tags_filtered = subtract_tags_minimal(tags_current);
+        fill_tag_field(tags_filtered);
       });
       return;
     }
@@ -218,11 +237,12 @@
     // 🚫 如果点了取消 → 不执行
     if (url === null) return;
 
-    // ✅ 如果输入空字符串 → 导入当前画廊标签，不过滤黑名单
+    // 空字符串 → 只过滤 original 和 rough translation
     if (url.trim() === "") {
       get_source_async_gt(window.location.href, function (text) {
         var tags_current = parse_tags(text);
-        fill_tag_field(tags_current);
+        var tags_filtered = subtract_tags_minimal(tags_current);
+        fill_tag_field(tags_filtered);
       });
       return;
     }

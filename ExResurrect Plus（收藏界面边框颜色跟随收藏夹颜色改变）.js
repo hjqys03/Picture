@@ -663,7 +663,7 @@
                     // ✅ 单作者 → 直接真实链接（中键可用）
                     menu.append(`
                         <span class="search-btn author-btn-eh"><img src="${icon}">
-                            <a href="/?f_search=${encodeURIComponent('artist:"' + validEhAuthors[0].id + '$"')}"
+                            <a href="/?f_search=${encodeURIComponent('artist:"' + validEhAuthors[0].id + '$"')}&advsearch=1"
                             target="_blank" title="${authorTitle}">艺术家搜索 (E-Hentai)</a>
                         </span>
                     `);
@@ -701,7 +701,7 @@
         // 再标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="/?f_search=${encodeURIComponent('"' + shortTitle + '"')}" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
+                <a href="/?f_search=${encodeURIComponent('"' + shortTitle + '"')}&advsearch=1&f_sft=on&f_sfu=on&f_sfl=on" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
             </span>
         `);
 
@@ -922,7 +922,7 @@
             if (validEhAuthors.length <= 1) return; // ✅ 单作者 → 真实链接，不拦截
             e.preventDefault(); // ⚠️ 多作者 → JS 多开
             validEhAuthors.forEach(author => {
-                window.open("/?f_search=" + encodeURIComponent('artist:"' + author.id + '$"'), "_blank");
+                window.open("/?f_search=" + encodeURIComponent('artist:"' + author.id + '$"') + "&advsearch=1", "_blank");
             });
         });
 
@@ -931,7 +931,7 @@
             if (validBackupAuthors.length <= 1) return;
             e.preventDefault();
             validBackupAuthors.forEach(author => {
-                window.open("/?f_search=" + encodeURIComponent('"' + author + '"'), "_blank");
+                window.open("/?f_search=" + encodeURIComponent('"' + author + '"') + "&advsearch=1", "_blank");
             });
         });
 

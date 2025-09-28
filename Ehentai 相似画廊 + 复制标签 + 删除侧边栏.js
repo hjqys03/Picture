@@ -270,7 +270,7 @@
 
     const searchHref = `/?f_search="${encodeURIComponent(
         extractTitle
-    )}"&advsearch=1`;
+    )}"&advsearch=1&f_sft=on&f_sfu=on&f_sfl=on`;
 
   // =============== 按钮分两行 ===============
   function addLink({ text, href = "#", onClick = null, title = "" }) {

@@ -29,7 +29,7 @@
   }
 
   function buildEHUrl(title) {
-    return "https://e-hentai.org/?f_search=" + encodeURIComponent(`"${title}"`) + "&advsearch=1";
+    return "https://e-hentai.org/?f_search=" + encodeURIComponent(`"${title}"`) + "&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on";
   }
 
   function buildHdoujinUrl(title) {

@@ -118,6 +118,7 @@
       "mosaic censorship",
       "scanmark",
       "rough translation",
+      "already uploaded",
       "watermarked"
     ];
     var ret = {};

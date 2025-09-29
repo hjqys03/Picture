@@ -354,7 +354,8 @@
                 "mosaic censorship",
                 "scanmark",
                 "rough translation",
-                "watermarked",
+                "already uploaded",
+                "watermarked"
             ];
 
             let tagsText = [];

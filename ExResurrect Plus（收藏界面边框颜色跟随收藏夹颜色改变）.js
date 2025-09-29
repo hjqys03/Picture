@@ -701,7 +701,7 @@
         // 再标题
         menu.append(`
             <span class="search-btn"><img src="${icon}">
-                <a href="/?f_search=${encodeURIComponent('"' + shortTitle + '"')}&advsearch=1&f_sft=on&f_sfu=on&f_sfl=on" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
+                <a href="/?f_search=${encodeURIComponent('"' + shortTitle + '"')}&advsearch=1" target="_blank" title="标题搜索：${shortTitle}">标题搜索 (E-Hentai)</a>
             </span>
         `);
 

@@ -349,6 +349,7 @@
             // 标签黑名单（按标签内容过滤）
             const blacklist = [
                 "original",
+                "uncensored",
                 "extraneous ads",
                 "full censorship",
                 "mosaic censorship",

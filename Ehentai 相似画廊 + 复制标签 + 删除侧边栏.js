@@ -113,6 +113,7 @@
   function subtract_tags(current_tags, tags_to_add) {
     const blacklist = [
       "original",
+      "uncensored",
       "extraneous ads",
       "full censorship",
       "mosaic censorship",

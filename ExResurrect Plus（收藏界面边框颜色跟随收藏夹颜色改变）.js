@@ -857,6 +857,10 @@
                 let hasGoudoushi  = tags.other && tags.other.includes("goudoushi");
                 let hasSoushuuhen = tags.other && tags.other.includes("soushuuhen");
 
+                // 🚩 新增：标题是否包含 (会展名) [ ... ]
+                let hasEventPrefix = /^\([^)]*\)\s*\[[^\]]+\]/.test(glisting.title)
+                                || /^\([^)]*\)\s*\[[^\]]+\]/.test(glisting.title_jpn || "");
+
                 // 🚩 新增：标题是否包含 [社团名 (作者)]
                 let titleHasCircle = /^\[[^\]]+\([^)]*\)\]/.test(glisting.title) 
                                 || /^\[[^\]]+\([^)]*\)\]/.test(glisting.title_jpn || "");
@@ -872,7 +876,7 @@
                 let hasGroupTag = tags.group && tags.group.length > 0;
 
                 // === FANZA 判断逻辑 ===
-                if (titleHasCircle || hasGroupTag || hasGoudoushi || hasSoushuuhen || hasParody) {
+                if (titleHasCircle || hasGroupTag || hasGoudoushi || hasSoushuuhen || hasParody || hasEventPrefix) {
                     // 强制 FANZA 同人
                     const fanzaUrl = "https://www.dmm.co.jp/dc/doujin/-/search/=/searchstr=" + encodeURIComponent(shortTitle);
                     menu.append(`

@@ -857,9 +857,9 @@
                 let hasGoudoushi  = tags.other && tags.other.includes("goudoushi");
                 let hasSoushuuhen = tags.other && tags.other.includes("soushuuhen");
 
-                // 🚩 新增：标题是否包含 (会展名) [ ... ]
-                let hasEventPrefix = /^\([^)]*\)\s*\[[^\]]+\]/.test(glisting.title)
-                                || /^\([^)]*\)\s*\[[^\]]+\]/.test(glisting.title_jpn || "");
+                // 🚩 新增：标题是否包含 (会展名) 开头
+                let hasEventPrefix = /^\([^)]*\)\s*/.test(glisting.title)
+                                || /^\([^)]*\)\s*/.test(glisting.title_jpn || "");
 
                 // 🚩 新增：标题是否包含 [社团名 (作者)]
                 let titleHasCircle = /^\[[^\]]+\([^)]*\)\]/.test(glisting.title) 
@@ -1207,7 +1207,7 @@
         }
 
         // 🚩 新增：处理罗马音/日语分隔符 | ｜ ︱ + ，只取前半段
-        title = title.split(/[\|｜︱\+]/)[0].trim();
+        title = title.split(/[\|｜︱\+＋]/)[0].trim();
 
         return title;
     }

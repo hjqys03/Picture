@@ -1411,10 +1411,10 @@
 (function() {
     function copyTextToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast("✅ 封面预览图创建成功");
-            console.log("✅ 已创建:", text);
+            showToast("✅ 封面预览图复制成功");
+            console.log("✅ 已复制:", text);
         }).catch(err => {
-            console.error("❌ 封面预览图创建失败:", err);
+            console.error("❌ 封面预览图复制失败:", err);
         });
     }
 

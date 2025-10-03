@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Ehentai 相似画廊 + 复制标签 + 删除侧边栏
+// @name         Ehentai 相似画廊 + 复制标签 + 删除侧边栏 + 非阻塞提示
 // @namespace    https://e-hentai.org/?f_cats=0
 // @version      0.3.3
 // @author       ruaruarua + atashiyuki + ???
-// @description  Ehentai 搜索相似画廊 & 复制标签 & 删除 “Load comic”、“多页查看器” 侧边栏按钮
+// @description  Ehentai 搜索相似画廊 & 复制标签 & 删除 “Load comic”、“多页查看器” 侧边栏按钮 & 非阻塞提示(标签)
 // @match        https://exhentai.org/g/*
 // @match        https://e-hentai.org/g/*
 // @icon         https://exhentai.org/favicon.ico
@@ -13,6 +13,82 @@
 
 (function () {
   "use strict";
+
+  // ========== Toast 样式 ==========
+  (function addToastStyles() {
+    if (document.getElementById("eh-toast-style")) return;
+    const style = document.createElement("style");
+    style.id = "eh-toast-style";
+    style.textContent = `
+      .eh-toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        z-index: 2147483647; /* 最大 z-index，确保永远在最上面 */
+        pointer-events: none;
+      }
+      .eh-toast {
+        background: rgba(0,0,0,0.85);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 14px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInOut 3.5s ease forwards;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* 加阴影，提高可见度 */
+      }
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(20px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  // ========== Toast 函数 ==========
+  function showToast(msg) {
+    // 找或建容器
+    let container = document.querySelector(".eh-toast-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "eh-toast-container";
+      document.body.appendChild(container);
+    }
+
+    // 建一个 toast
+    const toast = document.createElement("div");
+    toast.className = "eh-toast";
+    toast.textContent = msg;
+
+    container.appendChild(toast);
+
+    // 3.5 秒后移除
+    setTimeout(() => {
+      toast.remove();
+      if (container.children.length === 0) container.remove(); // 清空容器
+    }, 3600);
+  }
+
+  // 拦截 alert 弹窗，替换为非阻塞 toast
+  (function() {
+    const originalAlert = window.alert;
+    window.alert = function(msg) {
+      if (typeof msg === "string" && msg.includes("Could not vote for tag")) {
+        // 🚫 针对 tag 投票锁定提示 → 用 toast
+        showToast(msg);
+      } else {
+        // 其他 alert 保持原样（避免误伤）
+        originalAlert(msg);
+      }
+    };
+  })();
 
   // =============== 脚本一核心函数 ===============
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
@@ -84,28 +160,25 @@
   function fill_tag_field(tags) {
     var field = document.getElementById("newtagfield");
     var text = "";
+    let count = 0; // 计数器
+
     for (let namespace in tags) {
       for (let tag of tags[namespace]) {
         text += namespace + ":" + tag + ",";
+        count++;
       }
     }
     field.value = text;
 
-    if (text.length == 0) {
-      const originalPlaceholder = field.getAttribute("placeholder") || ""; // 保存原有 placeholder
+    if (count === 0) {
       const msg = get_text_in_local_language({
         "zh-CN": "没有可添加的标签…",
         "en-US": "no tags to add...",
         default: "no tags to add...",
       });
-      field.placeholder = msg;
-
-      // 3 秒后恢复原始 placeholder
-      setTimeout(() => {
-        if (field.value === "" && field.placeholder === msg) {
-          field.placeholder = originalPlaceholder;
-        }
-      }, 3000);
+      showToast(msg);
+    } else {
+      showToast("已填充 " + count + " 个标签"); // ✅ 直接用 count
     }
   }
 

@@ -11,6 +11,68 @@
 // @include      /https?:\/\/(e-|ex)hentai\.org\/.*/
 // ==/UserScript==
 
+  // ========== Toast 样式 ==========
+  (function addToastStyles() {
+    if (document.getElementById("eh-toast-style")) return;
+    const style = document.createElement("style");
+    style.id = "eh-toast-style";
+    style.textContent = `
+      .eh-toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        z-index: 2147483647; /* 最大 z-index，确保永远在最上面 */
+        pointer-events: none;
+      }
+      .eh-toast {
+        background: rgba(0,0,0,0.85);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 14px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInOut 3.5s ease forwards;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* 加阴影，提高可见度 */
+      }
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(20px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-10px); }
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  // ========== Toast 函数 ==========
+  function showToast(msg) {
+    // 找或建容器
+    let container = document.querySelector(".eh-toast-container");
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "eh-toast-container";
+      document.body.appendChild(container);
+    }
+
+    // 建一个 toast
+    const toast = document.createElement("div");
+    toast.className = "eh-toast";
+    toast.textContent = msg;
+
+    container.appendChild(toast);
+
+    // 3.5 秒后移除
+    setTimeout(() => {
+      toast.remove();
+      if (container.children.length === 0) container.remove(); // 清空容器
+    }, 3600);
+  }
+
 (function() {
     let $ = window.jQuery;
     var spl = document.URL.split('/');
@@ -379,8 +441,12 @@
             });
 
             let finalText = tagsText.join(',');
+
+            // 计算标签个数
+            const tagCount = tagsText.length;
+
             navigator.clipboard.writeText(finalText).then(() => {
-                alert("✅ 已复制标签：\n" + finalText);
+                showToast(`✅ 成功复制 ${tagCount} 个标签`);
             }).catch(err => {
                 console.error("❌ 复制失败:", err);
             });
@@ -1373,10 +1439,10 @@
 (function() {
     function copyTextToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-            alert("已复制论坛格式:\n" + text);
-            console.log("✅ 已复制:", text);
+            showToast("✅ 封面预览图创建成功");
+            console.log("✅ 已创建:", text);
         }).catch(err => {
-            console.error("❌ 复制失败:", err);
+            console.error("❌ 封面预览图创建失败:", err);
         });
     }
 

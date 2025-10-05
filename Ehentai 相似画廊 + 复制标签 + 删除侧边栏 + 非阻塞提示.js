@@ -191,6 +191,7 @@
       "full censorship",
       "mosaic censorship",
       "scanmark",
+      "sample",
       "rough translation",
       "already uploaded",
       "watermarked"
@@ -217,6 +218,7 @@
   function subtract_tags_minimal(tags_to_add) {
     const blacklist_minimal = [
       "original",
+      "sample",
       "rough translation"
     ];
     var ret = {};

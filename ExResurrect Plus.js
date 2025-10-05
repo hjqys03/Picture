@@ -416,6 +416,7 @@
                 "full censorship",
                 "mosaic censorship",
                 "scanmark",
+                "sample",
                 "rough translation",
                 "already uploaded",
                 "watermarked"

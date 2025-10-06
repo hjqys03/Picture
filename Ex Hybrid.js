@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Ehentai 相似画廊 + 复制标签 + 删除侧边栏 + 非阻塞提示
+// @name         Ex Hybrid
 // @namespace    https://e-hentai.org/?f_cats=0
-// @version      0.3.3
-// @author       ruaruarua + atashiyuki + ???
-// @description  Ehentai 搜索相似画廊 & 复制标签 & 删除 “Load comic”、“多页查看器” 侧边栏按钮 & 非阻塞提示(标签)
+// @version      6.6.6
+// @author       究极缝合怪
+// @description  搜索相似画廊 & 导入标签 & 非阻塞提示(标签) & 删除 “Load comic”、“多页查看器” 侧边栏按钮
 // @match        https://exhentai.org/g/*
 // @match        https://e-hentai.org/g/*
 // @icon         https://exhentai.org/favicon.ico
@@ -383,8 +383,7 @@
     }
     return a;
   }
-
-  // 第一行：相似画廊
+  // 第一行：相似画廊 + 悬浮窗
   const row1 = document.createElement("p");
   row1.className = "g2 gsp";
   const img1 = document.createElement("img");
@@ -394,13 +393,451 @@
       : "https://ehgt.org/g/mr.gif";
   row1.appendChild(img1);
   row1.appendChild(document.createTextNode(" "));
-  row1.appendChild(
-    addLink({
+  const similarLink = addLink({
       text: "相似画廊",
       href: searchHref,
       title: `标题搜索：${extractTitle}`,
-    })
-  );
+  });
+  row1.appendChild(similarLink);
+  sideBar.appendChild(row1);
+
+// =============== 相似画廊悬浮窗 ===============
+(function () {
+  // 🎨 直接读取网页颜色（不区分深浅模式）
+  const bodyStyle = getComputedStyle(document.body);
+  const bodyBgColor = bodyStyle.backgroundColor || "#E3E0D1";
+  const bodyTextColor = bodyStyle.color || "#5C0D11";
+
+  // 🎨 获取 .gm 背景色（不再调整亮度）
+  let gmBg = "#EDEBDF";
+  const gmEl = document.querySelector(".gm");
+  if (gmEl) {
+    gmBg = getComputedStyle(gmEl).backgroundColor || gmBg;
+  }
+
+  // 写入 CSS 变量（供样式中使用）
+  document.documentElement.style.setProperty("--gm-hover-bg", gmBg);
+
+  // 🎨 动态生成样式
+  const styleId = "similar-hover-style";
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+      .similar-hover-popup {
+        position: absolute;
+        background: ${bodyBgColor.replace('rgb', 'rgba').replace(')', ', 0.8)')};
+        backdrop-filter: blur(6px);
+        color: ${bodyTextColor};
+        border: 1px solid ${bodyTextColor};
+        border-radius: 8px;
+        padding: 0;
+        font-size: 12px;
+        z-index: 9999;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+        display: none;
+        pointer-events: auto;
+        transition: opacity 0.2s ease, border-color 0.2s ease;
+        opacity: 0;
+        max-width: 90vw;
+        overflow-x: auto;
+      }
+
+      .similar-hover-popup.show { opacity: 1; }
+
+      .popup-table {
+        width: auto;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 4px;
+        overflow: hidden;
+        table-layout: auto;
+      }
+
+      .popup-table th,
+      .popup-table td {
+        text-align: center;
+        padding: 6px 8px;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      /* ✅ 悬停颜色完全跟随 .gm 背景，不做亮度调整 */
+      .popup-table tbody tr:hover td {
+        background: var(--gm-hover-bg);
+        transition: background 0.15s ease;
+        background-clip: padding-box;
+      }
+
+      .popup-table thead th {
+        font-weight: bold;
+        border-bottom: 1px solid rgba(0,0,0,0.15);
+        background: rgba(0,0,0,0.04);
+        text-align: center;
+      }
+
+      .popup-table tbody td:nth-child(1) {
+        text-align: left;
+        padding-left: 14px;
+      }
+
+      .popup-link {
+        color: ${bodyTextColor};
+        text-decoration: none;
+        display: inline-block;
+        max-width: 40vw;            /* ✅ 限制标题列最大宽度（不会撑出屏幕） */
+        white-space: nowrap;        /* 不换行 */
+        overflow: hidden;           /* 超出部分隐藏 */
+        text-overflow: ellipsis;    /* 超出显示省略号 */
+        vertical-align: middle;
+        transition: color 0.15s ease;
+      }
+
+      .popup-link:hover {
+        text-decoration: none;
+      }
+
+      .copy-btn {
+        background: none !important;
+        border: none !important;
+        color: ${bodyTextColor} !important;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        margin: 0;
+        line-height: 1;
+        outline: none;
+        transition: transform 0.15s ease;
+      }
+
+      .copy-btn:hover { transform: scale(1.2); }
+      .copy-btn:active { transform: scale(0.95); }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // ✅ 实时同步网页颜色变化（仅执行 2 次，只更新颜色）
+  let colorCheckCount = 0;
+  const colorSyncTimer = setInterval(() => {
+    colorCheckCount++;
+    const bodyStyle = getComputedStyle(document.body);
+    const bodyBg = bodyStyle.backgroundColor;
+    const bodyColor = bodyStyle.color;
+    const gmEl = document.querySelector(".gm");
+    const gmBg = gmEl ? getComputedStyle(gmEl).backgroundColor : "#EDEBDF";
+
+    // 更新 CSS 变量
+    document.documentElement.style.setProperty("--gm-hover-bg", gmBg);
+
+    // 更新样式表颜色（只改颜色部分）
+    const styleEl = document.getElementById("similar-hover-style");
+    if (styleEl) {
+      styleEl.textContent = styleEl.textContent
+        .replace(/background: rgba?\([^)]*\)/g, `background: ${bodyBg.replace('rgb', 'rgba').replace(')', ', 0.8)')}`)
+        .replace(/color: [^;]*;/g, `color: ${bodyColor};`)
+        .replace(/border: 1px solid [^;]*;/g, `border: 1px solid ${bodyColor};`)
+        .replace(/--gm-hover-bg:[^;]*;/g, `--gm-hover-bg:${gmBg};`);
+    }
+
+    if (colorCheckCount >= 2) {
+      clearInterval(colorSyncTimer);
+      console.log("🎨 悬浮窗颜色同步已完成（共 2 次）");
+    }
+  }, 1000);
+
+    // 创建悬浮窗表格
+    function createPopup(list) {
+      const popup = document.createElement("div");
+      popup.className = "similar-hover-popup";
+      const table = document.createElement("table");
+      table.className = "popup-table";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>标题</th>
+            <th>语言</th>
+            <th>页数</th>
+            <th>文件大小</th>
+            <th>时间</th>
+            <th>链接</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector("tbody");
+
+      list.forEach((g) => {
+        if (!g.title) return;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <a href="${g.url}"
+               target="_blank"
+               class="popup-link"
+               title="${(g.engTitle || g.title).replace(/"/g, '&quot;')}">
+               ${g.title}
+            </a>
+          </td>
+          <td>${g.language}</td>
+          <td>${g.pages || "—"}</td>
+          <td>${g.fileSize || "—"}</td>
+          <td>${g.posted || "—"}</td>
+          <td><button class="copy-btn" data-url="${g.url}">♾️</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      popup.appendChild(table);
+      document.body.appendChild(popup);
+
+      popup.addEventListener("click", (e) => {
+        if (e.target.classList.contains("copy-btn")) {
+          const link = e.target.dataset.url;
+          navigator.clipboard.writeText(link).then(() => showToast("✅ 已复制链接"));
+        }
+      });
+      return popup;
+    }
+
+    let popup = null;
+    let cachedList = null;
+
+    // ========== 改进版：访问详情页抓取语言 ==========
+    async function fetchSimilarList() {
+      if (cachedList) return cachedList;
+
+      try {
+        const res = await fetch(`${searchHref}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`);
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl2t")];
+        const list = [];
+
+        // 当前画廊路径（例如 /g/123456/abcdef/）
+        const currentPath = window.location.pathname.replace(/\/$/, "");
+
+        // 先收集相似画廊的标题 + 链接
+        const MAX_RESULTS = 999;
+        for (const b of blocks.slice(0, MAX_RESULTS)) {
+          const a = b.querySelector("a");
+          if (!a) continue;
+          const title = a.textContent.trim();
+          const url = a.href;
+          if (!title) continue;
+
+          const linkPath = new URL(url).pathname.replace(/\/$/, "");
+          if (linkPath === currentPath) continue; // 🚫 排除当前画廊
+
+          list.push({ title, url, language: "⏳ 加载中…" });
+        }
+
+        // ⚙️ 并行请求每个画廊详情页，提取语言
+        const promises = list.map(async (item) => {
+          try {
+            const detailRes = await fetch(item.url);
+            const detailHtml = await detailRes.text();
+            const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
+
+            // ✅ 额外提取英文（罗马音）标题
+            const engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
+            if (engTitle) item.engTitle = engTitle;
+
+            // 查找语言行
+            const langRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find((td) =>
+              /语言|Language/i.test(td.textContent)
+            );
+            if (langRow) {
+              const valueTd = langRow.nextElementSibling;
+            if (valueTd) {
+              // ✅ 获取原始语言文字，去掉 TR 或类似翻译标记
+              let rawLang = valueTd.textContent.trim();
+
+              // 去掉 "TR" 或翻译提示（中英日都有）
+              rawLang = rawLang
+                .replace(/\bTR\b/gi, "")            // 去掉英文 TR
+                .replace(/\s+/g, " ")               // 合并多余空格
+                .trim();
+
+              item.language = rawLang;
+            } else {
+              item.language = "—";
+            }
+
+            } else {
+              item.language = "—";
+            }
+
+            // 查找文件大小
+            const sizeRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+              /File Size|文件大小/i.test(td.textContent)
+            );
+            if (sizeRow) {
+              const sizeTd = sizeRow.nextElementSibling;
+              item.fileSize = sizeTd ? sizeTd.textContent.trim() : "—";
+            } else {
+              item.fileSize = "—";
+            }
+
+            // 查找页数
+            const lenRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+              /Length|页数/i.test(td.textContent)
+            );
+            if (lenRow) {
+              const lenTd = lenRow.nextElementSibling;
+              if (lenTd) {
+                const match = lenTd.textContent.match(/\d+/);
+                item.pages = match ? parseInt(match[0], 10) : "—";
+              } else {
+                item.pages = "—";
+              }
+            } else {
+              item.pages = "—";
+            }
+
+            // 查找发布时间
+            const dateRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find((td) =>
+              /Posted|发布于/i.test(td.textContent)
+            );
+            if (dateRow) {
+              const dateTd = dateRow.nextElementSibling;
+              if (dateTd) {
+                let rawDate = dateTd.textContent.trim();
+                let match = rawDate.match(/\d{4}[-/]\d{1,2}[-/]\d{1,2}/);
+                if (match) {
+                  item.posted = match[0].replace(/\//g, "-");
+                } else {
+                  let m = rawDate.match(/(\d{1,2})\/(\d{1,2})/);
+                  if (m) {
+                    const year = new Date().getFullYear();
+                    const mm = m[1].padStart(2, "0");
+                    const dd = m[2].padStart(2, "0");
+                    item.posted = `${year}-${mm}-${dd}`;
+                  } else {
+                    item.posted = rawDate;
+                  }
+                }
+              } else {
+                item.posted = "—";
+              }
+            } else {
+              item.posted = "—";
+            }
+
+          } catch (e) {
+            console.warn("获取语言失败：", item.url);
+            item.language = "未知";
+          }
+          return item;
+        });
+
+    cachedList = await Promise.all(promises);
+
+    // ✅ 只显示指定语言
+    const allowedLangs = ["chinese", "japanese", "english", "korean"];
+    cachedList = cachedList.filter(item =>
+      allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
+    );
+
+    return cachedList;
+
+      } catch (err) {
+        console.error("相似画廊搜索失败：", err);
+        showToast("❌ 无法搜索相似画廊");
+        return [];
+      }
+    }
+
+    // ========== ✅ 新版：进入页面自动加载 + 加载完成后才允许显示悬浮窗 ==========
+    let hideTimer = null;
+    let isLoaded = false; // ✅ 标记是否已加载完相似画廊
+
+    function removePopup() {
+      if (popup && popup.parentNode) {
+        popup.remove();
+        popup = null;
+      }
+      clearTimeout(hideTimer);
+    }
+
+    function scheduleClosePopup(delay = 200) {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(removePopup, delay);
+    }
+
+    function cancelClosePopup() {
+      clearTimeout(hideTimer);
+    }
+
+    // ✅ 进入页面时立即加载相似画廊（只执行一次）
+    (async function preloadSimilarList() {
+      showToast("⏳ 正在搜索相似画廊…");
+
+      const list = await fetchSimilarList();
+
+      if (list.length) {
+        cachedList = list;
+        isLoaded = true;
+        showToast(`✅ 搜索完成，共找到 ${list.length} 个似画廊`);
+      } else {
+        showToast("⚠️ 未找到相似画廊");
+      }
+    })();
+
+    // ✅ 鼠标悬浮时（仅加载完成后才显示）
+    similarLink.addEventListener("mouseenter", async () => {
+      cancelClosePopup();
+
+      if (!isLoaded || !cachedList) return;
+
+      removePopup(); // 防叠加
+
+      popup = createPopup(cachedList);
+
+      // ✅ 仿照脚本二 (#btList) 的定位方式 —— 靠左展开
+      const parentBox = similarLink.closest(".g2") || similarLink.parentElement || document.body;
+      parentBox.style.position = "relative"; // 作为定位参考
+      parentBox.style.overflow = "visible";
+
+      popup.style.position = "absolute";
+      popup.style.top = "70%";
+      popup.style.right = "10%";
+      popup.style.marginRight = "8px"; // 按钮与浮窗间距
+      popup.style.zIndex = "9999";
+      popup.style.display = "block";
+      popup.style.opacity = "0";
+      popup.style.pointerEvents = "auto";
+      popup.style.maxWidth = "90vw";
+      popup.style.minWidth = "300px";
+      popup.style.boxSizing = "border-box";
+
+      parentBox.appendChild(popup);
+
+      requestAnimationFrame(() => {
+        popup.style.opacity = "1";
+      });
+
+      // ✅ 悬浮保持
+      popup.addEventListener("mouseenter", cancelClosePopup);
+      popup.addEventListener("mouseleave", () => scheduleClosePopup(150));
+    });
+
+    // 鼠标离开相似画廊按钮 → 延迟关闭
+    similarLink.addEventListener("mouseleave", () => scheduleClosePopup(250));
+
+    // 点击空白处关闭
+    document.addEventListener("click", (e) => {
+      if (popup && !popup.contains(e.target) && e.target !== similarLink) {
+        removePopup();
+      }
+    });
+
+    // 滚动或页面卸载时关闭
+    // ["scroll", "beforeunload"].forEach((ev) =>
+    //   window.addEventListener(ev, removePopup)
+    // );
+    window.addEventListener("beforeunload", removePopup);
+
+  })();
 
   // 第二行：TAG-ALL / TAG-PAS
   const row2 = document.createElement("p");

@@ -426,7 +426,7 @@
     style.textContent = `
       .similar-hover-popup {
         position: absolute;
-        background: ${bodyBgColor.replace('rgb', 'rgba').replace(')', ', 0.8)')};
+        background: ${bodyBgColor.replace('rgb', 'rgba').replace(')', ', 0.75)')};
         backdrop-filter: blur(6px);
         color: ${bodyTextColor};
         border: 1px solid ${bodyTextColor};
@@ -454,12 +454,34 @@
         table-layout: auto;
       }
 
+      /* ✅ 所有表头列、除标题外的内容列：水平居中 + 垂直居中 */
       .popup-table th,
       .popup-table td {
         text-align: center;
         padding: 6px 8px;
         vertical-align: middle;
         white-space: nowrap;
+      }
+
+      /* ✅ “标题”列（内容）水平左对齐 */
+      .popup-table tbody td:first-child {
+        text-align: left;
+        padding-left: 14px;
+      }
+
+      /* ✅ 确保内部元素（链接/按钮）也垂直居中 */
+      .popup-table th > *,
+      .popup-table td > * {
+        vertical-align: middle !important;
+        line-height: 1.3;
+      }
+
+      /* ✅ 特别确保链接和按钮在视觉上完美对齐 */
+      .popup-link,
+      .exhy-helper-one-click {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* ✅ 悬停颜色完全跟随 .gm 背景，不做亮度调整 */
@@ -474,11 +496,6 @@
         border-bottom: 1px solid rgba(0,0,0,0.15);
         background: rgba(0,0,0,0.04);
         text-align: center;
-      }
-
-      .popup-table tbody td:nth-child(1) {
-        text-align: left;
-        padding-left: 14px;
       }
 
       .popup-link {
@@ -517,12 +534,12 @@
   }
 
   (function addExactAria2ButtonStyle() {
-    if (document.getElementById("exact-aria2-btn-style")) return;
+    if (document.getElementById("exhy-aria2-btn-style")) return;
     const style = document.createElement("style");
-    style.id = "exact-aria2-btn-style";
+    style.id = "exhy-aria2-btn-style";
     style.textContent = `
       /* === 完全照搬 Aria2 按钮样式 === */
-      .aria2helper-one-click {
+      .exhy-helper-one-click {
           width: 15px;
           height: 15px;
           background: radial-gradient(#ffc36b,#c56a00);
@@ -535,25 +552,25 @@
           cursor: pointer;
           user-select: none;
       }
-      .aria2helper-one-click:hover {
+      .exhy-helper-one-click:hover {
           background: radial-gradient(#bf893b,#985200);
       }
-      .aria2helper-one-click.bt {
+      .exhy-helper-one-click.bt {
           background: radial-gradient(#a2d04f,#5fb213);
       }
-      .aria2helper-one-click.bt:hover {
+      .exhy-helper-one-click.bt:hover {
           background: radial-gradient(#95cf2b,#427711);
       }
-      .aria2helper-one-click i {
+      .exhy-helper-one-click i {
           font-style: initial;
           transform: scale(0.7);
           margin-left: -1.5px;
       }
-      .aria2helper-one-click svg circle {
+      .exhy-helper-one-click svg circle {
           stroke: #fff !important;
           stroke-width: 15px !important;
       }
-      .aria2helper-one-click svg {
+      .exhy-helper-one-click svg {
           width: 10px;
           display: inline-block;
           height: 10px;
@@ -580,7 +597,7 @@
     const styleEl = document.getElementById("similar-hover-style");
     if (styleEl) {
       styleEl.textContent = styleEl.textContent
-        .replace(/background: rgba?\([^)]*\)/g, `background: ${bodyBg.replace('rgb', 'rgba').replace(')', ', 0.8)')}`)
+        .replace(/background: rgba?\([^)]*\)/g, `background: ${bodyBg.replace('rgb', 'rgba').replace(')', ', 0.75)')}`)
         .replace(/color: [^;]*;/g, `color: ${bodyColor};`)
         .replace(/border: 1px solid [^;]*;/g, `border: 1px solid ${bodyColor};`)
         .replace(/--gm-hover-bg:[^;]*;/g, `--gm-hover-bg:${gmBg};`);
@@ -629,7 +646,7 @@
           <td>${g.pages || "—"}</td>
           <td>${g.fileSize || "—"}</td>
           <td>${g.posted || "—"}</td>
-          <td><div class="aria2helper-one-click bt bt-copy-button" data-url="${g.url}">✂</div></td>
+          <td><div class="exhy-helper-one-click bt bt-copy-button" data-url="${g.url}">✂</div></td>
         `;
         tbody.appendChild(tr);
       });

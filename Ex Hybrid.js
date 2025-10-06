@@ -516,6 +516,53 @@
     document.head.appendChild(style);
   }
 
+  (function addExactAria2ButtonStyle() {
+    if (document.getElementById("exact-aria2-btn-style")) return;
+    const style = document.createElement("style");
+    style.id = "exact-aria2-btn-style";
+    style.textContent = `
+      /* === 完全照搬 Aria2 按钮样式 === */
+      .aria2helper-one-click {
+          width: 15px;
+          height: 15px;
+          background: radial-gradient(#ffc36b,#c56a00);
+          border-radius: 15px;
+          border: 1px #666 solid;
+          box-sizing: border-box;
+          color: #ebeae9;
+          text-align: center;
+          line-height: 15px;
+          cursor: pointer;
+          user-select: none;
+      }
+      .aria2helper-one-click:hover {
+          background: radial-gradient(#bf893b,#985200);
+      }
+      .aria2helper-one-click.bt {
+          background: radial-gradient(#a2d04f,#5fb213);
+      }
+      .aria2helper-one-click.bt:hover {
+          background: radial-gradient(#95cf2b,#427711);
+      }
+      .aria2helper-one-click i {
+          font-style: initial;
+          transform: scale(0.7);
+          margin-left: -1.5px;
+      }
+      .aria2helper-one-click svg circle {
+          stroke: #fff !important;
+          stroke-width: 15px !important;
+      }
+      .aria2helper-one-click svg {
+          width: 10px;
+          display: inline-block;
+          height: 10px;
+          padding-top: 1.3px;
+      }
+    `;
+    document.head.appendChild(style);
+  })();
+
   // ✅ 实时同步网页颜色变化（仅执行 2 次，只更新颜色）
   let colorCheckCount = 0;
   const colorSyncTimer = setInterval(() => {
@@ -558,7 +605,7 @@
             <th>语言</th>
             <th>页数</th>
             <th>文件大小</th>
-            <th>时间</th>
+            <th>发布时间</th>
             <th>链接</th>
           </tr>
         </thead>
@@ -582,7 +629,7 @@
           <td>${g.pages || "—"}</td>
           <td>${g.fileSize || "—"}</td>
           <td>${g.posted || "—"}</td>
-          <td><button class="copy-btn" data-url="${g.url}">♾️</button></td>
+          <td><div class="aria2helper-one-click bt bt-copy-button" data-url="${g.url}">✂</div></td>
         `;
         tbody.appendChild(tr);
       });
@@ -591,7 +638,7 @@
       document.body.appendChild(popup);
 
       popup.addEventListener("click", (e) => {
-        if (e.target.classList.contains("copy-btn")) {
+        if (e.target.classList.contains("bt-copy-button")) {
           const link = e.target.dataset.url;
           navigator.clipboard.writeText(link).then(() => showToast("✅ 已复制链接"));
         }

@@ -904,42 +904,128 @@
     }
 
 
-      // ⚙️ 应用排序逻辑
-      if (newDir === "none") {
-        // 默认状态 = 恢复发布时间顺序
-        currentList = sortListBy(originalList, "posted", false);
-      } else {
-        currentList = sortListBy(originalList, key, newDir === "asc");
-      }
+    // ⚙️ 应用排序逻辑
+    if (newDir === "none") {
+      // 默认状态 = 恢复发布时间顺序
+      currentList = sortListBy(originalList, "posted", false);
+    } else {
+      currentList = sortListBy(originalList, key, newDir === "asc");
+    }
 
-      renderRows(currentList);
-      updateHeaderIndicators();
+    renderRows(currentList);
+    updateHeaderIndicators();
     });
 
-      });
+    });
 
-      // 初次根据 localStorage 应用
+    // 初次根据 localStorage 应用
+    if (currentSort.key && currentSort.dir) {
+      currentList = sortListBy(currentList, currentSort.key, currentSort.dir === "asc");
+    }
+
+    // 最开始渲染并显示箭头
+    renderRows(currentList);
+    updateHeaderIndicators();
+
+    // ✅ 定义强制刷新函数（用于首次打开悬浮窗时自动刷新）
+    popup.forceRefreshSort = function() {
+      if (popup._hasRefreshed) return; // 🚫 避免重复执行
+      popup._hasRefreshed = true;
+
       if (currentSort.key && currentSort.dir) {
-        currentList = sortListBy(currentList, currentSort.key, currentSort.dir === "asc");
+        currentList = sortListBy(originalList, currentSort.key, currentSort.dir === "asc");
+        // console.log("🔁 已根据偏好刷新排序");
+      } else {
+        currentList = sortListBy(originalList, "posted", false);
+        // console.log("🔁 默认发布时间排序已应用");
       }
 
-      // 最开始渲染并显示箭头
       renderRows(currentList);
       updateHeaderIndicators();
+    };
 
-      document.body.appendChild(popup);
-      return popup;
+    document.body.appendChild(popup);
+    return popup;
     }
 
     let popup = null;
     let cachedList = null;
+    let hasRefreshedOnce = false; // ✅ 全局标记：只刷新一次排序
 
     // ========== 改进版：访问详情页抓取语言 + 封面图 ==========
     async function fetchSimilarList() {
       if (cachedList) return cachedList;
 
       try {
-        const res = await fetch(`${searchHref}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`);
+        // 1️⃣ 从 taglist 获取所有艺术家名
+        const artistTagNames = [];
+        document.querySelectorAll('#taglist a[href*="artist:"]').forEach(a => {
+          const name = a.textContent.trim();
+          if (name && !artistTagNames.includes(name)) artistTagNames.push(name);
+        });
+
+        // 2️⃣ 从标题提取所有艺术家名
+        const artistTitleNames = [];
+        const titleFull = galleryTitleJP || galleryTitleEN || "";
+
+        // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
+        let m = titleFull.match(/\[[^\]]*?\(([^)]+)\)\]/);
+        if (m) {
+          artistTitleNames.push(
+            ...m[1]
+              .replace(/\s+/g, "")
+              .split(/[、,，&＆×x\+＋]/g)
+              .map(s => s.trim())
+              .filter(Boolean)
+          );
+        } else {
+          const m2 = titleFull.match(/\[([^\]]+)\]/);
+          if (m2) {
+            artistTitleNames.push(
+              ...m2[1]
+                .replace(/\s+/g, "")
+                .split(/[、,，&＆×x\+＋]/g)
+                .map(s => s.trim())
+                .filter(Boolean)
+            );
+          }
+        }
+
+        // 3️⃣ 判断是否为合辑类（other:anthology / other:goudoushi）
+        const otherTags = [];
+        document.querySelectorAll('#taglist a[href*="other:"]').forEach(a => {
+          const tag = a.textContent.trim().toLowerCase();
+          if (tag) otherTags.push(tag);
+        });
+
+        const isAnthology = otherTags.includes("anthology") || otherTags.includes("goudoushi");
+
+        // 4️⃣ 选择艺术家来源
+        let finalArtists = [];
+
+        if (!isAnthology) {
+          if (artistTagNames.length >= artistTitleNames.length && artistTagNames.length > 0) {
+            // ✅ 标签艺术家数量 ≥ 标题艺术家数量 → 使用标签（精确匹配）
+            finalArtists = artistTagNames.map(a => `artist:"${a}$"`);
+          } else if (artistTitleNames.length > 0) {
+            // ✅ 否则使用标题艺术家（普通匹配）
+            finalArtists = artistTitleNames.map(a => `"${a}"`);
+          }
+        } else {
+          console.log("🔸 检测到合辑标签（anthology / goudoushi），仅使用标题搜索");
+        }
+
+        // 5️⃣ 组合最终搜索关键词
+        const parts = [...finalArtists, `"${extractTitle}"`];
+        const hoverSearch = parts.join(" ");
+
+        // 6️⃣ 构造搜索 URL（空格转 +）
+        const hoverSearchURL =
+          `/?f_search=${encodeURIComponent(hoverSearch).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
+
+        // 7️⃣ 请求搜索页
+        const res = await fetch(hoverSearchURL);
+
         const html = await res.text();
         const doc = new DOMParser().parseFromString(html, "text/html");
         const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl2t")];
@@ -985,7 +1071,7 @@
             if (langRow) {
               const valueTd = langRow.nextElementSibling;
               let rawLang = valueTd?.textContent?.trim() || "";
-              rawLang = rawLang.replace(/\bTR\b/gi, "").replace(/\s+/g, " ").trim();
+              rawLang = rawLang.replace(/\b(TR|RW)\b/gi, "").replace(/\s+/g, " ").trim();
               item.language = rawLang || "—";
             } else {
               item.language = "—";
@@ -1086,6 +1172,15 @@
       removePopup(); // 防叠加
 
       popup = createPopup(cachedList);
+
+      // ✅ 首次打开悬浮窗时自动执行强制刷新排序（只执行一次）
+      requestAnimationFrame(() => {
+        if (!hasRefreshedOnce && popup && typeof popup.forceRefreshSort === "function") {
+          hasRefreshedOnce = true; // ✅ 只执行一次
+          popup.forceRefreshSort();
+          // console.log("🔄 搜索完成后强制刷新排序完成");
+        }
+      });
 
       // ✅ 仅隐藏被悬浮窗实际遮挡的收藏按钮
       requestAnimationFrame(() => {

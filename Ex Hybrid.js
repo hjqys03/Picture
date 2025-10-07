@@ -77,19 +77,31 @@
     }, 3600);
   }
 
-  // 拦截 alert 弹窗，替换为非阻塞 toast
-  (function() {
-    const originalAlert = window.alert;
-    window.alert = function(msg) {
-      if (typeof msg === "string" && msg.includes("Could not vote for tag")) {
-        // 🚫 针对 tag 投票锁定提示 → 用 toast
-        showToast(msg);
-      } else {
-        // 其他 alert 保持原样（避免误伤）
-        originalAlert(msg);
-      }
-    };
-  })();
+    // 拦截页面的原生 alert 弹窗，替换为非阻塞 toast
+    (function() {
+      const script = document.createElement("script");
+      script.textContent = `
+        (function() {
+          const originalAlert = window.alert;
+          window.alert = function(msg) {
+            if (typeof msg === "string" && msg.includes("Could not vote for tag")) {
+              window.postMessage({ type: "EH_SHOW_TOAST", message: msg }, "*");
+            } else {
+              originalAlert(msg);
+            }
+          };
+        })();
+      `;
+      document.documentElement.appendChild(script);
+      script.remove();
+
+      // 监听来自页面环境的 toast 请求
+      window.addEventListener("message", (e) => {
+        if (e.data?.type === "EH_SHOW_TOAST") {
+          showToast(e.data.message);
+        }
+      });
+    })();
 
   // =============== 脚本一核心函数 ===============
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别

@@ -77,31 +77,31 @@
     }, 3600);
   }
 
-    // 拦截页面的原生 alert 弹窗，替换为非阻塞 toast
-    (function() {
-      const script = document.createElement("script");
-      script.textContent = `
-        (function() {
-          const originalAlert = window.alert;
-          window.alert = function(msg) {
-            if (typeof msg === "string" && msg.includes("Could not vote for tag")) {
-              window.postMessage({ type: "EH_SHOW_TOAST", message: msg }, "*");
-            } else {
-              originalAlert(msg);
-            }
-          };
-        })();
-      `;
-      document.documentElement.appendChild(script);
-      script.remove();
+  // 拦截页面的原生 alert 弹窗，替换为非阻塞 toast
+  (function() {
+    const script = document.createElement("script");
+    script.textContent = `
+      (function() {
+        const originalAlert = window.alert;
+        window.alert = function(msg) {
+          if (typeof msg === "string" && msg.includes("Could not vote for tag")) {
+            window.postMessage({ type: "EH_SHOW_TOAST", message: msg }, "*");
+          } else {
+            originalAlert(msg);
+          }
+        };
+      })();
+    `;
+    document.documentElement.appendChild(script);
+    script.remove();
 
-      // 监听来自页面环境的 toast 请求
-      window.addEventListener("message", (e) => {
-        if (e.data?.type === "EH_SHOW_TOAST") {
-          showToast(e.data.message);
-        }
-      });
-    })();
+    // 监听来自页面环境的 toast 请求
+    window.addEventListener("message", (e) => {
+      if (e.data?.type === "EH_SHOW_TOAST") {
+        showToast(e.data.message);
+      }
+    });
+  })();
 
   // =============== 脚本一核心函数 ===============
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
@@ -830,7 +830,7 @@
 
         Object.assign(arrow.style, {
           position: "absolute",
-          right: "-0.9em",      // 不占位显示
+          right: "-0.85em",      // 不占位显示
           top: "50%",
           transform: "translateY(-50%)",
           opacity: "0.7",

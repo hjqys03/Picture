@@ -734,6 +734,7 @@
           let preview = null;
           let img = null;
           let moveHandler = null;
+          let scrollHandler = null;
           let isMounted = false; // 标记 preview 是否仍然存在（是否已离开）
 
           link.addEventListener("mouseenter", function onEnter(e) {
@@ -764,6 +765,20 @@
               userSelect: "none",
               border: "1px solid black",
             });
+
+          // 在这里加上滚动关闭逻辑
+          const scrollHandler = () => {
+            if (preview) {
+              preview.remove();
+              preview = null;
+            }
+            if (moveHandler) {
+              document.removeEventListener("mousemove", moveHandler);
+              moveHandler = null;
+            }
+            window.removeEventListener("scroll", scrollHandler);
+          };
+          window.addEventListener("scroll", scrollHandler, { passive: true });
 
             // 图片加载完成后再注册 moveHandler（并且先检查 isMounted）
             img.onload = () => {
@@ -811,6 +826,8 @@
               preview.remove();
               preview = null;
             }
+          // ✅ 滚动时关闭预览的监听也要清理掉
+          window.removeEventListener("scroll", scrollHandler);
           });
         });
       }

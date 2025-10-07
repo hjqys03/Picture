@@ -725,7 +725,7 @@
           };
         });
 
-        // 绑定封面预览（与原来逻辑一致，但必须每次重绘后重建）
+        // 替换原来 link 的 mouseenter / mouseleave 处理
         popup.querySelectorAll(".popup-link").forEach(link => {
           const url = link.href;
           const item = list.find(g => g.url === url);
@@ -734,9 +734,11 @@
           let preview = null;
           let img = null;
           let moveHandler = null;
+          let isMounted = false; // 标记 preview 是否仍然存在（是否已离开）
 
           link.addEventListener("mouseenter", function onEnter(e) {
             if (preview) return;
+            isMounted = true;
 
             preview = document.createElement("div");
             Object.assign(preview.style, {
@@ -763,11 +765,15 @@
               border: "1px solid black",
             });
 
+            // 图片加载完成后再注册 moveHandler（并且先检查 isMounted）
             img.onload = () => {
+              if (!isMounted) return; // 已经离开，不再注册或调用
               const w = img.width;
               const h = img.height;
 
-              moveHandler = e2 => {
+              // moveHandler 内先检查 preview，防止 race
+              moveHandler = (e2) => {
+                if (!preview) return; // 额外保护
                 let left = e2.clientX - w - 10;
                 let top = e2.clientY - h - 10;
 
@@ -776,11 +782,15 @@
                 if (left + w > window.innerWidth) left = window.innerWidth - w - 10;
                 if (top + h > window.innerHeight) top = window.innerHeight - h - 10;
 
-                preview.style.left = `${left}px`;
-                preview.style.top = `${top}px`;
+                // 再次保护（preview 可能在短时间内被移除）
+                if (preview) {
+                  preview.style.left = `${left}px`;
+                  preview.style.top = `${top}px`;
+                }
               };
 
               document.addEventListener("mousemove", moveHandler);
+              // 立即移动一次（使用 mouseenter 事件）
               moveHandler(e);
               preview.style.display = "block";
             };
@@ -790,10 +800,17 @@
           });
 
           link.addEventListener("mouseleave", function onLeave() {
-            if (!preview) return;
-            if (moveHandler) document.removeEventListener("mousemove", moveHandler);
-            preview.remove();
-            preview = null;
+            // 标记为已卸载，避免后续 onload 注册监听
+            isMounted = false;
+
+            if (moveHandler) {
+              document.removeEventListener("mousemove", moveHandler);
+              moveHandler = null;
+            }
+            if (preview) {
+              preview.remove();
+              preview = null;
+            }
           });
         });
       }

@@ -957,11 +957,27 @@
       if (cachedList) return cachedList;
 
       try {
-        // 1️⃣ 从 taglist 获取所有艺术家名
+        // 1️⃣ 从 taglist 获取所有艺术家名（修正版）
         const artistTagNames = [];
         document.querySelectorAll('#taglist a[href*="artist:"]').forEach(a => {
-          const name = a.textContent.trim();
-          if (name && !artistTagNames.includes(name)) artistTagNames.push(name);
+          let tagName = "";
+
+          // 从 id 属性提取（如 id="ta_artist:apart"）
+          const idAttr = a.id || "";
+          const idMatch = idAttr.match(/artist:([^"]+)/);
+          if (idMatch) tagName = idMatch[1];
+
+          // 若未取到，从 href 提取（如 href="https://exhentai.org/tag/artist:apart"）
+          if (!tagName) {
+            const hrefAttr = a.getAttribute("href") || "";
+            const hrefMatch = hrefAttr.match(/artist:([^&]+)/);
+            if (hrefMatch) tagName = decodeURIComponent(hrefMatch[1]);
+          }
+
+          // 去重加入
+          if (tagName && !artistTagNames.includes(tagName)) {
+            artistTagNames.push(tagName);
+          }
         });
 
         // 2️⃣ 从标题提取所有艺术家名
@@ -991,17 +1007,25 @@
           }
         }
 
-        // 3️⃣ 判断是否为合辑类（other:anthology / other:goudoushi）
-        const otherTags = [];
-        document.querySelectorAll('#taglist a[href*="other:"]').forEach(a => {
-          const tag = a.textContent.trim().toLowerCase();
-          if (tag) otherTags.push(tag);
-        });
+      // 3️⃣ 判断是否为合辑类（other:anthology / other:goudoushi）——仅用 id 提取
+      const otherTags = [];
+      document.querySelectorAll('#taglist a[href*="other:"]').forEach(a => {
+        const idAttr = a.id || "";
+        const idMatch = idAttr.match(/other:([^"]+)/);
+        if (idMatch) {
+          const tagName = idMatch[1].toLowerCase();
+          if (!otherTags.includes(tagName)) {
+            otherTags.push(tagName);
+          }
+        }
+      });
 
-        const isAnthology = otherTags.includes("anthology") || otherTags.includes("goudoushi");
+      const isAnthology = otherTags.includes("anthology") || otherTags.includes("goudoushi");
 
         // 4️⃣ 选择艺术家来源
         let finalArtists = [];
+        console.log("🎨 获取的艺术家 (标签) =", artistTagNames);
+        console.log("🎨 获取的艺术家 (标题) =", artistTitleNames);
 
         if (!isAnthology) {
           if (artistTagNames.length >= artistTitleNames.length && artistTagNames.length > 0) {
@@ -1018,6 +1042,7 @@
         // 5️⃣ 组合最终搜索关键词
         const parts = [...finalArtists, `"${extractTitle}"`];
         const hoverSearch = parts.join(" ");
+        console.log("🔍 悬浮窗搜索语句 =", hoverSearch);
 
         // 6️⃣ 构造搜索 URL（空格转 +）
         const hoverSearchURL =

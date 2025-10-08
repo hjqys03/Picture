@@ -372,8 +372,8 @@
         .replaceAll(PATTERN_TITLE_PREFIX, "")
         .replaceAll(PATTERN_TITLE_SUFFIX, "");
 
-    // ✅ 日语 / 罗马音 → 遇到 | ｜ ︱ + 才截断
-    const separateIndex = extractTitle.search(/\||｜|︱|\+/);
+    // ✅ 日语 / 罗马音 → 遇到 | ｜ ︱ + ＋ 才截断
+    const separateIndex = extractTitle.search(/\||｜|︱|\+|＋/);
     if (separateIndex >= 0) {
         extractTitle = extractTitle.slice(0, separateIndex).trim();
     }
@@ -1030,7 +1030,10 @@
 
         // 2️⃣ 从标题提取所有艺术家名
         const artistTitleNames = [];
-        const titleFull = galleryTitleJP || galleryTitleEN || "";
+        let titleFull = galleryTitleJP || galleryTitleEN || "";
+
+        // ✅ 清除末尾的 [xxx] 内容（例如 [中国翻訳]）
+        titleFull = titleFull.replace(/\[[^\]]*\]$/g, "").trim();
 
         // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
         let m = titleFull.match(/\[[^\]]*?\(([^)]+)\)\]/);

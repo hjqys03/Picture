@@ -443,7 +443,7 @@
         backdrop-filter: blur(6px);
         color: ${bodyTextColor};
         border: 1px solid ${bodyTextColor};
-        border-radius: 8px;
+        border-radius: 6px;
         padding: 0;
         font-size: 12px;
         z-index: 9999;
@@ -1096,6 +1096,8 @@
             cleanTitle = extractTitle
               // 去掉被【】或 ~、～、-、—、〜 包裹的说明
               .replace(/[【\-~～—〜][^【】\-~～—〜]+[】\-~～—〜]/g, "")
+              // ✅ 去掉 ":" 或 "：" 后的副标题（如 コワレモノ:璃沙 PLUS → コワレモノ）
+              .replace(/[:：].*$/, "")
               // 去掉末尾的各种章节/卷号标识（支持日语、Vol.、数字区间、上下卷、総集編、罗马数字）
               .replace(/\s*(?:前編|中編|後編|最終編|最終話|最終巻|最終卷|上巻|中巻|下巻|上卷|中卷|下卷|総集編(?:[・･·•]?[上下中]?(?:巻|卷)?)?|第?\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第\d+話|Vol\.?\s*(?:\d+(?:[\-~～—〜+]\d+)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第?\d+\s*(?:巻|卷|話|編)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
               // 去掉中点符号
@@ -1119,28 +1121,47 @@
         const hoverSearchURL =
           `/?f_search=${encodeURIComponent(hoverSearch).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
 
-        // 7️⃣ 请求搜索页
-        const res = await fetch(hoverSearchURL);
-
-        const html = await res.text();
-        const doc = new DOMParser().parseFromString(html, "text/html");
-        const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl2t")];
+        // 7️⃣ 分页抓取搜索结果
         const list = [];
-
         const currentPath = window.location.pathname.replace(/\/$/, "");
-        const MAX_RESULTS = 999;
+        const MAX_RESULTS = 100;
+        const MAX_PAGES = 10; // 最多抓取 5 页，可调
+        let page = 0;
+        let nextURL = hoverSearchURL;
 
-        for (const b of blocks.slice(0, MAX_RESULTS)) {
-          const a = b.querySelector("a");
-          if (!a) continue;
-          const title = a.textContent.trim();
-          const url = a.href;
-          if (!title) continue;
-          const linkPath = new URL(url).pathname.replace(/\/$/, "");
-          if (linkPath === currentPath) continue;
+        while (list.length < MAX_RESULTS && page < MAX_PAGES && nextURL) {
+          const res = await fetch(nextURL);
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+          if (!blocks.length) break;
 
-          list.push({ title, url, language: "⏳ 加载中…" });
+          for (const b of blocks) {
+            const a = b.querySelector("a");
+            if (!a) continue;
+            const title = a.textContent.trim();
+            const url = a.href;
+            if (!title) continue;
+            const linkPath = new URL(url).pathname.replace(/\/$/, "");
+            if (linkPath === currentPath) continue;
+            if (list.some(x => x.url === url)) continue;
+            list.push({ title, url, language: "⏳ 加载中…" });
+          }
+
+          // ✅ 检测下一页（支持 &next=）
+          const nextAnchor = doc.querySelector('a[href*="&next="]');
+          if (nextAnchor) {
+            const href = nextAnchor.getAttribute("href");
+            nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
+          } else {
+            nextURL = null;
+          }
+
+          page++;
+          await new Promise(r => setTimeout(r, 300)); // 防止请求过快
         }
+
+        console.log(`✅ 搜索抓取完毕：共 ${list.length} 条（${page} 页）`);
 
         const promises = list.map(async (item) => {
           try {

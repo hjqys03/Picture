@@ -1084,20 +1084,28 @@
             finalArtists = artistTitleNames.map(a => `"${a}"`);
           }
         } else {
-          console.log("🔸 检测到合辑标签（anthology / goudoushi），仅使用标题搜索");
+          // ✅ 合辑标签 → 仅使用标题搜索（不清理标题）
+          console.log("🔸 检测到合辑标签，仅使用标题搜索");
         }
 
-        // ✅ 预处理标题：去掉被【】或符号包裹的说明 + 分篇 + 章节号(含区间/罗马数字) + 卷号 + 数字 + 上下巻/卷标识 + 回退机制
-        let cleanTitle = extractTitle
-          ? extractTitle
+        // ✅ 预处理标题
+        let cleanTitle = "";
+        if (extractTitle) {
+          if (!isAnthology) {
+            // ✅ 非合辑 → 清理标题
+            cleanTitle = extractTitle
               // 去掉被【】或 ~、～、-、—、〜 包裹的说明
               .replace(/[【\-~～—〜][^【】\-~～—〜]+[】\-~～—〜]/g, "")
               // 去掉末尾的各种章节/卷号标识（支持日语、Vol.、数字区间、上下卷、総集編、罗马数字）
               .replace(/\s*(?:前編|中編|後編|最終編|最終話|最終巻|最終卷|上巻|中巻|下巻|上卷|中卷|下卷|総集編(?:[・･·•]?[上下中]?(?:巻|卷)?)?|第?\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第\d+話|Vol\.?\s*(?:\d+(?:[\-~～—〜+]\d+)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第?\d+\s*(?:巻|卷|話|編)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
               // 去掉中点符号
               .replace(/[・･·•]/g, "")
-              .trim()
-          : "";
+              .trim();
+          } else {
+            // ✅ 合辑 → 不清理标题，直接使用原始
+            cleanTitle = extractTitle.trim();
+          }
+        }
 
         // ✅ 清理后若为空 → 回退原始标题
         if (!cleanTitle) cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";

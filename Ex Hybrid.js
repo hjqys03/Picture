@@ -3,7 +3,7 @@
 // @namespace    https://e-hentai.org/?f_cats=0
 // @version      6.6.6
 // @author       究极缝合怪
-// @description  搜索相似画廊 & 导入标签 & 非阻塞提示(标签) & 删除 “Load comic”、“多页查看器” 侧边栏按钮
+// @description  搜索相似画廊 & 导入标签 & 非阻塞提示(标签) & 删除 “Load comic”、“多页查看器(MPV)” 侧边栏按钮 & 删除画廊顶部的广告
 // @match        https://exhentai.org/g/*
 // @match        https://e-hentai.org/g/*
 // @icon         https://exhentai.org/favicon.ico
@@ -14,6 +14,40 @@
 
 (function () {
   "use strict";
+
+  // ✅ spa 检测处理（最终版）
+  const spa = document.querySelector("#spa");
+  if (spa) {
+    // 删除 spa 元素
+    spa.remove();
+
+    // 删除 taglist 的 height 样式
+    const taglist = document.querySelector("#taglist");
+    if (taglist && taglist.hasAttribute("style")) {
+      const styleValue = taglist.getAttribute("style");
+      const newStyle = styleValue.replace(/height\s*:\s*\d+px;?/i, "").trim();
+      if (newStyle) taglist.setAttribute("style", newStyle);
+      else taglist.removeAttribute("style");
+    }
+
+    // 精确识别目标按钮并加上 gsp
+    document.querySelectorAll("p.g2, p.g3").forEach(p => {
+      const a = p.querySelector("a");
+      if (!a) return;
+
+      const href = a.getAttribute("href") || "";
+      const onclick = a.getAttribute("onclick") || "";
+
+      // 识别三种类型：举报图库 / 归档下载 / 申请删除
+      if (
+        href.includes("?report=select") ||
+        onclick.includes("archiver.php") ||
+        href.includes("?act=expunge")
+      ) {
+        p.classList.add("gsp");
+      }
+    });
+  }
 
   // ========== Toast 样式 ==========
   (function addToastStyles() {
@@ -399,13 +433,7 @@
 
   // 第一行：相似画廊 + 悬浮窗
   const row1 = document.createElement("p");
-
-  // ✅ 判断是否存在 spa 元素
-  if (document.querySelector("#spa")) {
-    row1.className = "g2"; // 存在 spa → 改为 g2
-  } else {
-    row1.className = "g2 gsp"; // 默认
-  }
+  row1.className = "g2 gsp"; // ✅ 不再判断 spa，固定样式
 
   const img1 = document.createElement("img");
   img1.src =
@@ -1401,8 +1429,8 @@
   sideBar.appendChild(row2);
 
   // ================== 删除按钮（多页查看器） ==================
-  const mpvBtn = sideBar.querySelector('p.g2.gsp a[href*="/mpv/"]');
-  if (mpvBtn) mpvBtn.closest("p")?.remove();
+  const mpvBtn = sideBar.querySelector('p a[href*="/mpv/"]');
+  mpvBtn?.closest('p')?.remove();
 
   // ================== 删除按钮（Load comic，含动态监听） ==================
   function removeLoadComicNodes(root) {

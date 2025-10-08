@@ -396,9 +396,17 @@
     }
     return a;
   }
+
   // 第一行：相似画廊 + 悬浮窗
   const row1 = document.createElement("p");
-  row1.className = "g2 gsp";
+
+  // ✅ 判断是否存在 spa 元素
+  if (document.querySelector("#spa")) {
+    row1.className = "g2"; // 存在 spa → 改为 g2
+  } else {
+    row1.className = "g2 gsp"; // 默认
+  }
+
   const img1 = document.createElement("img");
   img1.src =
     window.location.hostname.indexOf("exhentai") >= 0
@@ -406,10 +414,11 @@
       : "https://ehgt.org/g/mr.gif";
   row1.appendChild(img1);
   row1.appendChild(document.createTextNode(" "));
+
   const similarLink = addLink({
-      text: "相似画廊",
-      href: searchHref,
-      title: `标题搜索：${extractTitle}`,
+    text: "相似画廊",
+    href: searchHref,
+    title: `标题搜索：${extractTitle}`,
   });
   row1.appendChild(similarLink);
   sideBar.appendChild(row1);

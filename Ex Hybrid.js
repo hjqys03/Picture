@@ -515,12 +515,12 @@
         color: ${bodyTextColor};
         text-decoration: none;
         display: inline-block;
-        max-width: 40vw;            /* ✅ 限制标题列最大宽度（不会撑出屏幕） */
-        white-space: nowrap;        /* 不换行 */
-        overflow: hidden;           /* 超出部分隐藏 */
-        text-overflow: ellipsis;    /* 超出显示省略号 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         vertical-align: middle;
         transition: color 0.15s ease;
+        max-width: 40vw; /* 默认占 40% 屏宽 */
       }
 
       .popup-link:hover {
@@ -661,8 +661,10 @@
       console.warn("读取排序偏好失败：", e);
     }
 
-    if (lastSort.key && lastSort.dir) {
+    if (lastSort.key && lastSort.dir && lastSort.dir !== "none") {
       currentSort = { key: lastSort.key, dir: lastSort.dir };
+    } else {
+      currentSort = { key: null, dir: null }; // ✅ 防止“默认”状态下仍触发排序
     }
 
       function toMB(v) {
@@ -676,8 +678,20 @@
 
       function sortListBy(arr, key, isAsc) {
         return [...arr].sort((a, b) => {
-          const av = a[key] || "";
-          const bv = b[key] || "";
+          let av = a[key] || "";
+          let bv = b[key] || "";
+
+          // ✅ 对语言字段进行预处理，忽略 TR/RW 后缀
+          if (key === "language") {
+            const clean = (s) =>
+              s
+                .replace(/<[^>]*>/g, "")  // 去除 HTML 标签
+                .replace(/\b(TR|RW)\b/gi, "") // 去掉 TR / RW
+                .trim()
+                .toLowerCase();
+            av = clean(av);
+            bv = clean(bv);
+          }
 
           if (key === "pages") {
             return (isAsc ? 1 : -1) * ((parseInt(av) || 0) - (parseInt(bv) || 0));
@@ -690,15 +704,42 @@
             const db = new Date(bv).getTime() || 0;
             return (isAsc ? 1 : -1) * (da - db);
           }
+
+          // 默认：按中文或英文排序
           return (isAsc ? 1 : -1) * av.localeCompare(bv, "zh");
         });
       }
 
       // 渲染行并绑定预览/复制事件（每次重绘都要调用）
       function renderRows(listToRender) {
+        // === 语言 → 国旗图标映射（取自 Eh漫画语言快捷按钮） ===
+        const languageFlags = {
+          chinese: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI2QyMmYyNyIgZD0iTTUgMTdoNjJ2MzhINXoiLz48Y2lyY2xlIGN4PSIyNCIgY3k9IjM0IiByPSIxLjc1IiBmaWxsPSIjZjFiMzFjIi8+PGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMS43NSIgZmlsbD0iI2YxYjMxYyIvPjxjaXJjbGUgY3g9IjI4IiBjeT0iMzEiIHI9IjEuNzUiIGZpbGw9IiNmMWIzMWMiLz48Y2lyY2xlIGN4PSIyOCIgY3k9IjI2IiByPSIxLjc1IiBmaWxsPSIjZjFiMzFjIi8+PHBhdGggZmlsbD0iI2YxYjMxYyIgc3Ryb2tlPSIjZjFiMzFjIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik0xMy41MjggMzIuNDQ1bDIuNDcyLTggMi40NzMgOEwxMiAyNy41aDhsLTYuNDcyIDQuOTQ1eiIvPjxnPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01IDE3aDYydjM4SDV6Ii8+PC9nPjwvc3ZnPg==",
+          japanese: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjM2IiByPSI5IiBmaWxsPSIjZDIyZjI3Ii8+PGc+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48L2c+PC9zdmc+",
+          english: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzFlNTBhMCIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDAgMjguODU2VjMyaDEwLjE4MUw2NyAyMS42OTFWMTdoLTcuNjU0TDQwIDI4Ljg1NnoiLz48cGF0aCBmaWxsPSIjZDIyZjI3IiBkPSJNNjcgMTdoLTMuODI3TDQwIDMxLjIwM1YzMmgzLjQ4Mkw2NyAxNy41ODZWMTd6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTU5LjM0NyA1NUg2N3YtNC42OTJMNTAuMTgyIDQwSDQwdjMuMTQzTDU5LjM0NyA1NXoiLz48cGF0aCBmaWxsPSIjZDIyZjI3IiBkPSJNNjcgNTV2LTIuMzQ3TDQ2LjM1NSA0MGgtNC43ODdsMjQuNDc0IDE1SDY3eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0zMiA0My4xNDRWNDBIMjEuODE5TDUgNTAuMzA5VjU1aDcuNjU0TDMyIDQzLjE0NHoiLz48cGF0aCBmaWxsPSIjZDIyZjI3IiBkPSJNNSA1NWgzLjgyN0wzMiA0MC43OTdWNDBoLTMuNDgyTDUgNTQuNDE0VjU1eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xMi42NTMgMTdINXY0LjY5MkwyMS44MTggMzJIMzJ2LTMuMTQzTDEyLjY1MyAxN3oiLz48cGF0aCBmaWxsPSIjZDIyZjI3IiBkPSJNNSAxN3YyLjM0N0wyNS42NDYgMzJoNC43ODZMNS45NTggMTdINXoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNSAzMWg2MnYxMEg1eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0zMSAxN2gxMHYzOEgzMXoiLz48cGF0aCBmaWxsPSIjZDIyZjI3IiBkPSJNNSAzM2g2MnY2SDV6Ii8+PHBhdGggZmlsbD0iI2QyMmYyNyIgZD0iTTMzIDE3aDZ2MzhoLTZ6Ii8+PGc+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48L2c+PC9zdmc+",
+          korean: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjM2IiByPSI5IiBmaWxsPSIjZDIyZjI3Ii8+PGcgZmlsbD0iIzFlNTBhMCI+PHBhdGggZD0iTTI4LjEyNyAzMS42NzZBNC40OTIgNC40OTIgMCAwIDAgMzYgMzZjLjAyMy0uMDQuMDM0LS4wODMuMDU1LS4xMjNsLjAyNC4wMTRhNC40OTMgNC40OTMgMCAwIDEgNy43MjQgNC41OWwuMDAzLjAwMmE4Ljk5MiA4Ljk5MiAwIDAgMS0xNS42OC04LjgwN3pNMjguMzMxIDMxLjI4N2wuMDIuMDExYy0uMDMuMDQ2LS4wNjcuMDg1LS4wOTUuMTMzLjAyNy0uMDQ3LjA0Ny0uMDk4LjA3NS0uMTQ0eiIvPjwvZz48ZyBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTI0LjIzMiA0MS45MDJsMyA1LjE5Nk0yMC43NjggNDMuOTAybDMgNS4xOTZNMjIuNSA0Mi45MDJsMSAxLjczMk0yNC41IDQ2LjM2NmwxIDEuNzMyIi8+PGc+PHBhdGggZD0iTTQ1LjUgNDguMDk4bDEtMS43MzJNNDcuNSA0NC42MzRsMS0xLjczMk00Ny4yMzIgNDkuMDk4bDEtMS43MzJNNDkuMjMyIDQ1LjYzNGwxLTEuNzMyTTQzLjc2OCA0Ny4wOThsMS0xLjczMk00NS43NjggNDMuNjM0bDEtMS43MzIiLz48L2c+PGc+PHBhdGggZD0iTTIwLjc2OCAyOC4wOThsMy01LjE5Nk0yMi41IDI5LjA5OGwzLTUuMTk2TTI0LjIzMiAzMC4wOThsMy01LjE5NiIvPjwvZz48Zz48cGF0aCBkPSJNNDQuNzY4IDI0LjkwMmwxIDEuNzMyTTQ2Ljc2OCAyOC4zNjZsMSAxLjczMk00OC4yMzIgMjIuOTAybDEgMS43MzJNNTAuMjMyIDI2LjM2NmwxIDEuNzMyTTQ2LjUgMjMuOTAybDMgNS4xOTYiLz48L2c+PC9nPjxnPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01IDE3aDYydjM4SDV6Ii8+PC9nPjwvc3ZnPg==",
+        };
+
         tbody.innerHTML = "";
         listToRender.forEach((g) => {
           const tr = document.createElement("tr");
+
+          // === 根据语言名匹配国旗 ===
+          const langName = (g.language || "").replace(/<[^>]*>/g, "").trim().toLowerCase();
+          const flagKey = Object.keys(languageFlags).find(k => langName.includes(k));
+          const langHTML = flagKey
+            ? `<img src="${languageFlags[flagKey]}"
+                     alt="${flagKey}"
+                     title="${flagKey}"
+                     style="
+                       width:26px;
+                       height:20px;
+                       object-fit:contain;
+                       display:block;
+                       margin:0 auto;
+                       vertical-align:middle;
+                     ">`
+            : `<span>${g.language || "—"}</span>`;
           tr.innerHTML = `
             <td>
               <a href="${g.url}"
@@ -708,7 +749,7 @@
                 ${g.title}
               </a>
             </td>
-            <td>${g.language}</td>
+            <td>${langHTML}</td>
             <td>${g.pages || "—"}</td>
             <td>${g.fileSize || "—"}</td>
             <td>${g.posted || "—"}</td>
@@ -717,7 +758,7 @@
           tbody.appendChild(tr);
         });
 
-        // 绑定复制按钮事件
+        // === 绑定复制事件 ===
         popup.querySelectorAll(".bt-copy-button").forEach(btn => {
           btn.onclick = (e) => {
             const link = btn.dataset.url;
@@ -949,12 +990,12 @@
       if (popup._hasRefreshed) return; // 🚫 避免重复执行
       popup._hasRefreshed = true;
 
-      if (currentSort.key && currentSort.dir) {
-        currentList = sortListBy(originalList, currentSort.key, currentSort.dir === "asc");
-        // console.log("🔁 已根据偏好刷新排序");
-      } else {
-        currentList = sortListBy(originalList, "posted", false);
-        // console.log("🔁 默认发布时间排序已应用");
+      // ✅ 1️⃣ 打开悬浮窗时先强制按发布时间倒序刷新一次
+      currentList = sortListBy(originalList, "posted", false);
+
+      // ✅ 2️⃣ 如果有用户记忆的排序（非默认），再叠加应用一次
+      if (currentSort.key && currentSort.dir && currentSort.dir !== "none") {
+        currentList = sortListBy(currentList, currentSort.key, currentSort.dir === "asc");
       }
 
       renderRows(currentList);
@@ -1035,8 +1076,8 @@
         console.log("🎨 获取的艺术家 (标题) =", artistTitleNames);
 
         if (!isAnthology) {
-          if (artistTagNames.length >= artistTitleNames.length && artistTagNames.length > 0) {
-            // ✅ 标签艺术家数量 ≥ 标题艺术家数量 → 使用标签（精确匹配）
+          if (artistTagNames.length > 0) {
+            // ✅ 有标签艺术家 → 优先使用标签（精确匹配）
             finalArtists = artistTagNames.map(a => `artist:"${a}$"`);
           } else if (artistTitleNames.length > 0) {
             // ✅ 否则使用标题艺术家（普通匹配）
@@ -1046,8 +1087,23 @@
           console.log("🔸 检测到合辑标签（anthology / goudoushi），仅使用标题搜索");
         }
 
+        // ✅ 预处理标题：去掉被【】或符号包裹的说明 + 分篇 + 章节号(含区间/罗马数字) + 卷号 + 数字 + 上下巻/卷标识 + 回退机制
+        let cleanTitle = extractTitle
+          ? extractTitle
+              // 去掉被【】或 ~、～、-、—、〜 包裹的说明
+              .replace(/[【\-~～—〜][^【】\-~～—〜]+[】\-~～—〜]/g, "")
+              // 去掉末尾的各种章节/卷号标识（支持日语、Vol.、数字区间、上下卷、総集編、罗马数字）
+              .replace(/\s*(?:前編|中編|後編|最終編|最終話|最終巻|最終卷|上巻|中巻|下巻|上卷|中卷|下卷|総集編(?:[・･·•]?[上下中]?(?:巻|卷)?)?|第?\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第\d+話|Vol\.?\s*(?:\d+(?:[\-~～—〜+]\d+)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+[\-~～—〜+]\d+(?:話|巻|卷)?|第?\d+\s*(?:巻|卷|話|編)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
+              // 去掉中点符号
+              .replace(/[・･·•]/g, "")
+              .trim()
+          : "";
+
+        // ✅ 清理后若为空 → 回退原始标题
+        if (!cleanTitle) cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
+
         // 5️⃣ 组合最终搜索关键词
-        const parts = [...finalArtists, `"${extractTitle}"`];
+        const parts = [...finalArtists, `"${cleanTitle}"`];
         const hoverSearch = parts.join(" ");
         console.log("🔍 悬浮窗搜索语句 =", hoverSearch);
 
@@ -1103,8 +1159,9 @@
             if (langRow) {
               const valueTd = langRow.nextElementSibling;
               let rawLang = valueTd?.textContent?.trim() || "";
-              rawLang = rawLang.replace(/\b(TR|RW)\b/gi, "").replace(/\s+/g, " ").trim();
-              item.language = rawLang || "—";
+              // 直接删除 TR 和 RW
+              const cleanLang = rawLang.replace(/\b(TR|RW)\b/gi, "").trim();
+              item.language = cleanLang || "—";
             } else {
               item.language = "—";
             }

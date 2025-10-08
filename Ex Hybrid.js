@@ -1124,8 +1124,8 @@
         // 7️⃣ 分页抓取搜索结果
         const list = [];
         const currentPath = window.location.pathname.replace(/\/$/, "");
-        const MAX_RESULTS = 100;
-        const MAX_PAGES = 10; // 最多抓取 5 页，可调
+        const MAX_RESULTS = Infinity; // 最多抓取作品个数，可调
+        const MAX_PAGES = Infinity; // 最多抓取页数，可调
         let page = 0;
         let nextURL = hoverSearchURL;
 
@@ -1158,7 +1158,7 @@
           }
 
           page++;
-          await new Promise(r => setTimeout(r, 300)); // 防止请求过快
+          await new Promise(r => setTimeout(r, 0)); // 防止请求过快
         }
 
         console.log(`✅ 搜索抓取完毕：共 ${list.length} 条（${page} 页）`);

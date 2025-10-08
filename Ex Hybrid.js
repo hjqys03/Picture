@@ -940,13 +940,13 @@
       e.stopPropagation();
       const key = keyMap[index];
 
-      // 🔄 三态切换：none → desc → asc → none
+      // 🔄 三态切换：none → asc → desc → none
       let newDir = "none";
       if (currentSort.key !== key) {
-        newDir = "desc"; // 新列默认从降序开始
+        newDir = "asc"; // 新列默认从升序开始
       } else {
-        if (currentSort.dir === "none") newDir = "desc";
-        else if (currentSort.dir === "desc") newDir = "asc";
+        if (currentSort.dir === "none") newDir = "asc";
+        else if (currentSort.dir === "asc") newDir = "desc";
         else newDir = "none";
       }
 

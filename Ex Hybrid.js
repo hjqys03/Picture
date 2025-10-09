@@ -1406,6 +1406,8 @@
                   if (!a) continue;
                   const title = a.textContent.trim();
                   const url = a.href;
+                  const linkPath = new URL(url).pathname.replace(/\/$/, "");
+                  if (linkPath === window.location.pathname.replace(/\/$/, "")) continue; // 🚫 排除当前画廊
                   if (tempList.some(x => x.url === url)) continue;
                   tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
                 }

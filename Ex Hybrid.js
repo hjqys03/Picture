@@ -1554,7 +1554,7 @@
       if (list.length) {
         cachedList = list;
         isLoaded = true;
-        showToast(`✅ 搜索完成，共找到 ${list.length} 个似画廊`);
+        showToast(`✅ 搜索完成，共找到 ${list.length} 个相似画廊`);
       } else {
         showToast("⚠️ 未找到相似画廊");
       }

@@ -9,17 +9,89 @@
 // @icon         https://exhentai.org/favicon.ico
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // @run-at       document-end
 // ==/UserScript==
 
 (function () {
   "use strict";
 
-  // ✅ spa 检测处理（最终版）
+  // =====================================================
+  // ✅ 菜单注册系统（统一管理多个功能开关）
+  // =====================================================
+  let menuIds = [];
+
+  function registerMenuCommands() {
+    // 清理旧菜单
+    if (menuIds.length && typeof GM_unregisterMenuCommand === "function") {
+      for (const id of menuIds) {
+        try { GM_unregisterMenuCommand(id); } catch {}
+      }
+      menuIds = [];
+    }
+
+    // 📙 Manga 附加搜索
+    const extraEnabled = GM_getValue("enableExtraSearch", true);
+    const id1 = GM_registerMenuCommand(`${extraEnabled ? "关闭" : "启用"} Manga 附加搜索`, () => {
+      const next = !extraEnabled;
+      GM_setValue("enableExtraSearch", next);
+      showToast(`📙 Manga 附加搜索已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id1);
+
+    // 📚 系列作品搜索
+    const seriesEnabled = GM_getValue("enableSeriesSearch", true);
+    const id2 = GM_registerMenuCommand(`${seriesEnabled ? "关闭" : "启用"} 尝试搜索系列作品`, () => {
+      const next = !seriesEnabled;
+      GM_setValue("enableSeriesSearch", next);
+      showToast(`📚 系列作品搜索已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id2);
+
+    // 🧹 删除多余按钮（Load Comic + 多页查看器）
+    const delBtnsEnabled = GM_getValue("enableDelExtraBtns", true);
+    const id3 = GM_registerMenuCommand(`${delBtnsEnabled ? "关闭" : "启用"} 删除多余按钮`, () => {
+      const next = !delBtnsEnabled;
+      GM_setValue("enableDelExtraBtns", next);
+      showToast(`🧹 删除多余按钮功能已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id3);
+
+    // 🚫 去广告
+    const adBlockEnabled = GM_getValue("enableAdBlock", true);
+    const id4 = GM_registerMenuCommand(`${adBlockEnabled ? "关闭" : "启用"} 去广告`, () => {
+      const next = !adBlockEnabled;
+      GM_setValue("enableAdBlock", next);
+      showToast(`🚫 去广告功能已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id4);
+  }
+
+  // ✅ 初始化菜单注册
+  if (
+    typeof GM_registerMenuCommand === "function" &&
+    typeof GM_getValue === "function" &&
+    typeof GM_setValue === "function"
+  ) {
+    registerMenuCommands();
+  }
+
+  // ✅ spa 检测处理（最终版，带去广告开关）
+  const adBlockEnabled = (typeof GM_getValue === "function")
+    ? GM_getValue("enableAdBlock", true)
+    : true;
+
+  if (adBlockEnabled) {
   const spa = document.querySelector("#spa");
   if (spa) {
-    // 删除 spa 元素
+    // 删除 spa 元素（顶部广告）
     spa.remove();
+    console.log("🚫 已移除顶部广告（#spa）");
 
     // 删除 taglist 的 height 样式
     const taglist = document.querySelector("#taglist");
@@ -30,8 +102,8 @@
       else taglist.removeAttribute("style");
     }
 
-    // 精确识别目标按钮并加上 gsp
-    document.querySelectorAll("p.g2, p.g3").forEach(p => {
+    // 精确识别目标按钮并加上 gsp（原逻辑保留）
+    document.querySelectorAll("p.g2, p.g3").forEach((p) => {
       const a = p.querySelector("a");
       if (!a) return;
 
@@ -48,6 +120,9 @@
       }
     });
   }
+} else {
+  console.log("🚫 去广告功能已关闭，保留 #spa 元素");
+}
 
   // ========== Toast 样式 ==========
   (function addToastStyles() {
@@ -433,7 +508,17 @@
 
   // 第一行：相似画廊 + 悬浮窗
   const row1 = document.createElement("p");
-  row1.className = "g2 gsp"; // ✅ 不再判断 spa，固定样式
+
+  // 使用脚本顶部计算好的 adBlockEnabled（对应 GM key: "enableAdBlock"）
+  // 逻辑：当 去广告【关闭】(!adBlockEnabled) 且页面存在 #spa 时 → 去掉 gsp
+  if (!adBlockEnabled && document.querySelector("#spa")) {
+    // 兼容之前脚本运行留下的 class：把侧边栏中已有的 gsp 一并移除
+    document.querySelectorAll("#gd5 p.gsp, #gd5 p.g2.gsp, #gd5 p.g3.gsp").forEach(el => el.classList.remove("gsp"));
+
+    row1.className = "g2";
+  } else {
+    row1.className = "g2 gsp";
+  }
 
   const img1 = document.createElement("img");
   img1.src =
@@ -1128,9 +1213,17 @@
           console.log("🔸 检测到合辑标签，仅使用标题搜索");
         }
 
-        // ✅ 预处理标题
+        // ✅ 预处理标题（带系列搜索开关）
+        const seriesSearchEnabled = (typeof GM_getValue === "function")
+          ? GM_getValue("enableSeriesSearch", true)
+          : true;
+
         let cleanTitle = "";
-        if (extractTitle) {
+        if (!seriesSearchEnabled) {
+          // 🚫 关闭系列搜索 → 不做清理
+          cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
+          console.log("📚 系列作品搜索已关闭，使用原始标题:", cleanTitle);
+        } else if (extractTitle) {
           if (!isAnthology) {
             // ✅ 非合辑 → 清理标题
             cleanTitle = extractTitle
@@ -1205,8 +1298,6 @@
           await new Promise(r => setTimeout(r, 0)); // 防止请求过快
         }
 
-        console.log(`✅ 搜索抓取完毕：共 ${list.length} 条（${page} 页）`);
-
         const promises = list.map(async (item) => {
           try {
             const detailRes = await fetch(item.url);
@@ -1273,6 +1364,138 @@
         cachedList = cachedList.filter(item =>
           allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
         );
+
+        // ✅ 在过滤完成后再统计
+        console.log(`✅ 搜索抓取完毕：共 ${cachedList.length} 条（${page} 页）`);
+
+      // ========== ✅ 检查是否为漫画并追加标题末尾括号搜索 ==========
+      try {
+        // 如果没有 GM_getValue（比如运行环境不支持），默认视为启用
+        const extraSearchEnabled = (typeof GM_getValue === "function")
+          ? GM_getValue("enableExtraSearch", true)
+          : true;
+
+        if (!extraSearchEnabled) {
+          console.log("📖 附加搜索已关闭，跳过漫画末尾括号搜索");
+        } else {
+          const isManga = !!document.querySelector("#gdc .ct3[onclick*='/manga']");
+          const titleCombined = (galleryTitleJP || galleryTitleEN || "");
+          const bracketMatch = titleCombined.match(/\(([^()]+)\)\s*(?:\[[^\]]*\]\s*)*$/);
+
+          if (isManga && bracketMatch) {
+            const extraKeyword = bracketMatch[1].trim();
+            if (extraKeyword) {
+              const quotedKeyword = `"${extraKeyword}"`;
+              console.log("📖 附加搜索关键词 =", quotedKeyword);
+
+              let page = 0;
+              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
+              const tempList = [];
+              const MAX_PAGES = Infinity;
+
+              while (page < MAX_PAGES && nextURL) {
+                const res = await fetch(nextURL);
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, "text/html");
+
+                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                if (!blocks.length) break;
+
+                for (const b of blocks) {
+                  const a = b.querySelector("a");
+                  if (!a) continue;
+                  const title = a.textContent.trim();
+                  const url = a.href;
+                  if (tempList.some(x => x.url === url)) continue;
+                  tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
+                }
+
+                const nextAnchor = doc.querySelector('a[href*="&next="]');
+                if (nextAnchor) {
+                  const href = nextAnchor.getAttribute("href");
+                  nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
+                } else {
+                  nextURL = null;
+                }
+
+                page++;
+                await new Promise(r => setTimeout(r, 0));
+              }
+
+              if (!tempList.length) {
+                showToast(`⚠ 未找到 ${extraKeyword} 相关画廊`);
+              } else {
+                // 静默抓取详情并合并
+                const promises = tempList.map(async item => {
+                  try {
+                    const detailRes = await fetch(item.url);
+                    const detailHtml = await detailRes.text();
+                    const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
+
+                    item.engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
+                    const gd1Div = detailDoc.querySelector("#gd1 > div");
+                    if (gd1Div) {
+                      const bg = gd1Div.style.backgroundImage || "";
+                      const match = bg.match(/url\(["']?(.*?)["']?\)/);
+                      if (match) item.cover = match[1];
+                    }
+
+                    const langRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+                      /语言|Language/i.test(td.textContent)
+                    );
+                    if (langRow) {
+                      const valueTd = langRow.nextElementSibling;
+                      const rawLang = valueTd?.textContent?.trim() || "";
+                      item.language = rawLang.replace(/\b(TR|RW)\b/gi, "").trim() || "—";
+                    } else {
+                      item.language = "—";
+                    }
+
+                    const sizeRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+                      /File Size|文件大小/i.test(td.textContent)
+                    );
+                    item.fileSize = sizeRow?.nextElementSibling?.textContent?.trim() || "—";
+
+                    const lenRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+                      /Length|页数/i.test(td.textContent)
+                    );
+                    const m = lenRow?.nextElementSibling?.textContent?.match(/\d+/);
+                    item.pages = m ? parseInt(m[0]) : "—";
+
+                    const dateRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
+                      /Posted|发布于/i.test(td.textContent)
+                    );
+                    const rawDate = dateRow?.nextElementSibling?.textContent?.trim() || "—";
+                    item.posted = rawDate.match(/\d{4}-\d{2}-\d{2}/)?.[0] || rawDate;
+                  } catch (e) {
+                    item.language = "—";
+                  }
+                  return item;
+                });
+
+                let extraList = await Promise.all(promises);
+                const allowedLangs = ["chinese", "japanese", "english", "korean"];
+                extraList = extraList.filter(item =>
+                  allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
+                );
+
+                console.log(`✅ 附加搜索抓取完毕：共 ${extraList.length} 条（${page} 页）`);
+
+                const allList = [...cachedList, ...extraList];
+                const seen = new Set();
+                cachedList = allList.filter(it => {
+                  if (!it?.url) return false;
+                  if (seen.has(it.url)) return false;
+                  seen.add(it.url);
+                  return true;
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("📖 附加搜索模块出错：", err);
+      }
 
         return cachedList;
 
@@ -1432,42 +1655,43 @@
   sideBar.appendChild(row1);
   sideBar.appendChild(row2);
 
-  // ================== 删除按钮（多页查看器） ==================
-  const mpvBtn = sideBar.querySelector('p a[href*="/mpv/"]');
-  mpvBtn?.closest('p')?.remove();
+  // ================== 删除多余按钮（Load Comic + 多页查看器） ==================
+  if (GM_getValue("enableDelExtraBtns", true)) {
+    // 删除 MPV 按钮
+    const mpvBtn = sideBar.querySelector('p a[href*="/mpv/"]');
+    mpvBtn?.closest('p')?.remove();
 
-  // ================== 删除按钮（Load comic，含动态监听） ==================
-  function removeLoadComicNodes(root) {
-    const anchors = (root || document).querySelectorAll('p.g2.gsp a, p.g2 a');
-    anchors.forEach((a) => {
-      const text = (a.textContent || "").trim().toLowerCase();
-      const href = (a.getAttribute('href') || "").trim().toLowerCase();
+    // 删除 Load Comic 按钮
+    function removeLoadComicNodes(root) {
+      const anchors = (root || document).querySelectorAll('p.g2.gsp a, p.g2 a');
+      anchors.forEach((a) => {
+        const text = (a.textContent || "").trim().toLowerCase();
+        const href = (a.getAttribute("href") || "").trim().toLowerCase();
 
-      const isLoadComicText = text.includes('load comic') || text.includes('loadcomic');
-      const isJsHref = href === 'javascript:;';
+        const isLoadComicText = text.includes("load comic") || text.includes("loadcomic");
+        const isJsHref = href === "javascript:;";
 
-      if (!(isLoadComicText || isJsHref)) return;
+        if (!(isLoadComicText || isJsHref)) return;
 
-      const p = a.closest('p');
-      if (!p) return;
+        const p = a.closest("p");
+        if (!p) return;
 
-      const pText = (p.textContent || "").toLowerCase();
-      const safeMarkers = ['tag-all', 'tag-pas', '相似画廊', '相似'];
-      if (safeMarkers.some(s => pText.includes(s.toLowerCase()))) return;
+        const pText = (p.textContent || "").toLowerCase();
+        const safeMarkers = ["tag-all", "tag-pas", "相似画廊"];
+        if (safeMarkers.some((s) => pText.includes(s.toLowerCase()))) return;
 
-      p.remove();
-    });
+        p.remove();
+      });
+    }
+
+    // 初次清理一次
+    removeLoadComicNodes(sideBar);
+
+    // 动态监听（5秒后自动断开）
+    const observer = new MutationObserver(() => removeLoadComicNodes(sideBar));
+    observer.observe(sideBar, { childList: true, subtree: true });
+    setTimeout(() => observer.disconnect(), 5000);
   }
-
-  // 先清理一次
-  removeLoadComicNodes(sideBar);
-
-  // 监听后续动态插入
-  const observer = new MutationObserver(() => removeLoadComicNodes(sideBar));
-  observer.observe(sideBar, { childList: true, subtree: true });
-
-  // 可选：5秒后断开
-  setTimeout(() => observer.disconnect(), 5000);
 
   // ================== 移除 newtagfield 的 maxlength 限制 ==================
   const tagField = document.getElementById("newtagfield");

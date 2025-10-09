@@ -1491,6 +1491,13 @@
                   seen.add(it.url);
                   return true;
                 });
+
+                // ✅ 全局按发布时间统一排序（主搜索 + 附加搜索）
+                cachedList.sort((a, b) => {
+                  const da = new Date(a.posted).getTime() || 0;
+                  const db = new Date(b.posted).getTime() || 0;
+                  return db - da; // 最新的排最前
+                });
               }
             }
           }

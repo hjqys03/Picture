@@ -1219,6 +1219,11 @@
           : true;
 
         let cleanTitle = "";
+        if (extractTitle) {
+          // ✅ 不论是否开启系列搜索，都先去掉末尾【】说明
+          extractTitle = extractTitle.replace(/【[^【】]+】\s*$/g, "");
+        }
+
         if (!seriesSearchEnabled) {
           // 🚫 关闭系列搜索 → 不做清理
           cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
@@ -1227,8 +1232,6 @@
           if (!isAnthology) {
             // ✅ 非合辑 → 清理标题
             cleanTitle = extractTitle
-              // ✅ 去掉标题末尾被【】包裹的说明
-              .replace(/【[^【】]+】\s*$/g, "")
               // ✅ 遇到第一个 ":"、"：" 或任意连接符（-、～、—、〜、~、―、﹣）立即截断后续内容
               .replace(/[:：\-~～—〜―﹣].*$/, "")
               // ✅ 去掉末尾的各种章节/卷号标识

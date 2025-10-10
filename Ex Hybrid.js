@@ -300,7 +300,7 @@
       });
       showToast(msg);
     } else {
-      showToast("已填充 " + count + " 个标签"); // ✅ 直接用 count
+      showToast("✅ 已填充 " + count + " 个标签"); // ✅ 直接用 count
     }
   }
 

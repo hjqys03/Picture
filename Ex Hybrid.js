@@ -1568,6 +1568,14 @@
 
     // ✅ 进入页面时立即加载相似画廊（只执行一次）
     (async function preloadSimilarList() {
+
+      // ✅ 新增：只在特定类别启用搜索
+      const categoryDiv = document.querySelector("#gdc .cs");
+      if (!categoryDiv) return; // 找不到类别 → 不执行
+      const allowedCats = ["ct0", "ct2", "ct3", "ct9"]; // 私有 / 同人志 / 漫画 / 无H
+      const isAllowed = allowedCats.some(c => categoryDiv.classList.contains(c));
+      if (!isAllowed) return; // 不在允许类别 → 不执行
+
       showToast("⏳ 正在搜索相似画廊…");
 
       const list = await fetchSimilarList();

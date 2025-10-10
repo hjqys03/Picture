@@ -69,10 +69,38 @@
         // 删除 "种子"
         nav.querySelector('a[href*="torrents.php"]')?.parentElement?.remove();
 
-        // 删除 g/ 页面里的怪物事件框
+        // 将事件框改为非阻塞提示
         const eventPane = document.getElementById('eventpane');
         if (eventPane) {
+            // 获取内容
+            const originalText = eventPane.textContent.trim().replace(/\s+/g, ' ');
+            const preview = originalText.length > 100 ? originalText.slice(0, 100) + "..." : originalText;
+
+            // 删除事件框
             eventPane.remove();
+
+            // 显示非阻塞提示
+            function showToast(message) {
+                let container = document.querySelector('.eh-toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'eh-toast-container';
+                    document.body.appendChild(container);
+                }
+
+                const toast = document.createElement('div');
+                toast.className = 'eh-toast';
+                toast.textContent = message;
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                    if (!container.children.length) container.remove();
+                }, 5200);
+            }
+
+            // 立即显示提示
+            showToast(`📦 ${preview}`);
         }
     }
 })();

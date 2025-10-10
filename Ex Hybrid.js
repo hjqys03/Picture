@@ -1109,8 +1109,6 @@
 
     // ✅ 定义强制刷新函数（用于首次打开悬浮窗时自动刷新）
     popup.forceRefreshSort = function() {
-      if (popup._hasRefreshed) return; // 🚫 避免重复执行
-      popup._hasRefreshed = true;
 
       // ✅ 1️⃣ 打开悬浮窗时先强制按发布时间倒序刷新一次
       currentList = sortListBy(originalList, "posted", false);
@@ -1252,54 +1250,76 @@
         // ✅ 清理后若为空 → 回退原始标题
         if (!cleanTitle) cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
 
-        // 5️⃣ 组合最终搜索关键词
-        const parts = [...finalArtists, `"${cleanTitle}"`];
-        const hoverSearch = parts.join(" ");
-        console.log("🔍 悬浮窗搜索语句 =", hoverSearch);
+        const allResults = [];
+        const searchCombos = [];
+        let totalPages = 0; // 累计所有搜索组合的页数
 
-        // 6️⃣ 构造搜索 URL（空格转 +）
-        const hoverSearchURL =
-          `/?f_search=${encodeURIComponent(hoverSearch).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
-
-        // 7️⃣ 分页抓取搜索结果
-        const list = [];
-        const currentPath = window.location.pathname.replace(/\/$/, "");
-        const MAX_RESULTS = Infinity; // 最多抓取作品个数，可调
-        const MAX_PAGES = Infinity; // 最多抓取页数，可调
-        let page = 0;
-        let nextURL = hoverSearchURL;
-
-        while (list.length < MAX_RESULTS && page < MAX_PAGES && nextURL) {
-          const res = await fetch(nextURL);
-          const html = await res.text();
-          const doc = new DOMParser().parseFromString(html, "text/html");
-          const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
-          if (!blocks.length) break;
-
-          for (const b of blocks) {
-            const a = b.querySelector("a");
-            if (!a) continue;
-            const title = a.textContent.trim();
-            const url = a.href;
-            if (!title) continue;
-            const linkPath = new URL(url).pathname.replace(/\/$/, "");
-            if (linkPath === currentPath) continue;
-            if (list.some(x => x.url === url)) continue;
-            list.push({ title, url, language: "⏳ 加载中…" });
-          }
-
-          // ✅ 检测下一页（支持 &next=）
-          const nextAnchor = doc.querySelector('a[href*="&next="]');
-          if (nextAnchor) {
-            const href = nextAnchor.getAttribute("href");
-            nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
-          } else {
-            nextURL = null;
-          }
-
-          page++;
-          await new Promise(r => setTimeout(r, 0)); // 防止请求过快
+        // 🎨 生成搜索组合（多艺术家）
+        if (finalArtists.length > 1) {
+            for (const artist of finalArtists) {
+                searchCombos.push(`${artist} "${cleanTitle}"`);
+            }
+        } else if (finalArtists.length === 1) {
+            searchCombos.push(`${finalArtists[0]} "${cleanTitle}"`);
+        } else {
+            searchCombos.push(`"${cleanTitle}"`);
         }
+
+        console.log("🧩 生成的搜索组合 =", searchCombos);
+
+        // 🔍 多次请求搜索结果并合并
+        for (const [index, searchQuery] of searchCombos.entries()) {
+            const searchURL =
+                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
+            console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
+
+            let page = 0;
+            let nextURL = searchURL;
+            const MAX_RESULTS = Infinity;
+            const MAX_PAGES = Infinity;
+
+            while (allResults.length < MAX_RESULTS && page < MAX_PAGES && nextURL) {
+                const res = await fetch(nextURL);
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, "text/html");
+                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                if (!blocks.length) break;
+
+                for (const b of blocks) {
+                    const a = b.querySelector("a");
+                    if (!a) continue;
+                    const title = a.textContent.trim();
+                    const url = a.href;
+                    if (!title) continue;
+
+                    // ✅ 排除当前画廊
+                    const linkPath = new URL(url).pathname.replace(/\/$/, "");
+                    const currentPath = window.location.pathname.replace(/\/$/, "");
+                    if (linkPath === currentPath) continue;
+
+                    // ✅ 排除重复
+                    if (allResults.some(x => x.url === url)) continue;
+
+                    allResults.push({ title, url, language: "⏳ 加载中…" });
+                }
+
+                // ✅ 翻页
+                const nextAnchor = doc.querySelector('a[href*="&next="]');
+                if (nextAnchor) {
+                    const href = nextAnchor.getAttribute("href");
+                    nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
+                } else {
+                    nextURL = null;
+                }
+
+                page++;
+                await new Promise(r => setTimeout(r, 0));
+            }
+
+            totalPages += page; // 累计页数
+        }
+
+        const list = allResults;
 
         const promises = list.map(async (item) => {
           try {
@@ -1363,13 +1383,14 @@
 
         cachedList = await Promise.all(promises);
 
+        // ✅ 过滤语言
         const allowedLangs = ["chinese", "japanese", "english", "korean"];
         cachedList = cachedList.filter(item =>
           allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
         );
 
-        // ✅ 在过滤完成后再统计
-        console.log(`✅ 搜索抓取完毕：共 ${cachedList.length} 条（${page} 页）`);
+        // ✅ 在过滤完成后再统计最终显示条数
+        console.log(`✅ 搜索抓取完毕：共 ${cachedList.length} 条（${totalPages} 页）`);
 
       // ========== ✅ 检查是否为漫画并追加标题末尾括号搜索 ==========
       try {
@@ -1572,8 +1593,7 @@
 
       // ✅ 首次打开悬浮窗时自动执行强制刷新排序（只执行一次）
       requestAnimationFrame(() => {
-        if (!hasRefreshedOnce && popup && typeof popup.forceRefreshSort === "function") {
-          hasRefreshedOnce = true; // ✅ 只执行一次
+        if (popup && typeof popup.forceRefreshSort === "function") {
           popup.forceRefreshSort();
           // console.log("🔄 搜索完成后强制刷新排序完成");
         }

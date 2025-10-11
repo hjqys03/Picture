@@ -17,13 +17,9 @@
 (function () {
   "use strict";
 
-  // =====================================================
-  // ✅ 菜单注册系统（统一管理多个功能开关）
-  // =====================================================
   let menuIds = [];
 
   function registerMenuCommands() {
-    // 清理旧菜单
     if (menuIds.length && typeof GM_unregisterMenuCommand === "function") {
       for (const id of menuIds) {
         try { GM_unregisterMenuCommand(id); } catch {}
@@ -31,7 +27,6 @@
       menuIds = [];
     }
 
-    // 📙 Manga 附加搜索
     const extraEnabled = GM_getValue("enableExtraSearch", true);
     const id1 = GM_registerMenuCommand(`${extraEnabled ? "关闭" : "启用"} Manga 附加搜索`, () => {
       const next = !extraEnabled;
@@ -41,7 +36,6 @@
     });
     menuIds.push(id1);
 
-    // 📚 系列作品搜索
     const seriesEnabled = GM_getValue("enableSeriesSearch", true);
     const id2 = GM_registerMenuCommand(`${seriesEnabled ? "关闭" : "启用"} 尝试搜索系列作品`, () => {
       const next = !seriesEnabled;
@@ -51,7 +45,6 @@
     });
     menuIds.push(id2);
 
-    // 🧹 删除多余按钮（Load Comic + 多页查看器）
     const delBtnsEnabled = GM_getValue("enableDelExtraBtns", true);
     const id3 = GM_registerMenuCommand(`${delBtnsEnabled ? "关闭" : "启用"} 删除多余按钮`, () => {
       const next = !delBtnsEnabled;
@@ -61,7 +54,6 @@
     });
     menuIds.push(id3);
 
-    // 🚫 去广告
     const adBlockEnabled = GM_getValue("enableAdBlock", true);
     const id4 = GM_registerMenuCommand(`${adBlockEnabled ? "关闭" : "启用"} 去广告`, () => {
       const next = !adBlockEnabled;
@@ -72,7 +64,6 @@
     menuIds.push(id4);
   }
 
-  // ✅ 初始化菜单注册
   if (
     typeof GM_registerMenuCommand === "function" &&
     typeof GM_getValue === "function" &&
@@ -81,7 +72,6 @@
     registerMenuCommands();
   }
 
-  // ✅ spa 检测处理（最终版，带去广告开关）
   const adBlockEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableAdBlock", true)
     : true;
@@ -89,11 +79,9 @@
   if (adBlockEnabled) {
   const spa = document.querySelector("#spa");
   if (spa) {
-    // 删除 spa 元素（顶部广告）
     spa.remove();
     console.log("🚫 已移除顶部广告（#spa）");
 
-    // 删除 taglist 的 height 样式
     const taglist = document.querySelector("#taglist");
     if (taglist && taglist.hasAttribute("style")) {
       const styleValue = taglist.getAttribute("style");
@@ -102,7 +90,6 @@
       else taglist.removeAttribute("style");
     }
 
-    // 精确识别目标按钮并加上 gsp（原逻辑保留）
     document.querySelectorAll("p.g2, p.g3").forEach((p) => {
       const a = p.querySelector("a");
       if (!a) return;
@@ -110,7 +97,6 @@
       const href = a.getAttribute("href") || "";
       const onclick = a.getAttribute("onclick") || "";
 
-      // 识别三种类型：举报图库 / 归档下载 / 申请删除
       if (
         href.includes("?report=select") ||
         onclick.includes("archiver.php") ||
@@ -124,7 +110,6 @@
   console.log("🚫 去广告功能已关闭，保留 #spa 元素");
 }
 
-  // ========== Toast 样式 ==========
   (function addToastStyles() {
     if (document.getElementById("eh-toast-style")) return;
     const style = document.createElement("style");
@@ -162,9 +147,7 @@
     document.head.appendChild(style);
   })();
 
-  // ========== Toast 函数 ==========
   function showToast(msg) {
-    // 找或建容器
     let container = document.querySelector(".eh-toast-container");
     if (!container) {
       container = document.createElement("div");
@@ -172,21 +155,18 @@
       document.body.appendChild(container);
     }
 
-    // 建一个 toast
     const toast = document.createElement("div");
     toast.className = "eh-toast";
     toast.textContent = msg;
 
     container.appendChild(toast);
 
-    // 3.5 秒后移除
     setTimeout(() => {
       toast.remove();
-      if (container.children.length === 0) container.remove(); // 清空容器
+      if (container.children.length === 0) container.remove();
     }, 3600);
   }
 
-  // 拦截页面的原生 alert 弹窗，替换为非阻塞 toast
   (function() {
     const script = document.createElement("script");
     script.textContent = `
@@ -204,7 +184,6 @@
     document.documentElement.appendChild(script);
     script.remove();
 
-    // 监听来自页面环境的 toast 请求
     window.addEventListener("message", (e) => {
       if (e.data?.type === "EH_SHOW_TOAST") {
         showToast(e.data.message);
@@ -212,7 +191,6 @@
     });
   })();
 
-  // =============== 脚本一核心函数 ===============
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
   var prompt_map = {
     "zh-CN": "请输入要导入tag的画廊地址",
@@ -282,7 +260,7 @@
   function fill_tag_field(tags) {
     var field = document.getElementById("newtagfield");
     var text = "";
-    let count = 0; // 计数器
+    let count = 0;
 
     for (let namespace in tags) {
       for (let tag of tags[namespace]) {
@@ -300,7 +278,7 @@
       });
       showToast(msg);
     } else {
-      showToast("✅ 已填充 " + count + " 个标签"); // ✅ 直接用 count
+      showToast("✅ 已填充 " + count + " 个标签");
     }
   }
 
@@ -336,7 +314,7 @@
     return ret;
   }
 
-  // 空链接时的简化过滤（只屏蔽 original 和 rough translation）
+  // 标签黑名单（快速导入当前画廊时使用）
   function subtract_tags_minimal(tags_to_add) {
     const blacklist_minimal = [
       "original",
@@ -384,23 +362,19 @@
     };
   }
 
-    // ================== 域名互换函数（改进版） ==================
     function toggle_domain(url) {
         try {
             let u = new URL(url, window.location.href);
             const currentHost = window.location.hostname;
 
             if (currentHost.includes("exhentai.org") && u.hostname.includes("e-hentai.org")) {
-                // 当前在 ex → 输入 e 链接 → 转成 ex
                 u.hostname = "exhentai.org";
             } else if (currentHost.includes("e-hentai.org") && u.hostname.includes("exhentai.org")) {
-                // 当前在 e → 输入 ex 链接 → 转成 e
                 u.hostname = "e-hentai.org";
             }
-            // 同域名情况：保持不变
             return u.toString();
         } catch (e) {
-            return url; // 非法链接 → 原样返回
+            return url;
         }
     }
 
@@ -408,10 +382,8 @@
     var prompt_text = get_text_in_local_language(prompt_map);
     var url = prompt(prompt_text);
 
-    // 🚫 如果点了取消 → 不执行
     if (url === null) return;
 
-    // 空字符串 → 只过滤 original 和 rough translation
     if (url.trim() === "") {
       get_source_async(window.location.href, function (text) {
         var tags_current = parse_tags(text);
@@ -420,10 +392,8 @@
       });
       return;
     }
-    // 🔄 自动转换域名
     url = toggle_domain(url);
 
-    // ✅ 输入了有效链接 → 正常流程（过滤黑名单）
     var callbacks = make_callbacks(parse_tags, subtract_tags, fill_tag_field);
     get_source_async(window.location.href, callbacks.current_callback);
     get_source_async(url, callbacks.target_callback);
@@ -433,10 +403,8 @@
     var prompt_text = get_text_in_local_language(prompt_map);
     var url = prompt(prompt_text);
 
-    // 🚫 如果点了取消 → 不执行
     if (url === null) return;
 
-    // 空字符串 → 只过滤 original 和 rough translation
     if (url.trim() === "") {
       get_source_async_gt(window.location.href, function (text) {
         var tags_current = parse_tags(text);
@@ -445,16 +413,13 @@
       });
       return;
     }
-    // 🔄 自动转换域名
     url = toggle_domain(url);
 
-    // ✅ 输入了有效链接 → 正常流程（过滤黑名单）
     var callbacks = make_callbacks(parse_tags, subtract_tags, fill_tag_field);
     get_source_async_gt(window.location.href, callbacks.current_callback);
     get_source_async_gt(url, callbacks.target_callback);
   }
 
-    // =============== 脚本二配置 ===============
     const galleryTitleEN = document.querySelector("#gn")?.textContent || "";
     const galleryTitleJP = document.querySelector("#gj")?.textContent || "";
     const sideBar = document.querySelector("#gd5");
@@ -469,11 +434,9 @@
     let isJapanese = false;
 
     if (galleryTitleJP) {
-        // ✅ 优先日语，不截断
         isJapanese = true;
         extractTitle = galleryTitleJP;
     } else {
-        // ❌ 没有日语 → fallback 英文（罗马音）
         extractTitle = galleryTitleEN;
     }
 
@@ -481,7 +444,6 @@
         .replaceAll(PATTERN_TITLE_PREFIX, "")
         .replaceAll(PATTERN_TITLE_SUFFIX, "");
 
-    // ✅ 日语 / 罗马音 → 遇到 | ｜ ︱ + ＋ 才截断
     const separateIndex = extractTitle.search(/\||｜|︱|\+|＋/);
     if (separateIndex >= 0) {
         extractTitle = extractTitle.slice(0, separateIndex).trim();
@@ -491,7 +453,6 @@
         extractTitle
     )}"&advsearch=1`;
 
-  // =============== 按钮分两行 ===============
   function addLink({ text, href = "#", onClick = null, title = "" }) {
     const a = document.createElement("a");
     a.href = href;
@@ -506,13 +467,9 @@
     return a;
   }
 
-  // 第一行：相似画廊 + 悬浮窗
   const row1 = document.createElement("p");
 
-  // 使用脚本顶部计算好的 adBlockEnabled（对应 GM key: "enableAdBlock"）
-  // 逻辑：当 去广告【关闭】(!adBlockEnabled) 且页面存在 #spa 时 → 去掉 gsp
   if (!adBlockEnabled && document.querySelector("#spa")) {
-    // 兼容之前脚本运行留下的 class：把侧边栏中已有的 gsp 一并移除
     document.querySelectorAll("#gd5 p.gsp, #gd5 p.g2.gsp, #gd5 p.g3.gsp").forEach(el => el.classList.remove("gsp"));
 
     row1.className = "g2";
@@ -536,24 +493,19 @@
   row1.appendChild(similarLink);
   sideBar.appendChild(row1);
 
-// =============== 相似画廊悬浮窗 ===============
 (function () {
-  // 🎨 直接读取网页颜色（不区分深浅模式）
   const bodyStyle = getComputedStyle(document.body);
   const bodyBgColor = bodyStyle.backgroundColor || "#E3E0D1";
   const bodyTextColor = bodyStyle.color || "#5C0D11";
 
-  // 🎨 获取 .gm 背景色（不再调整亮度）
   let gmBg = "#EDEBDF";
   const gmEl = document.querySelector(".gm");
   if (gmEl) {
     gmBg = getComputedStyle(gmEl).backgroundColor || gmBg;
   }
 
-  // 写入 CSS 变量（供样式中使用）
   document.documentElement.style.setProperty("--gm-hover-bg", gmBg);
 
-  // 🎨 动态生成样式
   const styleId = "similar-hover-style";
   if (!document.getElementById(styleId)) {
     const style = document.createElement("style");
@@ -589,7 +541,6 @@
         table-layout: auto;
       }
 
-      /* ✅ 所有表头列、除标题外的内容列：水平居中 + 垂直居中 */
       .popup-table th,
       .popup-table td {
         text-align: center;
@@ -598,20 +549,17 @@
         white-space: nowrap;
       }
 
-      /* ✅ “标题”列（内容）水平左对齐 */
       .popup-table tbody td:first-child {
         text-align: left;
         padding-left: 14px;
       }
 
-      /* ✅ 确保内部元素（链接/按钮）也垂直居中 */
       .popup-table th > *,
       .popup-table td > * {
         vertical-align: middle !important;
         line-height: 1.3;
       }
 
-      /* ✅ 特别确保链接和按钮在视觉上完美对齐 */
       .popup-link,
       .exhy-helper-one-click {
         display: inline-flex;
@@ -619,7 +567,6 @@
         justify-content: center;
       }
 
-      /* ✅ 悬停颜色完全跟随 .gm 背景，不做亮度调整 */
       .popup-table tbody tr:hover td {
         background: var(--gm-hover-bg);
         transition: background 0.15s ease;
@@ -642,7 +589,7 @@
         text-overflow: ellipsis;
         vertical-align: middle;
         transition: color 0.15s ease;
-        max-width: 40vw; /* 默认占 40% 屏宽 */
+        max-width: 40vw;
       }
 
       .popup-link:hover {
@@ -715,7 +662,6 @@
     document.head.appendChild(style);
   })();
 
-  // ✅ 实时同步网页颜色变化（仅执行 2 次，只更新颜色）
   let colorCheckCount = 0;
   const colorSyncTimer = setInterval(() => {
     colorCheckCount++;
@@ -725,10 +671,8 @@
     const gmEl = document.querySelector(".gm");
     const gmBg = gmEl ? getComputedStyle(gmEl).backgroundColor : "#EDEBDF";
 
-    // 更新 CSS 变量
     document.documentElement.style.setProperty("--gm-hover-bg", gmBg);
 
-    // 更新样式表颜色（只改颜色部分）
     const styleEl = document.getElementById("similar-hover-style");
     if (styleEl) {
       styleEl.textContent = styleEl.textContent
@@ -744,7 +688,6 @@
     }
   }, 1000);
 
-    // 创建悬浮窗表格
     function createPopup(list) {
       const popup = document.createElement("div");
       popup.className = "similar-hover-popup";
@@ -766,13 +709,11 @@
       const tbody = table.querySelector("tbody");
       popup.appendChild(table);
 
-      // --- 排序相关 ---
       const keyMap = ["title", "language", "pages", "fileSize", "posted"];
-      const originalList = list.slice(); // 不变的原始基准
-      let currentList = originalList.slice(); // 当前显示的数据
-      let currentSort = { key: null, dir: null }; // 三态默认
+      const originalList = list.slice();
+      let currentList = originalList.slice();
+      let currentSort = { key: null, dir: null };
 
-    // ✅ 从 GM_getValue 读取（支持 e-hentai / exhentai 共享）
     let lastSort = {};
     try {
       const saved = typeof GM_getValue === "function"
@@ -786,7 +727,7 @@
     if (lastSort.key && lastSort.dir && lastSort.dir !== "none") {
       currentSort = { key: lastSort.key, dir: lastSort.dir };
     } else {
-      currentSort = { key: null, dir: null }; // ✅ 防止“默认”状态下仍触发排序
+      currentSort = { key: null, dir: null };
     }
 
       function toMB(v) {
@@ -803,12 +744,11 @@
           let av = a[key] || "";
           let bv = b[key] || "";
 
-          // ✅ 对语言字段进行预处理，忽略 TR/RW 后缀
           if (key === "language") {
             const clean = (s) =>
               s
-                .replace(/<[^>]*>/g, "")  // 去除 HTML 标签
-                .replace(/\b(TR|RW)\b/gi, "") // 去掉 TR / RW
+                .replace(/<[^>]*>/g, "")
+                .replace(/\b(TR|RW)\b/gi, "")
                 .trim()
                 .toLowerCase();
             av = clean(av);
@@ -827,14 +767,11 @@
             return (isAsc ? 1 : -1) * (da - db);
           }
 
-          // 默认：按中文或英文排序
           return (isAsc ? 1 : -1) * av.localeCompare(bv, "zh");
         });
       }
 
-      // 渲染行并绑定预览/复制事件（每次重绘都要调用）
       function renderRows(listToRender) {
-        // === 语言 → 国旗图标映射（取自 Eh漫画语言快捷按钮） ===
         const languageFlags = {
           albanian: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNSAxN2g2MnYzOEg1eiIvPjwvc3ZnPg==",
           arabic: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNSAxN2g2MnYzOEg1eiIvPjwvc3ZnPg==",
@@ -884,7 +821,6 @@
         listToRender.forEach((g) => {
           const tr = document.createElement("tr");
 
-          // === 根据语言名匹配国旗 ===
           const langName = (g.language || "").replace(/<[^>]*>/g, "").trim().toLowerCase();
           let flagKey = Object.keys(languageFlags).find(k => langName.includes(k));
           if (!flagKey) flagKey = "unknown";
@@ -921,7 +857,6 @@
           tbody.appendChild(tr);
         });
 
-        // === 绑定复制事件 ===
         popup.querySelectorAll(".bt-copy-button").forEach(btn => {
           btn.onclick = (e) => {
             const link = btn.dataset.url;
@@ -929,7 +864,6 @@
           };
         });
 
-        // 替换原来 link 的 mouseenter / mouseleave 处理
         popup.querySelectorAll(".popup-link").forEach(link => {
           const url = link.href;
           const item = list.find(g => g.url === url);
@@ -939,7 +873,7 @@
           let img = null;
           let moveHandler = null;
           let scrollHandler = null;
-          let isMounted = false; // 标记 preview 是否仍然存在（是否已离开）
+          let isMounted = false;
 
           link.addEventListener("mouseenter", function onEnter(e) {
             if (preview) return;
@@ -970,7 +904,6 @@
               border: "1px solid black",
             });
 
-          // 在这里加上滚动关闭逻辑
           const scrollHandler = () => {
             if (preview) {
               preview.remove();
@@ -984,15 +917,13 @@
           };
           window.addEventListener("scroll", scrollHandler, { passive: true });
 
-            // 图片加载完成后再注册 moveHandler（并且先检查 isMounted）
             img.onload = () => {
-              if (!isMounted || !preview) return; // ✅ 避免 null 访问
+              if (!isMounted || !preview) return;
               const w = img.width;
               const h = img.height;
 
-              // moveHandler 内先检查 preview，防止 race
               moveHandler = (e2) => {
-                if (!preview) return; // 额外保护
+                if (!preview) return;
                 let left = e2.clientX - w - 10;
                 let top = e2.clientY - h - 10;
 
@@ -1001,7 +932,6 @@
                 if (left + w > window.innerWidth) left = window.innerWidth - w - 10;
                 if (top + h > window.innerHeight) top = window.innerHeight - h - 10;
 
-                // 再次保护（preview 可能在短时间内被移除）
                 if (preview) {
                   preview.style.left = `${left}px`;
                   preview.style.top = `${top}px`;
@@ -1009,9 +939,8 @@
               };
 
               document.addEventListener("mousemove", moveHandler);
-              // 立即移动一次（使用 mouseenter 事件）
               moveHandler(e);
-              if (preview) preview.style.display = "block"; // ✅ 再次保护
+              if (preview) preview.style.display = "block";
             };
 
             preview.appendChild(img);
@@ -1019,7 +948,6 @@
           });
 
           link.addEventListener("mouseleave", function onLeave() {
-            // 标记为已卸载，避免后续 onload 注册监听
             isMounted = false;
 
             if (moveHandler) {
@@ -1030,13 +958,11 @@
               preview.remove();
               preview = null;
             }
-          // ✅ 滚动时关闭预览的监听也要清理掉
           window.removeEventListener("scroll", scrollHandler);
           });
         });
       }
 
-    // 更新表头箭头指示（不占字位）
     function updateHeaderIndicators() {
       const ths = table.querySelectorAll("th");
       ths.forEach((th, idx) => {
@@ -1044,31 +970,27 @@
         const span = th.querySelector("span");
         if (!span) return;
 
-        // 清除旧箭头
         const oldArrow = span.querySelector(".sort-arrow");
         if (oldArrow) oldArrow.remove();
 
-        // “链接”列不参与排序
         if (idx === 5) {
           span.textContent = raw;
           return;
         }
 
-        // 当前列是否正在被排序
         const isActive = currentSort.key === keyMap[idx];
         const dir = isActive ? currentSort.dir : "none";
 
-        // 创建箭头容器（绝对定位）
         const arrow = document.createElement("span");
         arrow.className = "sort-arrow";
         arrow.textContent =
           dir === "asc" ? "▴" :
           dir === "desc" ? "▾" :
-          ""; // ✅ 默认状态时不显示箭头
+          "";
 
         Object.assign(arrow.style, {
           position: "absolute",
-          right: "-0.85em",      // 不占位显示
+          right: "-0.85em",
           top: "50%",
           transform: "translateY(-50%)",
           opacity: "0.7",
@@ -1076,14 +998,12 @@
           userSelect: "none"
         });
 
-        // 确保容器相对定位
         span.style.position = "relative";
         span.textContent = raw;
         span.appendChild(arrow);
       });
     }
 
-      // --- 创建可点击的表头并绑定排序逻辑 ---
       const ths = table.querySelectorAll("th");
       ths.forEach((th, index) => {
         const label = th.textContent.trim();
@@ -1093,7 +1013,7 @@
         span.dataset.label = label;
         th.appendChild(span);
 
-        if (index === 5) { // 链接列不参与排序
+        if (index === 5) {
           span.style.cursor = "default";
           return;
         }
@@ -1103,10 +1023,9 @@
       e.stopPropagation();
       const key = keyMap[index];
 
-      // 🔄 三态切换：none → asc → desc → none
       let newDir = "none";
       if (currentSort.key !== key) {
-        newDir = "asc"; // 新列默认从升序开始
+        newDir = "asc";
       } else {
         if (currentSort.dir === "none") newDir = "asc";
         else if (currentSort.dir === "asc") newDir = "desc";
@@ -1125,9 +1044,7 @@
     }
 
 
-    // ⚙️ 应用排序逻辑
     if (newDir === "none") {
-      // 默认状态 = 恢复发布时间顺序
       currentList = sortListBy(originalList, "posted", false);
     } else {
       currentList = sortListBy(originalList, key, newDir === "asc");
@@ -1139,22 +1056,17 @@
 
     });
 
-    // 初次根据 localStorage 应用
     if (currentSort.key && currentSort.dir) {
       currentList = sortListBy(currentList, currentSort.key, currentSort.dir === "asc");
     }
 
-    // 最开始渲染并显示箭头
     renderRows(currentList);
     updateHeaderIndicators();
 
-    // ✅ 定义强制刷新函数（用于首次打开悬浮窗时自动刷新）
     popup.forceRefreshSort = function() {
 
-      // ✅ 1️⃣ 打开悬浮窗时先强制按发布时间倒序刷新一次
       currentList = sortListBy(originalList, "posted", false);
 
-      // ✅ 2️⃣ 如果有用户记忆的排序（非默认），再叠加应用一次
       if (currentSort.key && currentSort.dir && currentSort.dir !== "none") {
         currentList = sortListBy(currentList, currentSort.key, currentSort.dir === "asc");
       }
@@ -1169,14 +1081,12 @@
 
     let popup = null;
     let cachedList = null;
-    let hasRefreshedOnce = false; // ✅ 全局标记：只刷新一次排序
+    let hasRefreshedOnce = false;
 
-    // ========== 改进版：访问详情页抓取语言 + 封面图 ==========
     async function fetchSimilarList() {
       if (cachedList) return cachedList;
 
       try {
-        // 1️⃣ 从 taglist 获取所有艺术家名（最终版，仅用 id 提取）
         const artistTagNames = [];
         document.querySelectorAll('#taglist a[href*="artist:"]').forEach(a => {
           const idAttr = a.id || "";
@@ -1189,14 +1099,11 @@
           }
         });
 
-        // 2️⃣ 从标题提取所有艺术家名
         const artistTitleNames = [];
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
-        // ✅ 清除末尾的 [xxx] 内容（例如 [中国翻訳]）
         titleFull = titleFull.replace(/\[[^\]]*\]$/g, "").trim();
 
-        // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
         let m = titleFull.match(/\[[^\]]*?\(([^)]+)\)\]/);
         if (m) {
           artistTitleNames.push(
@@ -1219,7 +1126,6 @@
           }
         }
 
-        // 3️⃣ 判断是否为合辑类（other:anthology / other:goudoushi）——仅用 id 提取
         const otherTags = [];
         document.querySelectorAll('#taglist a[href*="other:"]').forEach(a => {
           const idAttr = a.id || "";
@@ -1234,70 +1140,53 @@
 
         const isAnthology = otherTags.includes("anthology") || otherTags.includes("goudoushi");
 
-        // 4️⃣ 选择艺术家来源
         let finalArtists = [];
         console.log("🎨 获取的艺术家 (标签) =", artistTagNames);
         console.log("🎨 获取的艺术家 (标题) =", artistTitleNames);
 
         if (!isAnthology) {
           if (artistTagNames.length > 0) {
-            // ✅ 有标签艺术家 → 优先使用标签（精确匹配）
             finalArtists = artistTagNames.map(a => `artist:"${a}$"`);
           } else if (artistTitleNames.length > 0) {
-            // ✅ 否则使用标题艺术家（普通匹配）
             finalArtists = artistTitleNames.map(a => `"${a}"`);
           }
         } else {
-          // ✅ 合辑标签 → 仅使用标题搜索（不清理标题）
           console.log("🔸 检测到合辑标签，仅使用标题搜索");
         }
 
-        // ✅ 预处理标题（带系列搜索开关）
         const seriesSearchEnabled = (typeof GM_getValue === "function")
           ? GM_getValue("enableSeriesSearch", true)
           : true;
 
         let cleanTitle = "";
         if (extractTitle) {
-          // ✅ 不论是否开启系列搜索，都先去掉末尾【】说明
           extractTitle = extractTitle.replace(/【[^【】]+】\s*$/g, "");
         }
 
         if (!seriesSearchEnabled) {
-          // 🚫 关闭系列搜索 → 不做清理
           cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
           console.log("📚 系列作品搜索已关闭，使用原始标题:", cleanTitle);
         } else if (extractTitle) {
           if (!isAnthology) {
-            // ✅ 非合辑 → 清理标题
             cleanTitle = extractTitle
-              // ✅ 遇到第一个 ":"、"：" 或任意连接符（-、～、—、〜、~、―、﹣）立即截断后续内容
               .replace(/[:：\-~～—〜―﹣].*$/, "")
-              // ✅ 去掉末尾的各种章节/卷号标识
               .replace(/\s*(?:前編|中編|後編|前篇|中篇|後篇|前章|中章|後章|最終編|最終篇|最終話|最終章|最終巻|最終卷|上巻|中巻|下巻|上卷|中卷|下卷|総集編|総集篇|総集章|単行本版(?:[上下中前後]?(?:巻|卷|篇|編|章)?)?)\s*$/i, "")
-              // ✅ 删除空格到「篇 / 編 / 巻 / 卷 / 話 / 章」结尾的内容
               .replace(/\s+[^ ]*(?:篇|編|巻|卷|話|章)$/, "")
-              // ✅ 去掉末尾单独的 上 中 下 前 中 後
               .replace(/\s*[上下中前後]\s*$/i, "")
-              // ✅ 去掉带数字或罗马数字的卷号/章节号（含小数点版本）
               .replace(/\s*(?:第?\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|Vol\.?\s*(?:\d+(?:\.\d+)?(?:[\-~～—〜+]\d+(?:\.\d+)?)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第?\d+(?:\.\d+)?\s*(?:巻|卷|話|篇|編|章)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜―﹣+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
-              // ✅ 仅在末尾去除中点符号
               .replace(/[・･·•]+$/g, "")
               .trim();
           } else {
-            // ✅ 合辑 → 不清理标题
             cleanTitle = extractTitle.trim();
           }
         }
 
-        // ✅ 清理后若为空 → 回退原始标题
         if (!cleanTitle) cleanTitle = extractTitle || galleryTitleJP || galleryTitleEN || "";
 
         const allResults = [];
         const searchCombos = [];
-        let totalPages = 0; // 累计所有搜索组合的页数
+        let totalPages = 0;
 
-        // 🎨 生成搜索组合（多艺术家）
         if (finalArtists.length > 1) {
             for (const artist of finalArtists) {
                 searchCombos.push(`${artist} "${cleanTitle}"`);
@@ -1310,10 +1199,9 @@
 
         console.log("🧩 生成的搜索组合 =", searchCombos);
 
-        // 🔍 多次请求搜索结果并合并
         for (const [index, searchQuery] of searchCombos.entries()) {
             const searchURL =
-                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
+                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sfu=on&f_sft=on`;
             console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
 
             let page = 0;
@@ -1335,18 +1223,15 @@
                     const url = a.href;
                     if (!title) continue;
 
-                    // ✅ 排除当前画廊
                     const linkPath = new URL(url).pathname.replace(/\/$/, "");
                     const currentPath = window.location.pathname.replace(/\/$/, "");
                     if (linkPath === currentPath) continue;
 
-                    // ✅ 排除重复
                     if (allResults.some(x => x.url === url)) continue;
 
                     allResults.push({ title, url, language: "⏳ 加载中…" });
                 }
 
-                // ✅ 翻页
                 const nextAnchor = doc.querySelector('a[href*="&next="]');
                 if (nextAnchor) {
                     const href = nextAnchor.getAttribute("href");
@@ -1359,7 +1244,7 @@
                 await new Promise(r => setTimeout(r, 0));
             }
 
-            totalPages += page; // 累计页数
+            totalPages += page;
         }
 
         const list = allResults;
@@ -1370,11 +1255,9 @@
             const detailHtml = await detailRes.text();
             const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 
-            // 英文标题
             const engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
             if (engTitle) item.engTitle = engTitle;
 
-            // ✅ 获取封面图（#gd1 > div 背景图）
             const gd1Div = detailDoc.querySelector("#gd1 > div");
             if (gd1Div) {
               const bg = gd1Div.style.backgroundImage || "";
@@ -1382,38 +1265,32 @@
               if (match) item.cover = match[1];
             }
 
-            // ✅ 语言
             const langRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find((td) =>
               /语言|Language/i.test(td.textContent)
             );
             if (langRow) {
               const valueTd = langRow.nextElementSibling;
               let rawLang = valueTd?.textContent?.trim() || "";
-              // 直接删除 TR 和 RW
               const cleanLang = rawLang.replace(/\b(TR|RW)\b/gi, "").trim();
               item.language = cleanLang || "—";
             } else {
               item.language = "—";
             }
 
-            // 文件大小
             const sizeRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
               /File Size|文件大小/i.test(td.textContent)
             );
             item.fileSize = sizeRow?.nextElementSibling?.textContent?.trim() || "—";
 
-            // 页数
             const lenRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find(td =>
               /Length|页数/i.test(td.textContent)
             );
             const match = lenRow?.nextElementSibling?.textContent.match(/\d+/);
             item.pages = match ? parseInt(match[0]) : "—";
 
-            // 发布时间
             const dateRow = [...detailDoc.querySelectorAll("#gdd .gdt1")].find((td) =>
               /Posted|发布于/i.test(td.textContent)
             );
-            // ✅ 发布时间：只取日期部分（YYYY-MM-DD）
             const rawDate = dateRow?.nextElementSibling?.textContent?.trim() || "—";
             item.posted = rawDate.match(/\d{4}-\d{2}-\d{2}/)?.[0] || rawDate;
 
@@ -1426,18 +1303,9 @@
 
         cachedList = await Promise.all(promises);
 
-        // ✅ 过滤语言
-        const allowedLangs = ["chinese", "japanese", "english", "korean"];
-        cachedList = cachedList.filter(item =>
-          allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
-        );
-
-        // ✅ 在过滤完成后再统计最终显示条数
         console.log(`✅ 搜索抓取完毕：共 ${cachedList.length} 条（${totalPages} 页）`);
 
-      // ========== ✅ 检查是否为漫画并追加标题末尾括号搜索 ==========
       try {
-        // 如果没有 GM_getValue（比如运行环境不支持），默认视为启用
         const extraSearchEnabled = (typeof GM_getValue === "function")
           ? GM_getValue("enableExtraSearch", true)
           : true;
@@ -1456,7 +1324,7 @@
               console.log("📖 附加搜索关键词 =", quotedKeyword);
 
               let page = 0;
-              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
+              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sfu=on&f_sft=on`;
               const tempList = [];
               const MAX_PAGES = Infinity;
 
@@ -1474,7 +1342,7 @@
                   const title = a.textContent.trim();
                   const url = a.href;
                   const linkPath = new URL(url).pathname.replace(/\/$/, "");
-                  if (linkPath === window.location.pathname.replace(/\/$/, "")) continue; // 🚫 排除当前画廊
+                  if (linkPath === window.location.pathname.replace(/\/$/, "")) continue;
                   if (tempList.some(x => x.url === url)) continue;
                   tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
                 }
@@ -1494,7 +1362,6 @@
               if (!tempList.length) {
                 showToast(`⚠ 未找到 ${extraKeyword} 相关画廊`);
               } else {
-                // 静默抓取详情并合并
                 const promises = tempList.map(async item => {
                   try {
                     const detailRes = await fetch(item.url);
@@ -1543,11 +1410,6 @@
                 });
 
                 let extraList = await Promise.all(promises);
-                const allowedLangs = ["chinese", "japanese", "english", "korean"];
-                extraList = extraList.filter(item =>
-                  allowedLangs.some(lang => item.language?.toLowerCase().includes(lang))
-                );
-
                 console.log(`✅ 附加搜索抓取完毕：共 ${extraList.length} 条（${page} 页）`);
 
                 const allList = [...cachedList, ...extraList];
@@ -1559,11 +1421,10 @@
                   return true;
                 });
 
-                // ✅ 全局按发布时间统一排序（主搜索 + 附加搜索）
                 cachedList.sort((a, b) => {
                   const da = new Date(a.posted).getTime() || 0;
                   const db = new Date(b.posted).getTime() || 0;
-                  return db - da; // 最新的排最前
+                  return db - da;
                 });
               }
             }
@@ -1582,9 +1443,8 @@
       }
     }
 
-    // ========== ✅ 新版：进入页面自动加载 + 加载完成后才允许显示悬浮窗 ==========
     let hideTimer = null;
-    let isLoaded = false; // ✅ 标记是否已加载完相似画廊
+    let isLoaded = false;
 
     function removePopup() {
       if (popup && popup.parentNode) {
@@ -1593,7 +1453,6 @@
       }
       clearTimeout(hideTimer);
 
-      // ✅ 恢复被隐藏的收藏备注按钮
       document.querySelectorAll(".favnote[data-_exhy_hidden='1'], .editor[data-_exhy_hidden='1']").forEach(e => {
         e.style.display = "";
         delete e.dataset._exhy_hidden;
@@ -1609,15 +1468,13 @@
       clearTimeout(hideTimer);
     }
 
-    // ✅ 进入页面时立即加载相似画廊（只执行一次）
     (async function preloadSimilarList() {
 
-      // ✅ 新增：只在特定类别启用搜索
       const categoryDiv = document.querySelector("#gdc .cs");
-      if (!categoryDiv) return; // 找不到类别 → 不执行
+      if (!categoryDiv) return;
       const allowedCats = ["ct0", "ct2", "ct3", "ct9"]; // 私有 / 同人志 / 漫画 / 无H
       const isAllowed = allowedCats.some(c => categoryDiv.classList.contains(c));
-      if (!isAllowed) return; // 不在允许类别 → 不执行
+      if (!isAllowed) return;
 
       showToast("⏳ 正在搜索相似画廊…");
 
@@ -1632,25 +1489,21 @@
       }
     })();
 
-    // ✅ 鼠标悬浮时（仅加载完成后才显示）
     similarLink.addEventListener("mouseenter", async () => {
       cancelClosePopup();
 
       if (!isLoaded || !cachedList) return;
 
-      removePopup(); // 防叠加
+      removePopup();
 
       popup = createPopup(cachedList);
 
-      // ✅ 首次打开悬浮窗时自动执行强制刷新排序（只执行一次）
       requestAnimationFrame(() => {
         if (popup && typeof popup.forceRefreshSort === "function") {
           popup.forceRefreshSort();
-          // console.log("🔄 搜索完成后强制刷新排序完成");
         }
       });
 
-      // ✅ 仅隐藏被悬浮窗实际遮挡的收藏按钮
       requestAnimationFrame(() => {
         popup.style.opacity = "1";
 
@@ -1672,15 +1525,14 @@
         });
       });
 
-      // ✅ 仿照脚本二 (#btList) 的定位方式 —— 靠左展开
       const parentBox = similarLink.closest(".g2") || similarLink.parentElement || document.body;
-      parentBox.style.position = "relative"; // 作为定位参考
+      parentBox.style.position = "relative";
       parentBox.style.overflow = "visible";
 
       popup.style.position = "absolute";
       popup.style.top = "70%";
       popup.style.right = "10%";
-      popup.style.marginRight = "8px"; // 按钮与浮窗间距
+      popup.style.marginRight = "8px";
       popup.style.zIndex = "9999";
       popup.style.display = "block";
       popup.style.opacity = "0";
@@ -1695,30 +1547,22 @@
         popup.style.opacity = "1";
       });
 
-      // ✅ 悬浮保持
       popup.addEventListener("mouseenter", cancelClosePopup);
       popup.addEventListener("mouseleave", () => scheduleClosePopup(150));
     });
 
-    // 鼠标离开相似画廊按钮 → 延迟关闭
     similarLink.addEventListener("mouseleave", () => scheduleClosePopup(250));
 
-    // 点击空白处关闭
     document.addEventListener("click", (e) => {
       if (popup && !popup.contains(e.target) && e.target !== similarLink) {
         removePopup();
       }
     });
 
-    // 滚动或页面卸载时关闭
-    // ["scroll", "beforeunload"].forEach((ev) =>
-    //   window.addEventListener(ev, removePopup)
-    // );
     window.addEventListener("beforeunload", removePopup);
 
   })();
 
-  // 第二行：TAG-ALL / TAG-PAS
   const row2 = document.createElement("p");
   row2.className = "g2";
   const img2 = document.createElement("img");
@@ -1734,17 +1578,13 @@
     addLink({ text: "TAG-ALL", onClick: () => start(), title: "导入所有标签" })
   );
 
-  // 添加到侧边栏
   sideBar.appendChild(row1);
   sideBar.appendChild(row2);
 
-  // ================== 删除多余按钮（Load Comic + 多页查看器） ==================
   if (GM_getValue("enableDelExtraBtns", true)) {
-    // 删除 MPV 按钮
     const mpvBtn = sideBar.querySelector('p a[href*="/mpv/"]');
     mpvBtn?.closest('p')?.remove();
 
-    // 删除 Load Comic 按钮
     function removeLoadComicNodes(root) {
       const anchors = (root || document).querySelectorAll('p.g2.gsp a, p.g2 a');
       anchors.forEach((a) => {
@@ -1767,19 +1607,16 @@
       });
     }
 
-    // 初次清理一次
     removeLoadComicNodes(sideBar);
 
-    // 动态监听（5秒后自动断开）
     const observer = new MutationObserver(() => removeLoadComicNodes(sideBar));
     observer.observe(sideBar, { childList: true, subtree: true });
     setTimeout(() => observer.disconnect(), 5000);
   }
 
-  // ================== 移除 newtagfield 的 maxlength 限制 ==================
   const tagField = document.getElementById("newtagfield");
   if (tagField) {
-    tagField.removeAttribute("maxlength"); // 移除 maxlength
+    tagField.removeAttribute("maxlength");
   }
 
 })();

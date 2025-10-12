@@ -191,6 +191,20 @@
     });
   })();
 
+  async function fetchWithRetry(url, retries = 3, delay = 200) {
+      for (let i = 0; i <= retries; i++) {
+          try {
+              const res = await fetch(url);
+              if (res.ok) return res;
+              else throw new Error(`HTTP ${res.status}`);
+          } catch (e) {
+              if (i === retries) throw e;
+              console.warn(`请求失败 ${url}，重试中...(${i + 1}/${retries})`);
+              await new Promise(r => setTimeout(r, delay));
+          }
+      }
+  }
+
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
   var prompt_map = {
     "zh-CN": "请输入要导入tag的画廊地址",
@@ -1202,7 +1216,7 @@
                 `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sft=on`;
             console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
 
-            let nextURL = searchURL; // 第1页
+            let nextURL = searchURL;
             const MAX_PAGES = Infinity;
             let page = 0;
 
@@ -1210,7 +1224,6 @@
                 const res = await fetch(nextURL);
                 const html = await res.text();
                 const doc = new DOMParser().parseFromString(html, "text/html");
-
                 const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
                 if (!blocks.length) break;
 
@@ -1250,7 +1263,7 @@
 
         const promises = list.map(async (item) => {
           try {
-            const detailRes = await fetch(item.url);
+            const detailRes = await fetchWithRetry(item.url);
             const detailHtml = await detailRes.text();
             const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 
@@ -1364,7 +1377,7 @@
               } else {
                 const promises = tempList.map(async item => {
                   try {
-                    const detailRes = await fetch(item.url);
+                    const detailRes = await fetchWithRetry(item.url);
                     const detailHtml = await detailRes.text();
                     const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 

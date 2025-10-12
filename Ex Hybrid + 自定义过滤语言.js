@@ -212,6 +212,21 @@
     });
   })();
 
+  // ====== fetch 重试函数 ======
+  async function fetchWithRetry(url, retries = 3, delay = 200) {
+      for (let i = 0; i <= retries; i++) {
+          try {
+              const res = await fetch(url);
+              if (res.ok) return res; // 成功直接返回
+              else throw new Error(`HTTP ${res.status}`);
+          } catch (e) {
+              if (i === retries) throw e; // 最后一次失败抛出
+              console.warn(`请求失败 ${url}，重试中...(${i + 1}/${retries})`);
+              await new Promise(r => setTimeout(r, delay));
+          }
+      }
+  }
+
   // =============== 脚本一核心函数 ===============
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
   var prompt_map = {
@@ -1314,12 +1329,11 @@
                 `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sfl=on&f_sfu=on&f_sft=on`;
             console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
 
-            let page = 0;
             let nextURL = searchURL;
-            const MAX_RESULTS = Infinity;
             const MAX_PAGES = Infinity;
+            let page = 0;
 
-            while (allResults.length < MAX_RESULTS && page < MAX_PAGES && nextURL) {
+            while (nextURL && page < MAX_PAGES) {
                 const res = await fetch(nextURL);
                 const html = await res.text();
                 const doc = new DOMParser().parseFromString(html, "text/html");
@@ -1344,27 +1358,27 @@
                     allResults.push({ title, url, language: "⏳ 加载中…" });
                 }
 
-                // ✅ 翻页
-                const nextAnchor = doc.querySelector('a[href*="&next="]');
-                if (nextAnchor) {
-                    const href = nextAnchor.getAttribute("href");
-                    nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
+                const nextAnchor = doc.querySelector("#unext");
+                if (nextAnchor && nextAnchor.tagName.toLowerCase() === "a") {
+                    nextURL = nextAnchor.href;
+                    console.log("➡ 翻页搜索 URL:", nextURL);
                 } else {
                     nextURL = null;
+                    console.log("➡ 已到最后一页，无下一页 URL");
                 }
 
                 page++;
                 await new Promise(r => setTimeout(r, 0));
             }
 
-            totalPages += page; // 累计页数
+            totalPages += page;
         }
 
         const list = allResults;
 
         const promises = list.map(async (item) => {
           try {
-            const detailRes = await fetch(item.url);
+            const detailRes = await fetchWithRetry(item.url);
             const detailHtml = await detailRes.text();
             const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 
@@ -1458,35 +1472,36 @@
               const tempList = [];
               const MAX_PAGES = Infinity;
 
-              while (page < MAX_PAGES && nextURL) {
-                const res = await fetch(nextURL);
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, "text/html");
+              while (nextURL && page < MAX_PAGES) {
+                  const res = await fetch(nextURL);
+                  const html = await res.text();
+                  const doc = new DOMParser().parseFromString(html, "text/html");
 
-                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
-                if (!blocks.length) break;
+                  const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                  if (!blocks.length) break;
 
-                for (const b of blocks) {
-                  const a = b.querySelector("a");
-                  if (!a) continue;
-                  const title = a.textContent.trim();
-                  const url = a.href;
-                  const linkPath = new URL(url).pathname.replace(/\/$/, "");
-                  if (linkPath === window.location.pathname.replace(/\/$/, "")) continue; // 🚫 排除当前画廊
-                  if (tempList.some(x => x.url === url)) continue;
-                  tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
-                }
+                  for (const b of blocks) {
+                      const a = b.querySelector("a");
+                      if (!a) continue;
+                      const title = a.textContent.trim();
+                      const url = a.href;
+                      const linkPath = new URL(url).pathname.replace(/\/$/, "");
+                      if (linkPath === window.location.pathname.replace(/\/$/, "")) continue;
+                      if (tempList.some(x => x.url === url)) continue;
+                      tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
+                  }
 
-                const nextAnchor = doc.querySelector('a[href*="&next="]');
-                if (nextAnchor) {
-                  const href = nextAnchor.getAttribute("href");
-                  nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
-                } else {
-                  nextURL = null;
-                }
+                  const nextAnchor = doc.querySelector("#unext");
+                  if (nextAnchor && nextAnchor.tagName.toLowerCase() === "a") {
+                      nextURL = nextAnchor.href;
+                      console.log("➡ 附加搜索下一页 URL:", nextURL);
+                  } else {
+                      nextURL = null;
+                      console.log("➡ 附加搜索已到最后一页");
+                  }
 
-                page++;
-                await new Promise(r => setTimeout(r, 0));
+                  page++;
+                  await new Promise(r => setTimeout(r, 0));
               }
 
               if (!tempList.length) {
@@ -1495,7 +1510,7 @@
                 // 静默抓取详情并合并
                 const promises = tempList.map(async item => {
                   try {
-                    const detailRes = await fetch(item.url);
+                    const detailRes = await fetchWithRetry(item.url);
                     const detailHtml = await detailRes.text();
                     const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 

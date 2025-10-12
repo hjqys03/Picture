@@ -811,9 +811,7 @@
           turkish: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI2QyMmYyNyIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSIjZmZmIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTQwLjY0IDMzLjA1bDMuMDUyIDQuMDE5LTQuOTM0LTEuNTMyIDQuOTMyLTEuNTQxLTMuMDQ2IDQuMDI1LS4wMDQtNC45NzJNMzEuMjkgNDQuNjRhOC42NDMgOC42NDMgMCAxIDEgMy45NTgtMTYuMzQgMTEgMTEgMCAxIDAgMCAxNS4zOCA4LjcxNSA4LjcxNSAwIDAgMS0zLjk1OC45NXoiLz48Zz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNSAxN2g2MnYzOEg1eiIvPjwvZz48L3N2Zz4=",
           ukrainian: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzYxYjJlNCIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSIjZmNlYTJiIiBkPSJNNSAzNmg2MnYxOUg1eiIvPjxnPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01IDE3aDYydjM4SDV6Ii8+PC9nPjwvc3ZnPg==",
           vietnamese: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI2QyMmYyNyIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSIjZjFiMzFjIiBzdHJva2U9IiNmMWIzMWMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTI4Ljg5IDQ3bDcuMzAzLTIyIDYuMjk1IDIxLjY2M0wyNSAzMy42MWwyMi0uNTQzTDI4Ljg5IDQ3eiIvPjxnPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01IDE3aDYydjM4SDV6Ii8+PC9nPjwvc3ZnPg==",
-          speechless: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzYiIGN5PSIzNS44IiByPSIyMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkNFQTJCIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMS44Ii8+PHBhdGggZmlsbD0iI0ZDRUEyQiIgZD0iTTQ2LjggNTYuM2MxMS4zLTYgMTUuNy0yMC4yIDkuNy0zMS41cy0yMC0xNS41LTMxLjMtOS41LTE1LjUgMjAtOS41IDMxLjNjMi4zIDQuMiA1LjggNy43IDEwLjEgOS44IDAgMS42LjcgMy4yIDEuOCA0LjQgMS40IDEuNiA4LjUgMy4zIDEyLjItLjIgMS4xLTEgNy4zLTQuMiA3LTQuM3oiLz48Zz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNTEuNSA1Mi44YzkuNC04LjYgMTAuMS0yMy4xIDEuNS0zMi41cy0yMy4xLTEwLjEtMzIuNS0xLjVTMTAuNCA0MS45IDE5IDUxLjNjLjkuOSAxLjggMS44IDIuOCAyLjYiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNMjEuNCAyMy42Yy43LTEuNCAxLjktMi40IDMuMy0yLjkgMS4zLS43IDIuOS0uOCA0LjMtLjRNNTAuNyAyMy42Yy0xLjUtMi43LTQuNi00LTcuNi0zLjNNMzQgNDEuNWMtMS40LS4yLTIuOC0uNy00LTEuNU00Mi4xIDQwYy0xLjMuNy0yLjcgMS4yLTQuMiAxLjVNMzcuOCAzOC42YzAtMS0uOS0xLjktMS45LTEuOXMtMS45LjktMS45IDEuOU0zNCA0Ny40di04LjhNMzcuOCAzOC42djguOSIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik0zNy4yIDQ3LjRjMS43IDAgMyAxLjMgMyAzdjEuOGg0LjFjMS4zLS4xIDIuNS43IDIuOCAycy0uMyAyLjYtMS40IDMuMmMtLjUuMy0xLjEuNi0xLjYuOS0yIDEuMS00LjEgMi4yLTYuMiAzLjMtMS45IDEtNCAxLjQtNi4xIDEtMy42LS42LTYtNC01LjQtNy43LjItMS41LjUtMyAxLTQuNC42LTEuOCAyLjMtMy4xIDQuMi0zLjFoNS42eiIvPjxwYXRoIGQ9Ik0zMCAyNy44YzAgMS43LTEuMyAzLTMgM3MtMy0xLjMtMy0zIDEuMy0zIDMtM2MxLjYgMCAzIDEuMyAzIDIuOXYuMU00OCAyNy44YzAgMS43LTEuMyAzLTMgM3MtMy0xLjMtMy0zIDEuMy0zIDMtM2MxLjYgMCAzIDEuMyAzIDIuOXYuMSIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTM2LjIgNTEuOGMtMS4zIDAtMiAuNy0yLjUgMS41LS42LjkgMCAyLjIgMSAyLjJIMzljLjcgMCAxLjItLjYgMS4yLTEuNFY1Mi4yIi8+PC9nPjwvc3ZnPg==",
-          text_cleaned: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik01OS4wMzUgNjBoLTQ2LjA3YS45NjguOTY4IDAgMCAxLS45NjUtLjk2NXYtNDYuMDdhLjk2OC45NjggMCAwIDEgLjk2NS0uOTY1aDQ2LjA3YS45NjguOTY4IDAgMCAxIC45NjUuOTY1djQ2LjA3YS45NjguOTY4IDAgMCAxLS45NjUuOTY1eiIvPjxwYXRoIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZD0iTTMyLjA3IDQyLjU3OGE1LjMxNCA1LjMxNCAwIDAgMS0zLjUzOCAxLjM0MyA1LjMzNCA1LjMzNCAwIDAgMS01LjMzNC01LjMzNHYtNC4yNjhhNS4zMzQgNS4zMzQgMCAwIDEgNS4zMzQtNS4zMzQgNS4zMTMgNS4zMTMgMCAwIDEgMy41MzggMS4zNDNNNDIuNDAxIDI5LjA0OXYxNC45MzZoNi40MDEiLz48L2c+PHBhdGggZmlsbD0iI2QyMmYyNyIgZD0iTTU5LjAzNSA2MC40NTNoLTQ2LjA3YS45NjguOTY4IDAgMCAxLS45NjUtLjk2NXYtNDYuMDdhLjk2OC45NjggMCAwIDEgLjk2NS0uOTY1aDQ2LjA3YS45NjguOTY4IDAgMCAxIC45NjUuOTY1djQ2LjA3YS45NjguOTY4IDAgMCAxLS45NjUuOTY1eiIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNNTkuMDM1IDYwaC00Ni4wN2EuOTY4Ljk2OCAwIDAgMS0uOTY1LS45NjV2LTQ2LjA3YS45NjguOTY4IDAgMCAxIC45NjUtLjk2NWg0Ni4wN2EuOTY4Ljk2OCAwIDAgMSAuOTY1Ljk2NXY0Ni4wN2EuOTY4Ljk2OCAwIDAgMS0uOTY1Ljk2NXoiLz48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIGQ9Ik0zMi4wNyA0Mi41NzhhNS4zMTQgNS4zMTQgMCAwIDEtMy41MzggMS4zNDMgNS4zMzQgNS4zMzQgMCAwIDEtNS4zMzQtNS4zMzR2LTQuMjY4YTUuMzM0IDUuMzM0IDAgMCAxIDUuMzM0LTUuMzM0IDUuMzEzIDUuMzEzIDAgMCAxIDMuNTM4IDEuMzQzTTQyLjQwMSAyOS4wNDl2MTQuOTM2aDYuNDAxIi8+PC9nPjwvc3ZnPg==",
-          rewrite: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTE2LjQwNSAxMS4zNzhINTUuOTd2NDkuMDY2SDE2LjQwNXoiLz48cGF0aCBmaWxsPSIjZjRhYTQxIiBkPSJNMzkuOTMxIDQwLjIyMmwxMS4yOTQtMTEuMjk0IDcuMzc2IDcuMzc2LTExLjE5OCAxMS4xOTgiLz48cGF0aCBmaWxsPSIjYTU3OTM5IiBkPSJNMzcuOTQxIDQ2LjgxOWwxLjk2MS01LjY0OSA2LjQ1NCA2LjQ1NC01LjY0OCAxLjk2Ii8+PHBhdGggZmlsbD0iI0VBNUE0NyIgZD0iTTU0LjYwOSAyNS4wNTJsMy45NzgtMy45NzkgNy44NTkgNy44NTktMy45NDUgMy45NDUiLz48cGF0aCBmaWxsPSIjZDBjZmNlIiBkPSJNNTAuNDk0IDI5LjY2bDQuNjA4LTQuNjA4IDcuMzc1IDcuMzc1LTQuNTY4IDQuNTY5Ii8+PGc+PHBhdGggZD0iTTM4LjA3IDQ3LjE5MWwyLjM4NiAyLjM4Ni0zLjQ2NCAxLjI4eiIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTIyLjMyMiAxOS44NzVoMjdNMjIuMzIyIDI3Ljg3NWgyNS42TTIyLjMyMiAzNS44NzVoMTcuMTA5TTIyLjMyMiA0My44NzVoMTIuMjA2TTIyLjMyMiA1MS44NzVoMTAuMTQ2Ii8+PHBhdGggZD0iTTM4LjA3IDQ3LjE5MWwyLjM4NiAyLjM4Ni0zLjQ2NCAxLjI4eiIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTQwLjY5MiA0OS41OTFsNS42NjQtMS45NjcgMTUuNTktMTUuNTktNi40NTQtNi40NTQtMTUuNTkgMTUuNTktMS45NzQgNS42NzF6TTU4LjA4NiAyMi45ODZsMS41NTUtMS41NTUgNi40NTQgNi40NTQtMS42MzIgMS42MzJNNDAuMjc5IDQwLjc5M2w2LjQ1NCA2LjQ1NCIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTM3LjkzMiA0Ni44MjhsLTEuMzgzIDQuMTQ5IDQuMTU5LTEuMzkyTTUxLjMwMiAzMC4xNTdsNi4yMDIgNi4yMDIiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjIuMDIxIiBkPSJNNTUuMzIyIDQ0LjIyOHYxNS42NDdoLTM5di00OGgzOXY4LjQ1NiIvPjwvZz48L3N2Zz4=",
+          "N/A": "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzYiIGN5PSIzNS44IiByPSIyMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkNFQTJCIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMS44Ii8+PHBhdGggZmlsbD0iI0ZDRUEyQiIgZD0iTTQ2LjggNTYuM2MxMS4zLTYgMTUuNy0yMC4yIDkuNy0zMS41cy0yMC0xNS41LTMxLjMtOS41LTE1LjUgMjAtOS41IDMxLjNjMi4zIDQuMiA1LjggNy43IDEwLjEgOS44IDAgMS42LjcgMy4yIDEuOCA0LjQgMS40IDEuNiA4LjUgMy4zIDEyLjItLjIgMS4xLTEgNy4zLTQuMiA3LTQuM3oiLz48Zz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNTEuNSA1Mi44YzkuNC04LjYgMTAuMS0yMy4xIDEuNS0zMi41cy0yMy4xLTEwLjEtMzIuNS0xLjVTMTAuNCA0MS45IDE5IDUxLjNjLjkuOSAxLjggMS44IDIuOCAyLjYiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNMjEuNCAyMy42Yy43LTEuNCAxLjktMi40IDMuMy0yLjkgMS4zLS43IDIuOS0uOCA0LjMtLjRNNTAuNyAyMy42Yy0xLjUtMi43LTQuNi00LTcuNi0zLjNNMzQgNDEuNWMtMS40LS4yLTIuOC0uNy00LTEuNU00Mi4xIDQwYy0xLjMuNy0yLjcgMS4yLTQuMiAxLjVNMzcuOCAzOC42YzAtMS0uOS0xLjktMS45LTEuOXMtMS45LjktMS45IDEuOU0zNCA0Ny40di04LjhNMzcuOCAzOC42djguOSIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLW1pdGVybGltaXQ9IjEwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik0zNy4yIDQ3LjRjMS43IDAgMyAxLjMgMyAzdjEuOGg0LjFjMS4zLS4xIDIuNS43IDIuOCAycy0uMyAyLjYtMS40IDMuMmMtLjUuMy0xLjEuNi0xLjYuOS0yIDEuMS00LjEgMi4yLTYuMiAzLjMtMS45IDEtNCAxLjQtNi4xIDEtMy42LS42LTYtNC01LjQtNy43LjItMS41LjUtMyAxLTQuNC42LTEuOCAyLjMtMy4xIDQuMi0zLjFoNS42eiIvPjxwYXRoIGQ9Ik0zMCAyNy44YzAgMS43LTEuMyAzLTMgM3MtMy0xLjMtMy0zIDEuMy0zIDMtM2MxLjYgMCAzIDEuMyAzIDIuOXYuMU00OCAyNy44YzAgMS43LTEuMyAzLTMgM3MtMy0xLjMtMy0zIDEuMy0zIDMtM2MxLjYgMCAzIDEuMyAzIDIuOXYuMSIvPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTM2LjIgNTEuOGMtMS4zIDAtMiAuNy0yLjUgMS41LS42LjkgMCAyLjIgMSAyLjJIMzljLjcgMCAxLjItLjYgMS4yLTEuNFY1Mi4yIi8+PC9nPjwvc3ZnPg==",
           unknown: "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNzIgNzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTUgMTdoNjJ2MzhINXoiLz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJNNSAxN2g2MnYzOEg1eiIvPjwvc3ZnPg==",
         };
 
@@ -1170,10 +1168,10 @@
           if (!isAnthology) {
             cleanTitle = extractTitle
               .replace(/[:：\-~～—〜―﹣].*$/, "")
+              .replace(/\s*(?:#?\d+(?:\.\d+)?|第?\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|Vol\.?\s*(?:\d+(?:\.\d+)?(?:[\-~～—〜+]\d+(?:\.\d+)?)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第?\d+(?:\.\d+)?\s*(?:巻|卷|話|篇|編|章)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜―﹣+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
               .replace(/\s*(?:前編|中編|後編|前篇|中篇|後篇|前章|中章|後章|最終編|最終篇|最終話|最終章|最終巻|最終卷|上巻|中巻|下巻|上卷|中卷|下卷|総集編|総集篇|総集章|単行本版(?:[上下中前後]?(?:巻|卷|篇|編|章)?)?)\s*$/i, "")
               .replace(/\s+[^ ]*(?:篇|編|巻|卷|話|章)$/, "")
               .replace(/\s*[上下中前後]\s*$/i, "")
-              .replace(/\s*(?:第?\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|Vol\.?\s*(?:\d+(?:\.\d+)?(?:[\-~～—〜+]\d+(?:\.\d+)?)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|\d+(?:\.\d+)?[\-~～—〜―﹣+]\d+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第?\d+(?:\.\d+)?\s*(?:巻|卷|話|篇|編|章)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜―﹣+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)\s*$/i, "")
               .replace(/[・･·•]+$/g, "")
               .trim();
           } else {
@@ -1201,18 +1199,18 @@
 
         for (const [index, searchQuery] of searchCombos.entries()) {
             const searchURL =
-                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sfu=on&f_sft=on`;
+                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sft=on`;
             console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
 
-            let page = 0;
-            let nextURL = searchURL;
-            const MAX_RESULTS = Infinity;
+            let nextURL = searchURL; // 第1页
             const MAX_PAGES = Infinity;
+            let page = 0;
 
-            while (allResults.length < MAX_RESULTS && page < MAX_PAGES && nextURL) {
+            while (nextURL && page < MAX_PAGES) {
                 const res = await fetch(nextURL);
                 const html = await res.text();
                 const doc = new DOMParser().parseFromString(html, "text/html");
+
                 const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
                 if (!blocks.length) break;
 
@@ -1232,12 +1230,13 @@
                     allResults.push({ title, url, language: "⏳ 加载中…" });
                 }
 
-                const nextAnchor = doc.querySelector('a[href*="&next="]');
-                if (nextAnchor) {
-                    const href = nextAnchor.getAttribute("href");
-                    nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
+                const nextAnchor = doc.querySelector("#unext");
+                if (nextAnchor && nextAnchor.tagName.toLowerCase() === "a") {
+                    nextURL = nextAnchor.href;
+                    console.log("➡ 翻页搜索 URL:", nextURL);
                 } else {
                     nextURL = null;
+                    console.log("➡ 已到最后一页，无下一页 URL");
                 }
 
                 page++;
@@ -1324,39 +1323,40 @@
               console.log("📖 附加搜索关键词 =", quotedKeyword);
 
               let page = 0;
-              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sfu=on&f_sft=on`;
+              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sft=on`;
               const tempList = [];
               const MAX_PAGES = Infinity;
 
-              while (page < MAX_PAGES && nextURL) {
-                const res = await fetch(nextURL);
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, "text/html");
+              while (nextURL && page < MAX_PAGES) {
+                  const res = await fetch(nextURL);
+                  const html = await res.text();
+                  const doc = new DOMParser().parseFromString(html, "text/html");
 
-                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
-                if (!blocks.length) break;
+                  const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                  if (!blocks.length) break;
 
-                for (const b of blocks) {
-                  const a = b.querySelector("a");
-                  if (!a) continue;
-                  const title = a.textContent.trim();
-                  const url = a.href;
-                  const linkPath = new URL(url).pathname.replace(/\/$/, "");
-                  if (linkPath === window.location.pathname.replace(/\/$/, "")) continue;
-                  if (tempList.some(x => x.url === url)) continue;
-                  tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
-                }
+                  for (const b of blocks) {
+                      const a = b.querySelector("a");
+                      if (!a) continue;
+                      const title = a.textContent.trim();
+                      const url = a.href;
+                      const linkPath = new URL(url).pathname.replace(/\/$/, "");
+                      if (linkPath === window.location.pathname.replace(/\/$/, "")) continue;
+                      if (tempList.some(x => x.url === url)) continue;
+                      tempList.push({ title, url, language: "⏳ 加载中…", from: `🔹 ${extraKeyword}` });
+                  }
 
-                const nextAnchor = doc.querySelector('a[href*="&next="]');
-                if (nextAnchor) {
-                  const href = nextAnchor.getAttribute("href");
-                  nextURL = href.startsWith("http") ? href : new URL(href, location.origin).href;
-                } else {
-                  nextURL = null;
-                }
+                  const nextAnchor = doc.querySelector("#unext");
+                  if (nextAnchor && nextAnchor.tagName.toLowerCase() === "a") {
+                      nextURL = nextAnchor.href;
+                      console.log("➡ 附加搜索下一页 URL:", nextURL);
+                  } else {
+                      nextURL = null;
+                      console.log("➡ 附加搜索已到最后一页");
+                  }
 
-                page++;
-                await new Promise(r => setTimeout(r, 0));
+                  page++;
+                  await new Promise(r => setTimeout(r, 0));
               }
 
               if (!tempList.length) {
@@ -1410,6 +1410,7 @@
                 });
 
                 let extraList = await Promise.all(promises);
+
                 console.log(`✅ 附加搜索抓取完毕：共 ${extraList.length} 条（${page} 页）`);
 
                 const allList = [...cachedList, ...extraList];

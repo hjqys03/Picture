@@ -1172,8 +1172,7 @@
 
         let cleanTitle = "";
         if (extractTitle) {
-          extractTitle = extractTitle.replace(/^【[^【】]+】\s*|\s*【[^【】]+】$/g, "");
-          extractTitle = extractTitle.replace(/^[（(][^（）()]+[）)]\s*|\s*[（(][^（）()]+[）)]$/g, "");
+          extractTitle = extractTitle.replace(/^[（(【][^（）()【】]+[）)】]\s*|\s*[（(【][^（）()【】]+[）)】]$/g, "");
         }
 
         if (!seriesSearchEnabled) {
@@ -1192,6 +1191,7 @@
               .replace(/第[一二三四五六七八九十]+(?:話|章|巻|卷|篇|編)/gi, "")
               .replace(/\s+[^ ]*(?:篇|編|巻|卷|話|章|版)$/, "")
               .replace(/\s*[上下中前後]\s*$/i, "")
+              .replace(/\s[\S]{1,3}$/i, "")
               .replace(/^[・･·•]+|[・･·•]+$/g, "")
               .trim();
           } else {
@@ -1219,7 +1219,7 @@
 
         for (const [index, searchQuery] of searchCombos.entries()) {
             const searchURL =
-                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}&advsearch=1&f_sft=on`;
+                `/?f_search=${encodeURIComponent(searchQuery).replace(/%20/g, '+')}`;
             console.log(`🔎 [${index + 1}/${searchCombos.length}] 搜索 URL =`, searchURL);
 
             let nextURL = searchURL;
@@ -1342,7 +1342,7 @@
               console.log("📖 附加搜索关键词 =", quotedKeyword);
 
               let page = 0;
-              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}&advsearch=1&f_sft=on`;
+              let nextURL = `/?f_search=${encodeURIComponent('"' + extraKeyword + '"')}`;
               const tempList = [];
               const MAX_PAGES = Infinity;
 

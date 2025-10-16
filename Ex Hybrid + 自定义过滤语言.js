@@ -1273,10 +1273,8 @@
         let cleanTitle = "";
         if (extractTitle) {
           // ✅ 不论是否开启系列搜索
-          // ✅ 去掉开头或结尾的【】包裹内容
-          extractTitle = extractTitle.replace(/^【[^【】]+】\s*|\s*【[^【】]+】$/g, "");
-          // ✅ 去掉开头或结尾的（）或()包裹的内容
-          extractTitle = extractTitle.replace(/^[（(][^（）()]+[）)]\s*|\s*[（(][^（）()]+[）)]$/g, "");
+          // ✅ 去掉开头或结尾的【】、（）或()包裹内容
+          extractTitle = extractTitle.replace(/^[（(【][^（）()【】]+[）)】]\s*|\s*[（(【][^（）()【】]+[）)】]$/g, "");
         }
 
         if (!seriesSearchEnabled) {
@@ -1307,6 +1305,8 @@
               .replace(/\s+[^ ]*(?:篇|編|巻|卷|話|章|版)$/, "")
               // ✅ 去掉末尾单独的 上 中 下 前 中 後
               .replace(/\s*[上下中前後]\s*$/i, "")
+              // ✅ 如果标题末尾有一个空格，后面是 1～3 个字符（任意文字），就把那部分删掉。
+              .replace(/\s[\S]{1,3}$/i, "")
               // ✅ 去掉开头或结尾的中点符号
               .replace(/^[・･·•]+|[・･·•]+$/g, "")
               .trim();

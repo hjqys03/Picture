@@ -1222,7 +1222,7 @@
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
         // ✅ 清除开头的 (xxx) 内容（例如 (C102)）
-        titleFull = titleFull.replace(/^(?:\([^)]*\)\s*)+/, "");
+        titleFull = titleFull.replace(/^(?:[\(（][^）)]*[\)）]\s*)+/, "");
 
         // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
         let m = titleFull.match(/^\[[^\]]*?\(([^)]+)\)\]/);

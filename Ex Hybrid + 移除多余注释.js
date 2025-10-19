@@ -1127,7 +1127,7 @@
         const artistTitleNames = [];
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
-        titleFull = titleFull.replace(/^(?:\([^)]*\)\s*)+/, "");
+        titleFull = titleFull.replace(/^(?:[\(（][^）)]*[\)）]\s*)+/, "");
 
         let m = titleFull.match(/^\[[^\]]*?\(([^)]+)\)\]/);
         if (m) {

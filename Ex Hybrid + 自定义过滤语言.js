@@ -1217,29 +1217,27 @@
           }
         });
 
-        // 2️⃣ 从标题提取所有艺术家名
+        // 2️⃣ 从标题前方提取艺术家名
         const artistTitleNames = [];
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
-        // ✅ 清除末尾的 [xxx] 内容（例如 [中国翻訳]）
-        titleFull = titleFull.replace(/\[[^\]]*\]$/g, "").trim();
+        // ✅ 清除开头的 (xxx) 内容（例如 (C102)）
+        titleFull = titleFull.replace(/^(?:\([^)]*\)\s*)+/, "");
 
         // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
-        let m = titleFull.match(/\[[^\]]*?\(([^)]+)\)\]/);
+        let m = titleFull.match(/^\[[^\]]*?\(([^)]+)\)\]/);
         if (m) {
           artistTitleNames.push(
             ...m[1]
-              .replace(/\s+/g, "")
               .split(/[、,，&＆×x\+＋\/]/g)
               .map(s => s.trim())
               .filter(Boolean)
           );
         } else {
-          const m2 = titleFull.match(/\[([^\]]+)\]/);
+          const m2 = titleFull.match(/^\[([^\]]+)\]/);
           if (m2) {
             artistTitleNames.push(
               ...m2[1]
-                .replace(/\s+/g, "")
                 .split(/[、,，&＆×x\+＋\/]/g)
                 .map(s => s.trim())
                 .filter(Boolean)
@@ -1659,11 +1657,13 @@
 
       // 判断函数：是否为全英文 + 无 [] 前缀
       function isPureEnglishNoBracket(title) {
-        return (
-          !!title &&
-          !/^\[.*\]/.test(title) &&               // 没有 [xxx] 前缀
-          /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(title) // 纯英文+符号
-        );
+        // 去掉开头空格
+        const t = title.trim();
+        // ✅ 如果开头有 []，则不是无前缀
+        if (/^(?:\([^)]*\)\s*)*\[.*?\]/.test(t)) return false;
+        // ✅ 去掉标题中所有 [] 和 【】、（）、()，包括空的
+        const main = t.replace(/(\[[^\]]*\]|【[^】]*】|\([^\)]*\)|（[^）]*）)/g, "").trim();
+        return /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(main);
       }
 
       // 判断标题分割符号
@@ -1672,18 +1672,24 @@
         return index >= 0 ? title.slice(0, index).trim() : title;
       }
 
-      // ✅ 优先日语标题
-      const jpCheckTitle = truncateTitle(jpTitle);
-      if (jpCheckTitle && isPureEnglishNoBracket(jpCheckTitle)) {
-        console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-        return;
-      }
+      // 检查是否有艺术家标签
+      const artistTags = Array.from(document.querySelectorAll('#taglist a[href*="artist:"]')).map(a =>
+        a.textContent.trim()
+      );
 
-      // ✅ 如果没有日语标题，再判断罗马音标题
-      const enCheckTitle = truncateTitle(enTitle);
-      if ((!jpTitle || !jpCheckTitle) && enCheckTitle && isPureEnglishNoBracket(enCheckTitle)) {
-        console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-        return;
+      // 如果存在艺术家标签，则忽略全英文跳过逻辑
+      if (artistTags.length === 0) {
+        const jpCheckTitle = truncateTitle(jpTitle);
+        if (jpCheckTitle && isPureEnglishNoBracket(jpCheckTitle)) {
+          console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+          return;
+        }
+
+        const enCheckTitle = truncateTitle(enTitle);
+        if ((!jpTitle || !jpCheckTitle) && enCheckTitle && isPureEnglishNoBracket(enCheckTitle)) {
+          console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+          return;
+        }
       }
     }
 

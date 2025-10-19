@@ -71,12 +71,12 @@
     });
     menuIds.push(id4);
 
-    // ✅ 新增开关：全英文标题跳过搜索
-    const skipFullEnglishEnabled = GM_getValue("enableSkipFullEnglish", true);
-    const id5 = GM_registerMenuCommand(`${skipFullEnglishEnabled ? "关闭" : "启用"} 全英文标题跳过搜索`, () => {
-      const next = !skipFullEnglishEnabled;
-      GM_setValue("enableSkipFullEnglish", next);
-      showToast(`🚫 全英文标题跳过搜索功能已${next ? "启用" : "关闭"}`);
+    // 🚫 未获取到艺术家，跳过相似画廊搜索
+    const artistRequiredEnabled = GM_getValue("enableArtistRequired", true);
+    const id5 = GM_registerMenuCommand(`${artistRequiredEnabled ? "关闭" : "启用"} 仅在有艺术家时搜索`, () => {
+      const next = !artistRequiredEnabled;
+      GM_setValue("enableArtistRequired", next);
+      showToast(`🎨 “仅在有艺术家时搜索” 已${next ? "启用" : "关闭"}`);
       registerMenuCommands();
     });
     menuIds.push(id5);
@@ -91,9 +91,9 @@
     registerMenuCommands();
   }
 
-  // 全英文标题跳过搜索
-  const skipFullEnglishEnabled = (typeof GM_getValue === "function")
-    ? GM_getValue("enableSkipFullEnglish", true)
+  // 🚫 未获取到艺术家，跳过相似画廊搜索
+  const artistRequiredEnabled = (typeof GM_getValue === "function")
+    ? GM_getValue("enableArtistRequired", true)
     : true;
 
   // ✅ spa 检测处理（最终版，带去广告开关）
@@ -200,6 +200,7 @@
       if (container.children.length === 0) container.remove(); // 清空容器
     }, 3600);
   }
+  let skipSearchDueToNoArtist = false;
 
   // 拦截页面的原生 alert 弹窗，替换为非阻塞 toast
   (function() {
@@ -1276,6 +1277,18 @@
           console.log("🔸 检测到合辑标签，仅使用标题搜索");
         }
 
+        if (
+          artistRequiredEnabled &&
+          !isAnthology &&
+          artistTagNames.length === 0 &&
+          artistTitleNames.length === 0
+        ) {
+          skipSearchDueToNoArtist = true;
+          showToast("🚫 未获取到艺术家，已跳过搜索");
+          console.log("🚫 未获取到艺术家，跳过相似画廊搜索");
+          return [];
+        }
+
         // ✅ 预处理标题（带系列搜索开关）
         const seriesSearchEnabled = (typeof GM_getValue === "function")
           ? GM_getValue("enableSeriesSearch", true)
@@ -1648,49 +1661,6 @@
 
     // ✅ 进入页面时立即加载相似画廊（只执行一次）
     (async function preloadSimilarList() {
-    // ✅ [增强逻辑] 当标题为全英文且无 [] 前缀时跳过搜索（优先日语，其次罗马音）
-    if (skipFullEnglishEnabled) {
-      const jpTitle = (galleryTitleJP || "").trim();
-      const enTitle = (galleryTitleEN || "").trim();
-
-      // 判断函数：是否为全英文 + 无 [] 前缀
-      function isPureEnglishNoBracket(title) {
-        // 去掉开头空格
-        const t = title.trim();
-        // ✅ 如果开头有 []，则不是无前缀、允许标题前面有 (C102) 或 （C102）
-        if (/^(?:[\(（][^）)]*[\)）]\s*)*\[.*?\]/.test(t)) return false;
-        // ✅ 去掉标题中所有 [] 和 【】、（）、()，包括空的
-        const main = t.replace(/(\[[^\]]*\]|【[^】]*】|\([^\)]*\)|（[^）]*）)/g, "").trim();
-        return /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(main);
-      }
-
-      // 判断标题分割符号
-      function truncateTitle(title) {
-        const index = title.search(/\||｜|︱|\+|＋/);
-        return index >= 0 ? title.slice(0, index).trim() : title;
-      }
-
-      // 检查是否有艺术家标签
-      const artistTags = Array.from(document.querySelectorAll('#taglist a[href*="artist:"]')).map(a =>
-        a.textContent.trim()
-      );
-
-      // 如果存在艺术家标签，则忽略全英文跳过逻辑
-      if (artistTags.length === 0) {
-        const jpCheckTitle = truncateTitle(jpTitle);
-        if (jpCheckTitle && isPureEnglishNoBracket(jpCheckTitle)) {
-          console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-          return;
-        }
-
-        const enCheckTitle = truncateTitle(enTitle);
-        if ((!jpTitle || !jpCheckTitle) && enCheckTitle && isPureEnglishNoBracket(enCheckTitle)) {
-          console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-          return;
-        }
-      }
-    }
-
       const categoryDiv = document.querySelector("#gdc .cs");
       if (!categoryDiv) return; // 找不到类别 → 不执行
       const allowedCats = ["ct0", "ct2", "ct3", "ct9"]; // 私有 / 同人志 / 漫画 / 无H
@@ -1706,7 +1676,11 @@
         isLoaded = true;
         showToast(`✅ 搜索完成，共找到 ${list.length} 个相似画廊`);
       } else {
-        showToast("⚠️ 未找到相似画廊");
+        // 🚫 如果上次搜索因为没有艺术家而跳过，就不显示“未找到相似画廊”
+        if (!skipSearchDueToNoArtist) {
+          showToast("⚠️ 未找到相似画廊");
+        }
+        skipSearchDueToNoArtist = false; // ✅ 搜索结束后重置状态
       }
     })();
 

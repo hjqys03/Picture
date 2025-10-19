@@ -84,6 +84,7 @@
   const skipFullEnglishEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableSkipFullEnglish", true)
     : true;
+
   const adBlockEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableAdBlock", true)
     : true;

@@ -63,7 +63,6 @@
     });
     menuIds.push(id4);
 
-    // ✅ 新增开关：全英文标题跳过搜索
     const skipFullEnglishEnabled = GM_getValue("enableSkipFullEnglish", true);
     const id5 = GM_registerMenuCommand(`${skipFullEnglishEnabled ? "关闭" : "启用"} 全英文标题跳过搜索`, () => {
       const next = !skipFullEnglishEnabled;
@@ -85,7 +84,6 @@
   const skipFullEnglishEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableSkipFullEnglish", true)
     : true;
-
   const adBlockEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableAdBlock", true)
     : true;

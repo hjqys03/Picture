@@ -70,6 +70,16 @@
       registerMenuCommands();
     });
     menuIds.push(id4);
+
+    // ✅ 新增开关：全英文标题跳过搜索
+    const skipFullEnglishEnabled = GM_getValue("enableSkipFullEnglish", true);
+    const id5 = GM_registerMenuCommand(`${skipFullEnglishEnabled ? "关闭" : "启用"} 全英文标题跳过搜索`, () => {
+      const next = !skipFullEnglishEnabled;
+      GM_setValue("enableSkipFullEnglish", next);
+      showToast(`🚫 全英文标题跳过搜索功能已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id5);
   }
 
   // ✅ 初始化菜单注册
@@ -80,6 +90,11 @@
   ) {
     registerMenuCommands();
   }
+
+  // 全英文标题跳过搜索
+  const skipFullEnglishEnabled = (typeof GM_getValue === "function")
+    ? GM_getValue("enableSkipFullEnglish", true)
+    : true;
 
   // ✅ spa 检测处理（最终版，带去广告开关）
   const adBlockEnabled = (typeof GM_getValue === "function")

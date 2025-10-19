@@ -1274,7 +1274,8 @@
         if (extractTitle) {
           // ✅ 不论是否开启系列搜索
           // ✅ 去掉开头或结尾的【】、（）或()包裹内容
-          extractTitle = extractTitle.replace(/^[（(【][^（）()【】]+[）)】]\s*|\s*[（(【][^（）()【】]+[）)】]$/g, "");
+          extractTitle = extractTitle.replace(/^【[^【】]+】\s*|\s*【[^【】]+】$/g, "");
+          extractTitle = extractTitle.replace(/^[（(][^（）()]+[）)]\s*|\s*[（(][^（）()]+[）)]$/g, "");
         }
 
         if (!seriesSearchEnabled) {
@@ -1292,7 +1293,7 @@
               // ✅ 删除冒号（:、：、-、~、～、—、〜、―、﹣）及其后的内容，或删除出现成对连接符号（ー）及其中间内容
               .replace(/[:：\-~～—〜―﹣].*$|\s(ー).*?\1.*$/i, "")
               // ✅ 删除以 "#" 开头的章节编号或数字后紧跟空格的部分
-              .replace(/#\d+(?:\.\d+)?\s*.*$|(?:\d+(?:\.\d+)?|[①-⑳IVXⅰⅴⅵⅶⅷⅸⅹ壱弐参肆伍陸柒捌玖拾]+)(?:\s.*|$)/i, "")
+              .replace(/#\d+(?:\.\d+)?\s*.*$|(?:\d+(?:\.\d+)?|(?<![A-Z])[IVXⅰⅴⅵⅶⅷⅸⅹ](?![A-Z])|[①-⑳壱弐参肆伍陸柒捌玖拾]+)(?:\s.*|$)/i, "")
               // ✅ 去掉带数字或罗马数字的卷号/章节号（含小数点版本）
               .replace(/\s*(?:第?[①-⑳\d]+(?:\.\d+)?[\-~～—〜―﹣+][①-⑳\d]+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第[①-⑳\d]+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|Vol\.?\s*(?:[①-⑳\d]+(?:\.\d+)?(?:[\-~～—〜―﹣+][①-⑳\d]+(?:\.\d+)?)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜―﹣+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?)|[①-⑳\d]+(?:\.\d+)?[\-~～—〜―﹣+][①-⑳\d]+(?:\.\d+)?(?:話|巻|卷|篇|編|章)?|第?[①-⑳\d]+(?:\.\d+)?\s*(?:巻|卷|話|篇|編|章)?|[IVXⅰⅴⅵⅶⅷⅸⅹ]+(?:[\-~～—〜―﹣+][IVXⅰⅴⅵⅶⅷⅸⅹ]+)?|\d+(?:st|nd|rd|th))\s*$/i, "")
               // ✅ 去掉末尾的各种章节/卷号标识
@@ -1637,8 +1638,31 @@
 
     // ✅ 进入页面时立即加载相似画廊（只执行一次）
     (async function preloadSimilarList() {
+      // ✅ [增强逻辑] 当标题为全英文且无 [] 前缀时跳过搜索（优先日语，其次罗马音）
+      const jpTitle = (galleryTitleJP || "").trim();
+      const enTitle = (galleryTitleEN || "").trim();
 
-      // ✅ 新增：只在特定类别启用搜索
+      // 判断函数：是否为全英文 + 无 [] 前缀
+      function isPureEnglishNoBracket(title) {
+        return (
+          !!title &&
+          !/^\[.*\]/.test(title) &&               // 没有 [xxx] 前缀
+          /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(title) // 纯英文+符号
+        );
+      }
+
+      // ✅ 优先判断日语标题
+      if (jpTitle && isPureEnglishNoBracket(jpTitle)) {
+        console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+        return; // 日语标题符合条件 → 跳过搜索
+      }
+
+      // ✅ 如果日语标题不存在，再判断罗马音标题
+      if (!jpTitle && enTitle && isPureEnglishNoBracket(enTitle)) {
+        console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+        return; // 仅罗马音标题符合条件 → 跳过搜索
+      }
+
       const categoryDiv = document.querySelector("#gdc .cs");
       if (!categoryDiv) return; // 找不到类别 → 不执行
       const allowedCats = ["ct0", "ct2", "ct3", "ct9"]; // 私有 / 同人志 / 漫画 / 无H

@@ -1637,7 +1637,8 @@
 
     // ✅ 进入页面时立即加载相似画廊（只执行一次）
     (async function preloadSimilarList() {
-      // ✅ [增强逻辑] 当标题为全英文且无 [] 前缀时跳过搜索（优先日语，其次罗马音）
+    // ✅ [增强逻辑] 当标题为全英文且无 [] 前缀时跳过搜索（优先日语，其次罗马音）
+    if (skipFullEnglishEnabled) {
       const jpTitle = (galleryTitleJP || "").trim();
       const enTitle = (galleryTitleEN || "").trim();
 
@@ -1650,17 +1651,26 @@
         );
       }
 
-      // ✅ 优先判断日语标题
-      if (jpTitle && isPureEnglishNoBracket(jpTitle)) {
-        console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-        return; // 日语标题符合条件 → 跳过搜索
+      // 判断标题分割符号
+      function truncateTitle(title) {
+        const index = title.search(/\||｜|︱|\+|＋/);
+        return index >= 0 ? title.slice(0, index).trim() : title;
       }
 
-      // ✅ 如果日语标题不存在，再判断罗马音标题
-      if (!jpTitle && enTitle && isPureEnglishNoBracket(enTitle)) {
-        console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
-        return; // 仅罗马音标题符合条件 → 跳过搜索
+      // ✅ 优先日语标题
+      const jpCheckTitle = truncateTitle(jpTitle);
+      if (jpCheckTitle && isPureEnglishNoBracket(jpCheckTitle)) {
+        console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+        return;
       }
+
+      // ✅ 如果没有日语标题，再判断罗马音标题
+      const enCheckTitle = truncateTitle(enTitle);
+      if ((!jpTitle || !jpCheckTitle) && enCheckTitle && isPureEnglishNoBracket(enCheckTitle)) {
+        console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
+        return;
+      }
+    }
 
       const categoryDiv = document.querySelector("#gdc .cs");
       if (!categoryDiv) return; // 找不到类别 → 不执行

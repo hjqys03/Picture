@@ -62,6 +62,16 @@
       registerMenuCommands();
     });
     menuIds.push(id4);
+
+    // ✅ 新增开关：全英文标题跳过搜索
+    const skipFullEnglishEnabled = GM_getValue("enableSkipFullEnglish", true);
+    const id5 = GM_registerMenuCommand(`${skipFullEnglishEnabled ? "关闭" : "启用"} 全英文标题跳过搜索`, () => {
+      const next = !skipFullEnglishEnabled;
+      GM_setValue("enableSkipFullEnglish", next);
+      showToast(`🚫 全英文标题跳过搜索功能已${next ? "启用" : "关闭"}`);
+      registerMenuCommands();
+    });
+    menuIds.push(id5);
   }
 
   if (
@@ -71,6 +81,10 @@
   ) {
     registerMenuCommands();
   }
+
+  const skipFullEnglishEnabled = (typeof GM_getValue === "function")
+    ? GM_getValue("enableSkipFullEnglish", true)
+    : true;
 
   const adBlockEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableAdBlock", true)
@@ -1489,6 +1503,7 @@
     }
 
     (async function preloadSimilarList() {
+    if (skipFullEnglishEnabled) {
       const jpTitle = (galleryTitleJP || "").trim();
       const enTitle = (galleryTitleEN || "").trim();
 
@@ -1500,15 +1515,23 @@
         );
       }
 
-      if (jpTitle && isPureEnglishNoBracket(jpTitle)) {
+      function truncateTitle(title) {
+        const index = title.search(/\||｜|︱|\+|＋/);
+        return index >= 0 ? title.slice(0, index).trim() : title;
+      }
+
+      const jpCheckTitle = truncateTitle(jpTitle);
+      if (jpCheckTitle && isPureEnglishNoBracket(jpCheckTitle)) {
         console.log("🚫 日语标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
         return;
       }
 
-      if (!jpTitle && enTitle && isPureEnglishNoBracket(enTitle)) {
+      const enCheckTitle = truncateTitle(enTitle);
+      if ((!jpTitle || !jpCheckTitle) && enCheckTitle && isPureEnglishNoBracket(enCheckTitle)) {
         console.log("🚫 罗马音标题为纯英文且无 [] 前缀，跳过相似画廊搜索");
         return;
       }
+    }
 
       const categoryDiv = document.querySelector("#gdc .cs");
       if (!categoryDiv) return;

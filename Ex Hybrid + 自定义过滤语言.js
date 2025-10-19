@@ -1221,11 +1221,8 @@
         const artistTitleNames = [];
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
-        // ✅ 清除开头的 (xxx) 内容（例如 (C102)）
-        titleFull = titleFull.replace(/^(?:[\(（][^）)]*[\)）]\s*)+/, "");
-
-        // 支持 [团队名 (艺术家名1、艺术家名2)] 或 [艺术家名1、艺术家名2]
-        let m = titleFull.match(/^\[[^\]]*?\(([^)]+)\)\]/);
+        // ✅ 匹配 [Circle (Artist)] 或 [Artist]（允许前方有展会编号）
+        let m = titleFull.match(/^(?:[\(（][^）)]*[\)）]\s*)*\[[^\]]*?\(([^)]+)\)\]/);
         if (m) {
           artistTitleNames.push(
             ...m[1]
@@ -1234,7 +1231,8 @@
               .filter(Boolean)
           );
         } else {
-          const m2 = titleFull.match(/^\[([^\]]+)\]/);
+          // ✅ 匹配 [Artist]（允许前方有展会编号）
+          const m2 = titleFull.match(/^(?:[\(（][^）)]*[\)）]\s*)*\[([^\]]+)\]/);
           if (m2) {
             artistTitleNames.push(
               ...m2[1]
@@ -1659,8 +1657,8 @@
       function isPureEnglishNoBracket(title) {
         // 去掉开头空格
         const t = title.trim();
-        // ✅ 如果开头有 []，则不是无前缀
-        if (/^(?:\([^)]*\)\s*)*\[.*?\]/.test(t)) return false;
+        // ✅ 如果开头有 []，则不是无前缀、允许标题前面有 (C102) 或 （C102）
+        if (/^(?:[\(（][^）)]*[\)）]\s*)*\[.*?\]/.test(t)) return false;
         // ✅ 去掉标题中所有 [] 和 【】、（）、()，包括空的
         const main = t.replace(/(\[[^\]]*\]|【[^】]*】|\([^\)]*\)|（[^）]*）)/g, "").trim();
         return /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(main);

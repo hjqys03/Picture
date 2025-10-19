@@ -1127,9 +1127,7 @@
         const artistTitleNames = [];
         let titleFull = galleryTitleJP || galleryTitleEN || "";
 
-        titleFull = titleFull.replace(/^(?:[\(（][^）)]*[\)）]\s*)+/, "");
-
-        let m = titleFull.match(/^\[[^\]]*?\(([^)]+)\)\]/);
+        let m = titleFull.match(/^(?:[\(（][^）)]*[\)）]\s*)*\[[^\]]*?\(([^)]+)\)\]/);
         if (m) {
           artistTitleNames.push(
             ...m[1]
@@ -1138,7 +1136,7 @@
               .filter(Boolean)
           );
         } else {
-          const m2 = titleFull.match(/^\[([^\]]+)\]/);
+          const m2 = titleFull.match(/^(?:[\(（][^）)]*[\)）]\s*)*\[([^\]]+)\]/);
           if (m2) {
             artistTitleNames.push(
               ...m2[1]
@@ -1506,7 +1504,7 @@
 
       function isPureEnglishNoBracket(title) {
         const t = title.trim();
-        if (/^(?:\([^)]*\)\s*)*\[.*?\]/.test(t)) return false;
+        if (/^(?:[\(（][^）)]*[\)）]\s*)*\[.*?\]/.test(t)) return false;
         const main = t.replace(/(\[[^\]]*\]|【[^】]*】|\([^\)]*\)|（[^）]*）)/g, "").trim();
         return /^[A-Za-z0-9\s'"\-:;.,!?()&]+$/.test(main);
       }

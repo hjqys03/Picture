@@ -1374,11 +1374,20 @@
                 const res = await fetch(nextURL);
                 const html = await res.text();
                 const doc = new DOMParser().parseFromString(html, "text/html");
-                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl3m, .gl3c, .gl4e")];
                 if (!blocks.length) break;
 
                 for (const b of blocks) {
-                    const a = b.querySelector("a");
+                    let a;
+    
+                    // 扩展模式：div.gl4e.glname 的父元素是 <a>
+                    if (b.classList.contains("gl4e") && b.classList.contains("glname")) {
+                        a = b.parentElement.tagName === "A" ? b.parentElement : null;
+                    } else {
+                        // 普通模式：a 在内部
+                        a = b.querySelector("a");
+                    }
+
                     if (!a) continue;
                     const title = a.textContent.trim();
                     const url = a.href;
@@ -1419,9 +1428,11 @@
             const detailHtml = await detailRes.text();
             const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 
-            // 英文标题
-            const engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
-            if (engTitle) item.engTitle = engTitle;
+            // ✅ 优先使用 <h1 id="gj"> 日文标题，其次 <h1 id="gn"> 英文标题
+            const jpTitle = detailDoc.querySelector("#gj")?.textContent?.trim();
+            const enTitle = detailDoc.querySelector("#gn")?.textContent?.trim();
+            item.title = jpTitle || enTitle || ""; // 这是悬浮窗显示的主标题
+            item.engTitle = enTitle || "";         // 保留英文标题备用
 
             // ✅ 获取封面图（#gd1 > div 背景图）
             const gd1Div = detailDoc.querySelector("#gd1 > div");
@@ -1514,11 +1525,19 @@
                   const html = await res.text();
                   const doc = new DOMParser().parseFromString(html, "text/html");
 
-                  const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                  const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl3m, .gl3c, .gl4e")];
                   if (!blocks.length) break;
 
                   for (const b of blocks) {
-                      const a = b.querySelector("a");
+                      let a;
+
+                      // 扩展模式：div.gl4e.glname 的父元素是 <a>
+                      if (b.classList.contains("gl4e") && b.classList.contains("glname")) {
+                          a = b.parentElement.tagName === "A" ? b.parentElement : null;
+                      } else {
+                          // 普通模式：a 在内部
+                          a = b.querySelector("a");
+                      }
                       if (!a) continue;
                       const title = a.textContent.trim();
                       const url = a.href;
@@ -1551,7 +1570,11 @@
                     const detailHtml = await detailRes.text();
                     const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
 
-                    item.engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
+                    const jpTitle = detailDoc.querySelector("#gj")?.textContent?.trim();
+                    const enTitle = detailDoc.querySelector("#gn")?.textContent?.trim();
+                    item.title = jpTitle || enTitle || "";
+                    item.engTitle = enTitle || "";
+
                     const gd1Div = detailDoc.querySelector("#gd1 > div");
                     if (gd1Div) {
                       const bg = gd1Div.style.backgroundImage || "";

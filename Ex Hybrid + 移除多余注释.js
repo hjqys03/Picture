@@ -1252,11 +1252,16 @@
                 const res = await fetch(nextURL);
                 const html = await res.text();
                 const doc = new DOMParser().parseFromString(html, "text/html");
-                const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl3m, .gl3c, .gl4e")];
                 if (!blocks.length) break;
 
                 for (const b of blocks) {
-                    const a = b.querySelector("a");
+                    let a;
+                    if (b.classList.contains("gl4e") && b.classList.contains("glname")) {
+                        a = b.parentElement.tagName === "A" ? b.parentElement : null;
+                    } else {
+                        a = b.querySelector("a");
+                    }
                     if (!a) continue;
                     const title = a.textContent.trim();
                     const url = a.href;
@@ -1294,9 +1299,10 @@
             const detailRes = await fetchWithRetry(item.url);
             const detailHtml = await detailRes.text();
             const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
-
-            const engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
-            if (engTitle) item.engTitle = engTitle;
+            const jpTitle = detailDoc.querySelector("#gj")?.textContent?.trim();
+            const enTitle = detailDoc.querySelector("#gn")?.textContent?.trim();
+            item.title = jpTitle || enTitle || "";
+            item.engTitle = enTitle || "";
 
             const gd1Div = detailDoc.querySelector("#gd1 > div");
             if (gd1Div) {
@@ -1373,11 +1379,16 @@
                   const html = await res.text();
                   const doc = new DOMParser().parseFromString(html, "text/html");
 
-                  const blocks = [...doc.querySelectorAll(".gl1t, .gl2t, .gl3t")];
+                  const blocks = [...doc.querySelectorAll(".gl1t, .gl3t, .gl3m, .gl3c, .gl4e")];
                   if (!blocks.length) break;
 
                   for (const b of blocks) {
-                      const a = b.querySelector("a");
+                      let a;
+                      if (b.classList.contains("gl4e") && b.classList.contains("glname")) {
+                          a = b.parentElement.tagName === "A" ? b.parentElement : null;
+                      } else {
+                          a = b.querySelector("a");
+                      }
                       if (!a) continue;
                       const title = a.textContent.trim();
                       const url = a.href;
@@ -1408,8 +1419,10 @@
                     const detailRes = await fetchWithRetry(item.url);
                     const detailHtml = await detailRes.text();
                     const detailDoc = new DOMParser().parseFromString(detailHtml, "text/html");
-
-                    item.engTitle = detailDoc.querySelector("#gn")?.textContent?.trim() || "";
+                    const jpTitle = detailDoc.querySelector("#gj")?.textContent?.trim();
+                    const enTitle = detailDoc.querySelector("#gn")?.textContent?.trim();
+                    item.title = jpTitle || enTitle || "";
+                    item.engTitle = enTitle || "";
                     const gd1Div = detailDoc.querySelector("#gd1 > div");
                     if (gd1Div) {
                       const bg = gd1Div.style.backgroundImage || "";

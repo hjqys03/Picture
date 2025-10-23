@@ -205,18 +205,18 @@
     });
   })();
 
-  async function fetchWithRetry(url, retries = 3, delay = 200) {
-      for (let i = 0; i <= retries; i++) {
-          try {
-              const res = await fetch(url);
-              if (res.ok) return res;
-              else throw new Error(`HTTP ${res.status}`);
-          } catch (e) {
-              if (i === retries) throw e;
-              console.warn(`请求失败 ${url}，重试中...(${i + 1}/${retries})`);
-              await new Promise(r => setTimeout(r, delay));
-          }
+  async function fetchWithRetry(url, options = {}, retries = 3, delay = 250) {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const res = await fetch(url, options);
+        if (res.ok) return res;
+        else throw new Error(`HTTP ${res.status}`);
+      } catch (e) {
+        if (i === retries) throw e;
+        console.warn(`请求失败 ${url}，重试中...(${i + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
       }
+    }
   }
 
   var exclude_namespaces = ["language", "reclass"]; // 跳过复制的标签类别
@@ -1309,14 +1309,14 @@
         for (let i = 0; i < gidList.length; i += chunkSize) {
           const chunk = gidList.slice(i, i + chunkSize);
           try {
-            const res = await fetch("https://api.e-hentai.org/api.php", {
+            const response = await fetchWithRetry(document.location.origin + "/api.php", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ method: "gdata", gidlist: chunk, namespace: 1 })
             });
 
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const json = await response.json();
 
             if (json.gmetadata) allMeta.push(...json.gmetadata);
           } catch (err) {
@@ -1443,14 +1443,14 @@
                 for (let i = 0; i < gidListExtra.length; i += chunkSizeExtra) {
                   const chunk = gidListExtra.slice(i, i + chunkSizeExtra);
                   try {
-                    const res = await fetch("https://api.e-hentai.org/api.php", {
+                    const response = await fetchWithRetry(document.location.origin + "/api.php", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ method: "gdata", gidlist: chunk, namespace: 1 })
                     });
 
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const json = await res.json();
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const json = await response.json();
 
                     if (json.gmetadata) allMetaExtra.push(...json.gmetadata);
                   } catch (err) {

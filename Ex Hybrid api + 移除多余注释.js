@@ -1216,7 +1216,7 @@
               .replace(/\s+[^ ]*(?:篇|編|巻|卷|話|章|版)$/, "")
               .replace(/\s*[上下中前後]\s*$/i, "")
               .replace(/\s[\S]{1,3}$/i, "")
-              .replace(/^[・･·•]+|[・･·•]+$/g, "")
+              .replace(/^[・･·•♥♡★☆❀]+|[・･·•♥♡★☆❀]+$/g, "")
               .trim();
           } else {
             cleanTitle = extractTitle.trim();

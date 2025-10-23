@@ -823,10 +823,12 @@
       function toMB(v) {
         if (typeof v !== "string") return 0;
         const n = parseFloat(v) || 0;
-        if (/GB/i.test(v)) return n * 1024;
-        if (/MB/i.test(v)) return n;
-        if (/KB/i.test(v)) return n / 1024;
-        return n || 0;
+        if (/TiB/i.test(v)) return n * 1024 * 1024;
+        if (/GiB/i.test(v)) return n * 1024;
+        if (/MiB/i.test(v)) return n;
+        if (/KiB/i.test(v)) return n / 1024;
+        if (/B/i.test(v)) return n / (1024 * 1024);
+        return n;
       }
 
       function sortListBy(arr, key, isAsc) {
@@ -834,18 +836,10 @@
           let av = a[key] || "";
           let bv = b[key] || "";
 
-          // ✅ 对语言字段进行预处理，忽略 TR/RW 后缀
           if (key === "language") {
-            const clean = (s) =>
-              s
-                .replace(/<[^>]*>/g, "")  // 去除 HTML 标签
-                .replace(/\b(TR|RW)\b/gi, "") // 去掉 TR / RW
-                .trim()
-                .toLowerCase();
-            av = clean(av);
-            bv = clean(bv);
+            av = (av || "").trim().toLowerCase();
+            bv = (bv || "").trim().toLowerCase();
           }
-
           if (key === "pages") {
             return (isAsc ? 1 : -1) * ((parseInt(av) || 0) - (parseInt(bv) || 0));
           }
@@ -1476,9 +1470,18 @@
               if (!langTag) return "japanese";
               return langTag.replace("language:", "").trim();
             })(),
-            fileSize: g.filesize
-              ? (g.filesize / (1024 * 1024)).toFixed(1) + " MB"
-              : "—",
+            fileSize: (() => {
+              const size = g.filesize;
+              if (!size) return "—";
+              const units = ["B", "KiB", "MiB", "GiB", "TiB"];
+              let i = 0;
+              let num = size;
+              while (num >= 1024 && i < units.length - 1) {
+                num /= 1024;
+                i++;
+              }
+              return num.toFixed(2) + " " + units[i];
+            })(),
             pages: g.filecount || "—",
             posted: g.posted
               ? new Date(g.posted * 1000).toISOString().split("T")[0]
@@ -1606,10 +1609,18 @@
                       if (!langTag) return "japanese";
                       return langTag.replace("language:", "").trim();
                     })(),
-
-                    fileSize: g.filesize
-                      ? (g.filesize / (1024 * 1024)).toFixed(1) + " MB"
-                      : "—",
+                    fileSize: (() => {
+                      const size = g.filesize;
+                      if (!size) return "—";
+                      const units = ["B", "KiB", "MiB", "GiB", "TiB"];
+                      let i = 0;
+                      let num = size;
+                      while (num >= 1024 && i < units.length - 1) {
+                        num /= 1024;
+                        i++;
+                      }
+                      return num.toFixed(2) + " " + units[i];
+                    })(),
                     pages: g.filecount || "—",
                     posted: g.posted
                       ? new Date(g.posted * 1000).toISOString().split("T")[0]

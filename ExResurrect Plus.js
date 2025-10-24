@@ -78,7 +78,7 @@
     var spl = document.URL.split('/');
 	var dead, claim, language, translated;
     const category = {doujinshi: 'ct2', manga: 'ct3', artistcg: 'ct4', gamecg: 'ct5', western: 'cta', nonh: 'ct9', imageset: 'ct6', cosplay: 'ct7', asianporn: 'ct8', misc: 'ct1'};
-    const fileSizeLabels = [ "B", "KB", "MB", "GB" ];
+    const fileSizeLabels = [ "B", "KiB", "MiB", "GiB" ];
     const defaultNamespace = "misc";
     const tags = {};
 

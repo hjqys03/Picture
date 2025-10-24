@@ -6,11 +6,45 @@
 // @description  Resurrect E/Ex gallery listings
 // @author       Hauffen (Original Author) + HeartThrob
 // @license      MIT
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // @runat        document-start
 // @require      https://code.jquery.com/jquery-3.3.1.min.js
 // @include      /https?:\/\/(e-|ex)hentai\.org\/.*/
 // ==/UserScript==
 
+  // =====================================================
+  // ✅ 菜单注册系统（统一管理多个功能开关）
+  // =====================================================
+  let menuIds = [];
+
+  function registerMenuCommands() {
+    // 清理旧菜单
+    if (menuIds.length && typeof GM_unregisterMenuCommand === "function") {
+      for (const id of menuIds) {
+        try { GM_unregisterMenuCommand(id); } catch {}
+      }
+      menuIds = [];
+    }
+
+    // 🟢 分类色描边开关
+    const enableCategoryBorders = GM_getValue("enableCategoryBorders", true);
+    const id1 = GM_registerMenuCommand(`${enableCategoryBorders ? "关闭" : "启用"} 分类色描边`, () => {
+      const next = !enableCategoryBorders;
+      GM_setValue("enableCategoryBorders", next);
+      showToast(`🎨 分类色描边已${next ? "启用" : "关闭"}`);
+      registerMenuCommands(); // ✅ 仅刷新菜单按钮文字
+      // ❌ 不再刷新页面
+    });
+    menuIds.push(id1);
+  }
+
+  // 初始化菜单
+  if (typeof GM_registerMenuCommand === "function") {
+    registerMenuCommands();
+  }
   // ========== Toast 样式 ==========
   (function addToastStyles() {
     if (document.getElementById("eh-toast-style")) return;
@@ -1347,6 +1381,8 @@
 // === 分类色边框应用到 .gl3t 容器 ===
 (function(){
     function applyCategoryBorders(){
+        const enableCategoryBorders = GM_getValue("enableCategoryBorders", true);
+        if (!enableCategoryBorders) return; // ✅ 若菜单关闭则不执行
         document.querySelectorAll('.gl1t').forEach(gallery=>{
             const catDiv = gallery.querySelector('.cs'); // 分类色的小块（左上角的彩条）
             const coverBox = gallery.querySelector('.gl3t'); // 封面容器（缩略图外层）

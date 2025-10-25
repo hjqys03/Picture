@@ -1592,12 +1592,12 @@
         }
       });
 
-      requestAnimationFrame(() => {
-        popup.style.opacity = "1";
-
+      const hideOverlap = () => {
         const popupRect = popup.getBoundingClientRect();
 
         document.querySelectorAll(".favnote, .editor").forEach(e => {
+          if (e.dataset._exhy_hidden) return;
+
           const rect = e.getBoundingClientRect();
           const overlap = !(
             rect.right < popupRect.left ||
@@ -1611,6 +1611,15 @@
             e.style.display = "none";
           }
         });
+
+        if (popup.isConnected && popup.style.opacity === "1") {
+          requestAnimationFrame(hideOverlap);
+        }
+      };
+
+      requestAnimationFrame(() => {
+        popup.style.opacity = "1";
+        hideOverlap();
       });
 
       const parentBox = similarLink.closest(".g2") || similarLink.parentElement || document.body;

@@ -1739,12 +1739,13 @@
       });
 
       // ✅ 仅隐藏被悬浮窗实际遮挡的收藏按钮
-      requestAnimationFrame(() => {
-        popup.style.opacity = "1";
-
+      const hideOverlap = () => {
         const popupRect = popup.getBoundingClientRect();
 
         document.querySelectorAll(".favnote, .editor").forEach(e => {
+          // 如果已经隐藏过，就不再处理
+          if (e.dataset._exhy_hidden) return;
+
           const rect = e.getBoundingClientRect();
           const overlap = !(
             rect.right < popupRect.left ||
@@ -1758,6 +1759,17 @@
             e.style.display = "none";
           }
         });
+
+        // 悬浮窗还在就继续检测
+        if (popup.isConnected && popup.style.opacity === "1") {
+          requestAnimationFrame(hideOverlap);
+        }
+      };
+
+      // 初次显示悬浮窗
+      requestAnimationFrame(() => {
+        popup.style.opacity = "1";
+        hideOverlap();
       });
 
       // ✅ 仿照脚本二 (#btList) 的定位方式 —— 靠左展开

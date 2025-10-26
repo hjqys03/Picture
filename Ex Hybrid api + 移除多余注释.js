@@ -1593,6 +1593,8 @@
       });
 
       const hideOverlap = () => {
+        if (!popup || !popup.isConnected) return;
+
         const popupRect = popup.getBoundingClientRect();
 
         document.querySelectorAll(".favnote, .editor").forEach(e => {
@@ -1612,12 +1614,13 @@
           }
         });
 
-        if (popup.isConnected && popup.style.opacity === "1") {
+        if (popup.style.opacity === "1") {
           requestAnimationFrame(hideOverlap);
         }
       };
 
       requestAnimationFrame(() => {
+        if (!popup || !popup.isConnected) return;
         popup.style.opacity = "1";
         hideOverlap();
       });

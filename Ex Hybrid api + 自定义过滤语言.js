@@ -1740,6 +1740,8 @@
 
       // ✅ 仅隐藏被悬浮窗实际遮挡的收藏按钮
       const hideOverlap = () => {
+        if (!popup || !popup.isConnected) return; // ✅ 确保 popup 存在且仍在页面中
+
         const popupRect = popup.getBoundingClientRect();
 
         document.querySelectorAll(".favnote, .editor").forEach(e => {
@@ -1761,13 +1763,14 @@
         });
 
         // 悬浮窗还在就继续检测
-        if (popup.isConnected && popup.style.opacity === "1") {
+        if (popup.style.opacity === "1") {
           requestAnimationFrame(hideOverlap);
         }
       };
 
       // 初次显示悬浮窗
       requestAnimationFrame(() => {
+        if (!popup || !popup.isConnected) return; // ✅ 再次保护
         popup.style.opacity = "1";
         hideOverlap();
       });

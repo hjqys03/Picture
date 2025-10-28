@@ -239,8 +239,13 @@
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.onreadystatechange = function () {
-      if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-        call_back(req.response);
+      if (req.readyState === XMLHttpRequest.DONE) {
+        if (req.status !== 200) {
+          console.warn(`⚠️ 页面无法打开（HTTP ${req.status}），尝试通过 API 获取...`);
+          get_tags_via_api(url, call_back);
+        } else {
+          call_back(req.responseText);
+        }
       }
     };
     req.send();
@@ -250,16 +255,21 @@
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.onreadystatechange = function () {
-      if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-        var responseText = req.response;
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(responseText, "text/html");
-        var gtElements = doc.querySelectorAll(".gt");
-        var filteredHTML = "";
-        gtElements.forEach((el) => {
-          filteredHTML += el.outerHTML + "\n";
-        });
-        call_back(filteredHTML);
+      if (req.readyState === XMLHttpRequest.DONE) {
+        if (req.status !== 200) {
+          console.warn(`⚠️ 页面无法打开（HTTP ${req.status}），尝试通过 API 获取...`);
+          get_tags_via_api(url, call_back);
+        } else {
+          var responseText = req.responseText;
+          var parser = new DOMParser();
+          var doc = parser.parseFromString(responseText, "text/html");
+          var gtElements = doc.querySelectorAll(".gt");
+          var filteredHTML = "";
+          gtElements.forEach((el) => {
+            filteredHTML += el.outerHTML + "\n";
+          });
+          call_back(filteredHTML);
+        }
       }
     };
     req.send();
@@ -283,6 +293,45 @@
       ret[namespace_tag[0]].push(namespace_tag[1]);
     }
     return ret;
+  }
+
+  async function get_tags_via_api(url, call_back) {
+    const match = url.match(/\/g\/(\d+)\/([0-9a-fA-F]+)\//);
+    if (!match) {
+      console.error("❌ 无法从链接提取 gid/token:", url);
+      return;
+    }
+
+    const gidList = [[match[1], match[2]]];
+
+    try {
+      const response = await fetchWithRetry(document.location.origin + "/api.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          method: "gdata",
+          gidlist: gidList,
+          namespace: 1
+        })
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const json = await response.json();
+      const meta = json?.gmetadata?.[0];
+      if (!meta || !meta.tags?.length) {
+        console.warn("❌ API 无法返回标签数据");
+        return;
+      }
+
+      const tagLines = meta.tags
+        .map((t) => `return toggle_tagmenu(0,'${t}','');`)
+        .join("\n");
+
+      console.log("✅ 已通过 API 成功获取标签");
+      call_back(tagLines);
+    } catch (err) {
+      console.error("📡 API 获取标签失败：", err);
+    }
   }
 
   function fill_tag_field(tags) {

@@ -319,7 +319,10 @@
                         <div class="cs ` + category[glisting.category.toLowerCase().replace(/ /g, '').replace(/-/g, '')] + `" onclick="document.location='` + document.location.origin + '/' + glisting.category.toLowerCase().replace(/ /g, '') + `'">` + glisting.category + `</div>
                     </div>
                     <div id="gdn">
-                        <a href="` + document.location.origin + '/uploader/' + glisting.uploader + '">' + glisting.uploader + `</a>
+                        ` + (glisting.uploader === "(Disowned)"
+                            ? `<div style="opacity:0.5;font-style:italic">(Disowned)</div>`
+                            : `<a href="` + document.location.origin + '/uploader/' + glisting.uploader + '">' + glisting.uploader + `</a>`
+                          ) + `
                     </div>
                     <div id="gdd">
                         <table>

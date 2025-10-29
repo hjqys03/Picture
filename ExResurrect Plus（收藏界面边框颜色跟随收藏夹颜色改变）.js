@@ -320,7 +320,7 @@
                     </div>
                     <div id="gdn">
                         ` + (glisting.uploader === "(Disowned)"
-                            ? `<div style="opacity:0.5;font-style:italic">(Disowned)</div>`
+                            ? `<div style="opacity:0.5;font-style:italic;">${glisting.uploader}</div>`
                             : `<a href="` + document.location.origin + '/uploader/' + glisting.uploader + '">' + glisting.uploader + `</a>`
                           ) + `
                     </div>

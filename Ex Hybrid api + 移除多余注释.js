@@ -57,6 +57,7 @@
               { key: "enableAdBlock", name: "去广告" },
               { key: "enableArtistRequired", name: "仅在有艺术家时搜索" },
               { key: "enableRatingDisplay", name: "显示评分" },
+              { key: "enableArchiveDownload", name: "归档下载功能" },
           ];
 
           features.forEach(f => {
@@ -71,6 +72,12 @@
               checkbox.addEventListener("change", () => {
                   GM_setValue(f.key, checkbox.checked);
                   showToast(`🔧 ${f.name} 已${checkbox.checked ? "启用" : "关闭"}`);
+
+                  if (f.key === "enableArchiveDownload") {
+                      if (checkbox.checked) {
+                          setupArchiveDownload();
+                      }
+                  }
               });
 
               const label = document.createElement("label");
@@ -152,6 +159,49 @@
   }
 } else {
   console.log("🚫 去广告功能已关闭，保留 #spa 元素");
+}
+
+function setupArchiveDownload() {
+    const archiveLink = document.querySelector('p.g2.gsp a[onclick^="return popUp"]');
+    if (!archiveLink) return;
+
+    archiveLink.onclick = async (e) => {
+        e.preventDefault();
+        try {
+            const onclickAttr = archiveLink.getAttribute('onclick');
+            const match = onclickAttr && onclickAttr.match(/popUp\('(.+?)',\d+,\d+\)/);
+            if (!match) { alert('无法解析归档链接'); return; }
+            const url = match[1];
+
+            const res = await fetch(url);
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const form = doc.querySelector('form[action*="archiver.php"]');
+            if (!form) { alert('未找到归档表单'); return; }
+
+            const action = form.getAttribute('action');
+            const params = 'dlcheck=Download Original Archive&dltype=org';
+            const dlRes = await fetch(action, {
+                method: 'POST',
+                body: params,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            });
+            const dlHtml = await dlRes.text();
+
+            const dlMatch = dlHtml.match(/document\.location = "(.*)"/);
+            if (dlMatch && dlMatch[1]) {
+                window.location.href = `${dlMatch[1]}?start=1`;
+            } else {
+                alert('未能找到下载链接');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('下载失败，请查看控制台');
+        }
+    };
+}
+if (GM_getValue("enableArchiveDownload", true)) {
+    setupArchiveDownload();
 }
 
   (function addToastStyles() {
@@ -1019,7 +1069,7 @@
 
             Object.assign(ratingEl.style, {
               position: "absolute",
-              bottom: "28px",
+              bottom: "32px",
               right: "-28px",
               width: rectWidth + "px",
               height: rectHeight + "px",
@@ -1035,11 +1085,12 @@
             textEl.textContent = parseFloat(item.rating).toFixed(1);
             Object.assign(textEl.style, {
               position: "absolute",
-              bottom: "10px",
-              right: "23px",
+              bottom: "8px",
+              right: "25px",
               color: "#fff",
               fontSize: "23px",
               fontWeight: "600",
+              fontFamily: "Microsoft YaHei, 微软雅黑, Arial, sans-serif",
               transformOrigin: "bottom right",
               pointerEvents: "none",
               textShadow: "1px 1px 3px rgba(0,0,0,0.6)",

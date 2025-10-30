@@ -55,13 +55,13 @@
 
           // 功能列表
           const features = [
+              { key: "enableArtistRequired", name: "仅在有艺术家时搜索" },
               { key: "enableExtraSearch", name: "Manga 附加搜索" },
               { key: "enableSeriesSearch", name: "尝试搜索系列作品" },
+              { key: "enableArchiveDownload", name: "归档下载功能" },
+              { key: "enableRatingDisplay", name: "显示评分" },
               { key: "enableDelExtraBtns", name: "删除多余按钮" },
               { key: "enableAdBlock", name: "去广告" },
-              { key: "enableArtistRequired", name: "仅在有艺术家时搜索" },
-              { key: "enableRatingDisplay", name: "显示评分" },
-              { key: "enableArchiveDownload", name: "归档下载功能" },
           ];
 
           features.forEach(f => {

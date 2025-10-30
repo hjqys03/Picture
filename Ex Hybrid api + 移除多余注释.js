@@ -19,67 +19,98 @@
 
   let menuIds = [];
 
-  function registerMenuCommands() {
-    if (menuIds.length && typeof GM_unregisterMenuCommand === "function") {
-      for (const id of menuIds) {
-        try { GM_unregisterMenuCommand(id); } catch {}
-      }
-      menuIds = [];
-    }
+  (function registerSingleSettingsMenu() {
+      if (typeof GM_registerMenuCommand !== "function") return;
 
-    const extraEnabled = GM_getValue("enableExtraSearch", true);
-    const id1 = GM_registerMenuCommand(`${extraEnabled ? "关闭" : "启用"} Manga 附加搜索`, () => {
-      const next = !extraEnabled;
-      GM_setValue("enableExtraSearch", next);
-      showToast(`📙 Manga 附加搜索已${next ? "启用" : "关闭"}`);
-      registerMenuCommands();
-    });
-    menuIds.push(id1);
+      GM_registerMenuCommand("设置", () => {
+          let settingsPopup = document.getElementById("exhy-settings-popup");
+          if (settingsPopup) {
+              settingsPopup.style.display = settingsPopup.style.display === "none" ? "block" : "none";
+              return;
+          }
 
-    const seriesEnabled = GM_getValue("enableSeriesSearch", true);
-    const id2 = GM_registerMenuCommand(`${seriesEnabled ? "关闭" : "启用"} 尝试搜索系列作品`, () => {
-      const next = !seriesEnabled;
-      GM_setValue("enableSeriesSearch", next);
-      showToast(`📚 系列作品搜索已${next ? "启用" : "关闭"}`);
-      registerMenuCommands();
-    });
-    menuIds.push(id2);
+          settingsPopup = document.createElement("div");
+          settingsPopup.id = "exhy-settings-popup";
+          Object.assign(settingsPopup.style, {
+              position: "fixed",
+              top: "50px",
+              right: "50px",
+              background: "rgba(0,0,0,0.85)",
+              color: "#fff",
+              padding: "16px",
+              borderRadius: "8px",
+              zIndex: 999999,
+              fontSize: "14px",
+              minWidth: "220px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+          });
 
-    const delBtnsEnabled = GM_getValue("enableDelExtraBtns", true);
-    const id3 = GM_registerMenuCommand(`${delBtnsEnabled ? "关闭" : "启用"} 删除多余按钮`, () => {
-      const next = !delBtnsEnabled;
-      GM_setValue("enableDelExtraBtns", next);
-      showToast(`🧹 删除多余按钮功能已${next ? "启用" : "关闭"}`);
-      registerMenuCommands();
-    });
-    menuIds.push(id3);
+          const title = document.createElement("div");
+          title.textContent = "功能开关";
+          Object.assign(title.style, { fontWeight: "bold", marginBottom: "10px", textAlign: "center" });
+          settingsPopup.appendChild(title);
 
-    const adBlockEnabled = GM_getValue("enableAdBlock", true);
-    const id4 = GM_registerMenuCommand(`${adBlockEnabled ? "关闭" : "启用"} 去广告`, () => {
-      const next = !adBlockEnabled;
-      GM_setValue("enableAdBlock", next);
-      showToast(`🚫 去广告功能已${next ? "启用" : "关闭"}`);
-      registerMenuCommands();
-    });
-    menuIds.push(id4);
+          const features = [
+              { key: "enableExtraSearch", name: "Manga 附加搜索" },
+              { key: "enableSeriesSearch", name: "尝试搜索系列作品" },
+              { key: "enableDelExtraBtns", name: "删除多余按钮" },
+              { key: "enableAdBlock", name: "去广告" },
+              { key: "enableArtistRequired", name: "仅在有艺术家时搜索" },
+              { key: "enableRatingDisplay", name: "显示评分" },
+          ];
 
-    const artistRequiredEnabled = GM_getValue("enableArtistRequired", true);
-    const id5 = GM_registerMenuCommand(`${artistRequiredEnabled ? "关闭" : "启用"} 仅在有艺术家时搜索`, () => {
-      const next = !artistRequiredEnabled;
-      GM_setValue("enableArtistRequired", next);
-      showToast(`🎨 “仅在有艺术家时搜索” 已${next ? "启用" : "关闭"}`);
-      registerMenuCommands();
-    });
-    menuIds.push(id5);
-  }
+          features.forEach(f => {
+              const wrapper = document.createElement("div");
+              wrapper.style.marginBottom = "6px";
 
-  if (
-    typeof GM_registerMenuCommand === "function" &&
-    typeof GM_getValue === "function" &&
-    typeof GM_setValue === "function"
-  ) {
-    registerMenuCommands();
-  }
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.id = "chk_" + f.key;
+              checkbox.checked = GM_getValue(f.key, true);
+              checkbox.style.marginRight = "6px";
+              checkbox.addEventListener("change", () => {
+                  GM_setValue(f.key, checkbox.checked);
+                  showToast(`🔧 ${f.name} 已${checkbox.checked ? "启用" : "关闭"}`);
+              });
+
+              const label = document.createElement("label");
+              label.htmlFor = checkbox.id;
+              label.textContent = f.name;
+
+              wrapper.appendChild(checkbox);
+              wrapper.appendChild(label);
+              settingsPopup.appendChild(wrapper);
+          });
+
+          const closeBtn = document.createElement("button");
+          closeBtn.textContent = "关闭";
+          Object.assign(closeBtn.style, {
+              marginTop: "10px",
+              width: "100%",
+              padding: "6px 0",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+              background: "#c55",
+              color: "#fff",
+              fontWeight: "bold",
+          });
+          closeBtn.addEventListener("click", () => {
+              settingsPopup.style.display = "none";
+          });
+          settingsPopup.appendChild(closeBtn);
+
+          document.body.appendChild(settingsPopup);
+
+          document.addEventListener("click", (e) => {
+              const popup = document.getElementById("exhy-settings-popup");
+              if (!popup) return;
+              if (!popup.contains(e.target)) {
+                  popup.style.display = "none";
+              }
+          });
+      });
+  })();
 
   const artistRequiredEnabled = (typeof GM_getValue === "function")
     ? GM_getValue("enableArtistRequired", true)
@@ -959,13 +990,14 @@
               position: "fixed",
               zIndex: "999999",
               pointerEvents: "none",
-              borderRadius: "10px",
+              borderRadius: "8px",
               overflow: "hidden",
               background: "none",
-              padding: "4px",
               display: "none",
               willChange: "transform, left, top",
               transform: "translateZ(0)",
+              border: "1px solid black",
+              padding: "0px",
             });
 
             img = document.createElement("img");
@@ -976,8 +1008,46 @@
               maxHeight: "348px",
               borderRadius: "8px",
               userSelect: "none",
-              border: "1px solid black",
+              border: "none",
             });
+
+          const ratingEnabled = GM_getValue("enableRatingDisplay", true);
+          if (item.rating && ratingEnabled) {
+            const ratingEl = document.createElement("div");
+            const rectWidth = 80;
+            const rectHeight = 35;
+
+            Object.assign(ratingEl.style, {
+              position: "absolute",
+              bottom: "28px",
+              right: "-28px",
+              width: rectWidth + "px",
+              height: rectHeight + "px",
+              background: "rgba(57,197,187,1.00)",
+              backdropFilter: "blur(3px)",
+              WebkitBackdropFilter: "blur(3px)",
+              pointerEvents: "none",
+              transform: "rotate(-45deg)",
+              transformOrigin: "bottom right",
+            });
+
+            const textEl = document.createElement("span");
+            textEl.textContent = parseFloat(item.rating).toFixed(1);
+            Object.assign(textEl.style, {
+              position: "absolute",
+              bottom: "10px",
+              right: "23px",
+              color: "#fff",
+              fontSize: "23px",
+              fontWeight: "600",
+              transformOrigin: "bottom right",
+              pointerEvents: "none",
+              textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
+            });
+
+            ratingEl.appendChild(textEl);
+            preview.appendChild(ratingEl);
+          }
 
           const scrollHandler = () => {
             if (preview) {
@@ -1403,6 +1473,7 @@
             posted: g.posted
               ? new Date(g.posted * 1000).toISOString().split("T")[0]
               : "—",
+            rating: g.rating || null,
             url: `https://${currentHost}/g/${g.gid}/${g.token}/`
           };
         }
@@ -1535,6 +1606,7 @@
                     posted: g.posted
                       ? new Date(g.posted * 1000).toISOString().split("T")[0]
                       : "—",
+                    rating: g.rating || null,
                     url: `https://${currentHost}/g/${g.gid}/${g.token}/`
                   };
                 }

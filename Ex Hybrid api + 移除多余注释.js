@@ -1054,8 +1054,6 @@ if (GM_getValue("enableArchiveDownload", true)) {
             img.src = item.cover;
             Object.assign(img.style, {
               display: "block",
-              maxWidth: "250px",
-              maxHeight: "348px",
               borderRadius: "8px",
               userSelect: "none",
               border: "none",

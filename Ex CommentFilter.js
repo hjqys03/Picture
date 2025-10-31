@@ -194,7 +194,6 @@
 
             GM_setValue("filterConfigV2", config);
             showToast("✅ 设置已保存，刷新页面后生效");
-            overlay.style.display = "none";
         };
 
         closeBtn.onclick = () => overlay.style.display = "none";

@@ -479,6 +479,7 @@ if (GM_getValue("enableArchiveDownload", true)) {
       "mosaic censorship",
       "scanmark",
       "sample",
+      "redraw",
       "rough translation",
       "already uploaded",
       "watermarked"
@@ -506,6 +507,7 @@ if (GM_getValue("enableArchiveDownload", true)) {
     const blacklist_minimal = [
       "original",
       "sample",
+      "redraw",
       "rough translation"
     ];
     var ret = {};

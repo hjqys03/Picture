@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         Ex CommentFilter
-// @namespace    http://tampermonkey.net/
+// @namespace    https://e-hentai.org/?f_cats=0
 // @icon         https://exhentai.org/favicon.ico
-// @version      2.16
+// @version      2.17
+// @author       究极缝合怪
+// @description  屏蔽某些**评论
 // @match        https://e-hentai.org/g/*
 // @match        https://exhentai.org/g/*
 // @grant        GM_registerMenuCommand
@@ -191,14 +193,14 @@
             config.line4_usernames = document.getElementById("line4_usernames").value.split(',').map(s=>s.trim()).filter(Boolean);
 
             GM_setValue("filterConfigV2", config);
-            showToast("✅ 设置已保存，屏蔽规则立即生效");
+            showToast("✅ 设置已保存，刷新页面后生效");
             overlay.style.display = "none";
         };
 
         closeBtn.onclick = () => overlay.style.display = "none";
     }
 
-    GM_registerMenuCommand("评论屏蔽设置", () => {
+    GM_registerMenuCommand("设置菜单", () => {
         const overlay = document.getElementById("filter-setting-overlay");
         if (!overlay) createSettings();
         document.getElementById("filter-setting-overlay").style.display = "block";
@@ -228,7 +230,7 @@
         });
     }
 
-    const observer = new MutationObserver(filterComments);
-    observer.observe(document.body, { childList:true, subtree:true });
+    // 页面加载完成后执行一次
+    window.addEventListener('load', filterComments);
 
 })();

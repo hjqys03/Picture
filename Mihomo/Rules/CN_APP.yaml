@@ -1,14 +1,3 @@
 payload:
   - PROCESS-NAME,com.ss.android.ugc.aweme
   - PROCESS-NAME,com.tencent.tmgp.cf
-  - PROCESS-NAME,com.netease.cloudmusic
-  - PROCESS-NAME,com.sankuai.meituan.dispatch.crowdsource
-  - PROCESS-NAME,com.eg.android.AlipayGphone
-  - PROCESS-NAME,com.greenpoint.android.mc10086.activity
-  - PROCESS-NAME,com.jingyao.easybike
-  - PROCESS-NAME,com.chinamworld.bocmbci
-  - PROCESS-NAME,com.xunmeng.pinduoduo
-  - PROCESS-NAME,com.taobao.idlefish
-  - PROCESS-NAME,com.sankuai.meituan
-  - PROCESS-NAME,com.jingdong.app.mall
-  - PROCESS-NAME,com.taobao.taobao

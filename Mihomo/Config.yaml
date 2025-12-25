@@ -28,7 +28,7 @@ tproxy-port: 9898
 mode: rule
 log-level: warning
 ipv6: false
-allow-lan: true
+allow-lan: false
 bind-address: '*'
 unified-delay: true
 tcp-concurrent: true
@@ -36,8 +36,8 @@ global-client-fingerprint: chrome
 find-process-mode: strict
 
 # 管理面板配置
-external-ui-url: 'https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip'
-external-ui: ./zashboard
+external-ui-url: 'https://ghfast.top/github.com/Zephyruso/zashboard/archive/gh-pages.zip'
+external-ui: ./WebUI
 external-controller: 0.0.0.0:9090
 secret: 'Password'
 
@@ -159,6 +159,7 @@ rules:
   - RULE-SET,EHentai_Domain,EHentai
   - RULE-SET,Games_Domain,Games
   - RULE-SET,GamesCN_Domain,Games
+  - DOMAIN,ghfast.top,Direct
   - DOMAIN,raw.gitmirror.com,Direct
   - RULE-SET,Google_Domain,Google
   - RULE-SET,Microsoft_Domain,Proxy

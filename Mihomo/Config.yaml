@@ -16,8 +16,8 @@ Pproviders: &Pproviders {type: http, interval: 86400, proxy: DIRECT, health-chec
 
 # 节点订阅
 proxy-providers:
-  机场1: {<<: *PP, url: '🔗订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
-  机场2: {<<: *PP, url: '🔗订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
+  机场1: {<<: *Pproviders, url: '🔗订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
+  机场2: {<<: *Pproviders, url: '🔗订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
 
 # 基础配置
 port: 7890
@@ -102,7 +102,7 @@ proxies:
 
 # 策略组
 proxy-groups:
-  - {name: 'Proxy', <<: *Select, proxies: ['Auto','🌐 本地直连'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Proxy.png'}
+  - {name: 'Proxy', <<: *Select, proxies: ['Auto'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Proxy.png'}
   - {name: 'EHentai', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Exhentai.png'}
   - {name: 'Telegram', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Telegram.png'}
   - {name: 'Twitter', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Twitter.png'}
@@ -113,7 +113,7 @@ proxy-groups:
   - {name: 'Games', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Game.png'}
   - {name: 'Google', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Google.png'}
   - {name: 'Direct', <<: [*Select, *FilterSelect], proxies: ['🌐 本地直连','Proxy'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png'}
-  - {name: 'Adblock', <<: [*Select, *FilterSelect], proxies: ['⛔️ 拒绝连接','🌐 本地直连','Proxy'], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Adblock.png'}
+  - {name: 'Adblock', <<: [*Select, *FilterSelect], proxies: ['⛔️ 拒绝连接','🌐 本地直连','Proxy'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png'}
   - {name: 'Final', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Final.png'}
   - {name: 'GLOBAL', <<: [*Select, *FilterSelect], proxies: ['Proxy','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','Games','Google','Direct','Adblock','Final'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
   - {name: 'Auto', <<: [*UrlTest, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Auto.png'}

@@ -1,0 +1,6 @@
+payload:
+  # Github加速镜像
+  - +.ghfast.top
+  - +.gitmirror.com
+  # 再漫画
+  - +.zaimanhua.com

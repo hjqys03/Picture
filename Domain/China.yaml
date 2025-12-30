@@ -25,3 +25,5 @@ payload:
   - ap-cn02.emby.bangumi.ca
   - ap-cn03.emby.bangumi.ca
   - ap-cn04.emby.bangumi.ca
+  # 图床
+  - p.sda1.dev

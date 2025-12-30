@@ -1,6 +1,7 @@
 payload:
   # Github加速镜像
   - git.imee.me
+  - gh-proxy.com
   - +.ghfast.top
   - +.gitmirror.com
   # 再漫画

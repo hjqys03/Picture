@@ -1,6 +1,7 @@
 payload:
   # Github加速镜像
   - git.imee.me
+  - ghproxy.net
   - gh-proxy.com
   - gh-proxy.org
   - +.ghfast.top

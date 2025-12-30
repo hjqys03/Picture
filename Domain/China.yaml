@@ -1,5 +1,6 @@
 payload:
   # Github加速镜像
+  - git.imee.me
   - +.ghfast.top
   - +.gitmirror.com
   # 再漫画

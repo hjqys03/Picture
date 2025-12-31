@@ -9,15 +9,14 @@ UrlTest: &UrlTest {type: url-test, hidden: true, include-all: true}
 # 锚点 - 规则集
 IPcidr: &IPcidr {type: http, interval: 86400, behavior: ipcidr, format: mrs}
 Domain: &Domain {type: http, interval: 86400, behavior: domain, format: mrs}
-Classical: &Classical {type: http, interval: 86400, behavior: classical, format: yaml}
 # 锚点 - 远程订阅组
-Pproviders: &Pproviders {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.gstatic.com/generate_204', interval: 600}, <<: *FilterOthers}
+Providers: &Providers {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://captive.apple.com/generate_204', interval: 600}, <<: *FilterOthers}
 ############################################## - ⚓️ 锚点区结束 - ##############################################
 
 # 节点订阅
 proxy-providers:
-  机场1: {<<: *Pproviders, url: '🔗订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
-  机场2: {<<: *Pproviders, url: '🔗订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
+  机场1: {<<: *Providers, url: '🔗订阅链接', path: ./providers/机场1.yaml, override: {additional-prefix: '机场1 '}}
+  机场2: {<<: *Providers, url: '🔗订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}
 
 # 基础配置
 port: 7890
@@ -26,7 +25,7 @@ mixed-port: 7892
 redir-port: 9797
 tproxy-port: 9898
 mode: rule
-log-level: warning
+log-level: error
 ipv6: false
 allow-lan: false
 bind-address: '*'
@@ -49,16 +48,15 @@ profile:
 # 域名嗅探配置
 sniffer:
   enable: true
-  force-dns-mapping: false
-  parse-pure-ip: false
-  override-destination: false
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
   sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
   skip-domain: ['rule-set:Private_Domain']
   skip-src-address: ['rule-set:Private_ip']
 
 # Hosts配置
 hosts:
-  # 谷歌推送
   mtalk.google.com: 142.250.107.188
   alt1-mtalk.google.com: 172.217.78.188
   alt2-mtalk.google.com: 142.250.101.188
@@ -74,7 +72,7 @@ dns:
   enable: true
   ipv6: false
   prefer-h3: false
-  use-hosts: true
+  use-hosts: false
   listen: 0.0.0.0:1053
   cache-algorithm: arc
   enhanced-mode: fake-ip
@@ -86,9 +84,9 @@ dns:
 # TUN模式配置
 tun:
   enable: true
-  mtu: 1500
+  mtu: 9000
   stack: gvisor
-  device: Mihomo
+  device: utun
   dns-hijack: ['any:53', 'tcp://any:53']
   auto-route: true
   strict-route: true
@@ -102,75 +100,76 @@ proxies:
 
 # 策略组
 proxy-groups:
-  - {name: 'Proxy', <<: *Select, proxies: ['Auto'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Proxy.png'}
-  - {name: 'Auto', <<: [*UrlTest, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Auto.png'}
-  - {name: 'EHentai', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/hjqys03/Picture/main/icon/Exhentai.png'}
-  - {name: 'Telegram', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Telegram.png'}
-  - {name: 'Twitter', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Twitter.png'}
-  - {name: 'Emby', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Emby.png'}
-  - {name: 'YouTube', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/YouTube.png'}
-  - {name: 'TikTok', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/TikTok.png'}
-  - {name: 'OpenAI', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png'}
-  - {name: 'Games', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Game.png'}
-  - {name: 'Google', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Orz-3/mini/master/Color/Google.png'}
-  - {name: 'Direct', <<: [*Select, *FilterSelect], proxies: ['🌐 Direct','⛔️ Reject','Proxy'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Direct.png'}
-  - {name: 'Adblock', <<: [*Select, *FilterSelect], proxies: ['⛔️ Reject','🌐 Direct','Proxy'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Reject.png'}
-  - {name: 'Final', <<: [*Select, *FilterSelect], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Final.png'}
-  - {name: 'GLOBAL', <<: [*Select, *FilterSelect], proxies: ['Proxy','EHentai','Telegram','Twitter','Emby','YouTube','TikTok','OpenAI','Games','Google','Direct','Adblock','Final'], icon: 'https://raw.gitmirror.com/Koolson/Qure/master/IconSet/Color/Global.png'}
+  - {name: 'Proxy', <<: *Select, proxies: ['Auto'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Proxy.png'}
+  - {name: 'Auto', <<: [*UrlTest, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png'}
+  - {name: 'Telegram', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Orz-3/mini/raw/master/Color/Telegram.png'}
+  - {name: 'Twitter', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Twitter.png'}
+  - {name: 'Emby', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Orz-3/mini/raw/master/Color/Emby.png'}
+  - {name: 'YouTube', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Orz-3/mini/raw/master/Color/YouTube.png'}
+  - {name: 'EHentai', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/MissToT/Picture/raw/main/icon/Exhentai.png'}
+  - {name: 'TikTok', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/TikTok.png'}
+  - {name: 'AI', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/ChatGPT.png'}
+  - {name: 'Games', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Game.png'}
+  - {name: 'Japan', <<: *Select, filter: '^(?=.*(?i)(日本|🇯🇵|JP|JPN))(?!.*(排除1|排除2)).*$', icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png'}
+  - {name: 'Taiwan', <<: *Select, filter: '^(?=.*(?i)(台湾|🇹🇼|TW|TWN))(?!.*(排除1|排除2)).*$', icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png'}
+  - {name: 'GoogleFCM', <<: [*Select, *FilterSelect], proxies: ['Proxy','🌐 Direct','⛔️ Reject'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png'}
+  - {name: 'Direct', <<: [*Select, *FilterSelect], proxies: ['🌐 Direct','⛔️ Reject','Proxy'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Direct.png'}
+  - {name: 'Adblock', <<: [*Select, *FilterSelect], proxies: ['⛔️ Reject','🌐 Direct','Proxy'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Reject.png'}
+  - {name: 'Final', <<: [*Select, *FilterSelect], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png'}
+  - {name: 'GLOBAL', <<: [*Select, *FilterSelect], proxies: ['Proxy','GoogleFCM','Telegram','Twitter','Emby','YouTube','EHentai','TikTok','AI','Games','Japan','Taiwan','Direct','Adblock','Final'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png'}
 
 # 远程规则集
 rule-providers:
-  Telegram_ip:       {<<: *IPcidr, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs'}
-  Twitter_ip:        {<<: *IPcidr, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs'}
-  Google_ip:         {<<: *IPcidr, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs'}
-  Games_ip:          {<<: *IPcidr, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/ipcidr/games.mrs'}
-  Private_ip:        {<<: *IPcidr, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs'}
-  Proxy_ip:          {<<: *IPcidr, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/ipcidr/proxy.mrs'}
-  CN_ip:             {<<: *IPcidr, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/ipcidr/cn.mrs'}
-  FCM_Domain:        {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs'}
-  TikTok_Domain:     {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs'}
-  YouTube_Domain:    {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs'}
-  OpenAI_Domain:     {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs'}
-  Gemini_Domain:     {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google-gemini.mrs'}
-  EHentai_Domain:    {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ehentai.mrs'}
-  Telegram_Domain:   {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs'}
-  Twitter_Domain:    {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs'}
-  Google_Domain:     {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs'}
-  GamesCN_Domain:    {<<: *Domain, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/domain/games-cn.mrs'}
-  Games_Domain:      {<<: *Domain, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/domain/games.mrs'}
-  Microsoft_Domain:  {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs'}
-  Private_Domain:    {<<: *Domain, url: 'https://raw.gitmirror.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs'}
-  Proxy_Domain:      {<<: *Domain, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/domain/proxy.mrs'}
-  CN_Domain:         {<<: *Domain, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/domain/cn.mrs'}
-  Fakeip_Filter:     {<<: *Domain, url: 'https://raw.gitmirror.com/QuixoticHeart/rule-set/ruleset/meta/domain/fake-ip-filter.mrs'}
-  Anti-AD:           {<<: *Domain, url: 'https://raw.gitmirror.com/privacy-protection-tools/anti-ad.github.io/master/docs/mihomo.mrs'}
+  CN_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/ipcidr/cn.mrs'}
+  Proxy_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/ipcidr/proxy.mrs'}
+  Private_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/private.mrs'}
+  Telegram_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/telegram.mrs'}
+  Twitter_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/twitter.mrs'}
+  Google_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geoip/google.mrs'}
+  Games_ip: {<<: *IPcidr, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/ipcidr/Game.mrs'}
+  CN_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/domain/cn.mrs'}
+  Proxy_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/domain/proxy.mrs'}
+  Private_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/private.mrs'}
+  Telegram_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/telegram.mrs'}
+  Twitter_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/twitter.mrs'}
+  Google_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/google.mrs'}
+  GoogleFCM_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/googlefcm.mrs'}
+  Games_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/Domain/Game.mrs'}
+  AI_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/domain/ai.mrs'}
+  Emby_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/Domain/Emby.mrs'}
+  Japan_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/Domain/Japan.mrs'}
+  Taiwan_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/Domain/Taiwan.mrs'}
+  China_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MissToT/Picture/raw/Meta/Domain/China.mrs'}
+  TikTok_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/tiktok.mrs'}
+  YouTube_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/youtube.mrs'}
+  EHentai_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/ehentai.mrs'}
+  Adblock_Domain: {<<: *Domain, url: 'https://ghfast.top/github.com/privacy-protection-tools/anti-ad.github.io/raw/master/docs/mihomo.mrs'}
+  Fakeip_Filter: {<<: *Domain, url: 'https://ghfast.top/github.com/QuixoticHeart/rule-set/raw/ruleset/meta/domain/fake-ip-filter.mrs'}
 
 # 路由规则
 rules:
-  - RULE-SET,Anti-AD,Adblock
-  - RULE-SET,FCM_Domain,Direct
+  - RULE-SET,Adblock_Domain,Adblock
+  - RULE-SET,Private_Domain,DIRECT
+  - RULE-SET,GoogleFCM_Domain,GoogleFCM
   - RULE-SET,Telegram_Domain,Telegram
   - RULE-SET,Twitter_Domain,Twitter
   - RULE-SET,TikTok_Domain,TikTok
-  - RULE-SET,OpenAI_Domain,OpenAI
-  - RULE-SET,Gemini_Domain,OpenAI
+  - RULE-SET,AI_Domain,AI
   - RULE-SET,YouTube_Domain,YouTube
-  - DOMAIN-SUFFIX,dandanplay.net,Emby
+  - RULE-SET,Emby_Domain,Emby
   - RULE-SET,EHentai_Domain,EHentai
   - RULE-SET,Games_Domain,Games
-  - RULE-SET,GamesCN_Domain,Games
-  - DOMAIN,ghfast.top,Direct
-  - DOMAIN,raw.gitmirror.com,Direct
-  - RULE-SET,Google_Domain,Google
-  - RULE-SET,Microsoft_Domain,Proxy
-  - RULE-SET,Private_Domain,Direct
-  - RULE-SET,Proxy_Domain,Proxy
+  - RULE-SET,Japan_Domain,Japan
+  - RULE-SET,Taiwan_Domain,Taiwan
+  - RULE-SET,China_Domain,Direct
+  - RULE-SET,Google_Domain,Proxy
   - RULE-SET,CN_Domain,Direct
+  - RULE-SET,Proxy_Domain,Proxy
+  - RULE-SET,Private_ip,DIRECT,no-resolve
   - RULE-SET,Telegram_ip,Telegram,no-resolve
   - RULE-SET,Twitter_ip,Twitter,no-resolve
   - RULE-SET,Games_ip,Games,no-resolve
-  - RULE-SET,Google_ip,Google,no-resolve
-  - RULE-SET,Private_ip,Direct,no-resolve
-  - RULE-SET,Proxy_ip,Proxy,no-resolve
+  - RULE-SET,Google_ip,Proxy,no-resolve
   - RULE-SET,CN_ip,Direct,no-resolve
+  - RULE-SET,Proxy_ip,Proxy,no-resolve
   - MATCH,Final

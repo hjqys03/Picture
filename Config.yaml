@@ -72,7 +72,7 @@ dns:
   enable: true
   ipv6: false
   prefer-h3: false
-  use-hosts: false
+  use-hosts: true
   listen: 0.0.0.0:1053
   cache-algorithm: arc
   enhanced-mode: fake-ip

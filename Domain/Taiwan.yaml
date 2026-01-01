@@ -1,11 +1,9 @@
 payload:
   # Pubu
-  - '*pubu*'
   - +.pubu.tw
   - +.pubu.com.tw
   - pubu.api.useinsider.com
   # Readmoo
-  - '*readmoo*'
   - +.readmoo.com
   # Bookwalker
   - +.bookwalker.com.tw

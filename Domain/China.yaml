@@ -1,8 +1,8 @@
 payload:
   # Github加速镜像
   - git.imee.me
-  - gh-proxy.com
-  - gh-proxy.org
+  - +.gh-proxy.com
+  - +.gh-proxy.org
   - +.ghfast.top
   - +.gitmirror.com
   # 再漫画
@@ -24,6 +24,7 @@ payload:
   - +.yuanshen.com
   - +.juequling.com
   # nya
+  - +.emby.bangumi.ca
   - ap-cn01.emby.bangumi.ca
   - ap-cn02.emby.bangumi.ca
   - ap-cn03.emby.bangumi.ca

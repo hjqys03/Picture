@@ -30,3 +30,5 @@ payload:
   - ap-cn04.emby.bangumi.ca
   # 图床
   - p.sda1.dev
+  # Zashboard WebUI
+  - board.zash.run.place

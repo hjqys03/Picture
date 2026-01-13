@@ -1,0 +1,188 @@
+{
+  "providers": [
+    {
+      "tag": "SNTP",
+      "type": "remote",
+      "download_detour": "Direct",
+      "update_interval": "24h",
+      "url": "https://sub1.sntp.me/baseStr?token=35c659a9dc9155f982b169abe646318a&timestamp=146142",
+      "path": "./providers/SNTP.yaml",
+      "user_agent": "clash.meta",
+      "include": "(?i)(🇭🇰|港|hk|hongkong|hong kong|🇹🇼|台|tw|taiwan|tai wan|🇯🇵|日|jp|japan|🇸🇬|新|sg|singapore|🇺🇸|美|us|unitedstates|united states)",
+      "health_check": {
+        "enabled": true,
+        "url": "https://captive.apple.com/generate_204",
+        "interval": "10m"
+      }
+    }
+  ],
+  
+  "log": { 
+    "level": "error",
+    "timestamp": true,
+    "output": "/data/adb/box/run/sing-box.log"
+  },
+  
+  "dns": {
+    "servers": [
+      {
+        "tag": "hosts",
+        "type": "hosts",
+        "predefined": {
+          "mtalk.google.com": "142.250.107.188"
+        }
+      },
+      { "tag": "dns_resolver", "type": "https", "server": "223.5.5.5" },
+      { 
+        "tag": "dns_direct", 
+        "type": "quic", 
+        "server": "dns.alidns.com", 
+        "domain_resolver": "dns_resolver"
+      },
+      { 
+        "tag": "dns_fakeip", 
+        "type": "fakeip",
+        "inet4_range": "28.0.0.0/8", 
+        "inet6_range": "fc00::/16" 
+      }
+    ],
+    "rules": [
+      { "ip_accept_any": true, "server": "hosts" },
+      { "clash_mode": [ "Direct" ], "query_type": [ "A", "AAAA" ], "server": "dns_direct" },
+      { "clash_mode": [ "Global" ], "query_type": [ "A", "AAAA" ], "server": "dns_direct" },
+      { "rule_set": [ "Adblock_Domain" ], "action": "predefined" },
+      { "query_type": [ "A", "AAAA" ], "server": "dns_fakeip" }
+    ],
+    "final": "dns_direct",
+    "strategy": "prefer_ipv4",
+    "independent_cache": true,
+    "reverse_mapping": true
+  },
+  
+  "inbounds": [
+    { 
+      "tag": "tun-in", 
+      "type": "tun",
+      "mtu": 9000,
+      "stack": "gvisor",
+      "auto_route": true,
+      "strict_route": true,
+      "auto_reDirect": false,
+      "interface_name": "sing-box", 
+      "address": [ "172.18.0.1/30", "fdfe:dcba:9876::1/126" ]
+    },
+    {
+      "tag": "tproxy-in",
+      "type": "tproxy",
+      "listen": "::",
+      "listen_port": 9898
+    }
+  ],
+  
+  "outbounds": [
+    { "tag": "Proxy", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "Auto", "DIRECT" ] },
+    { "tag": "Direct", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "DIRECT", "Proxy" ] },
+    { "tag": "Telegram", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "Proxy", "Auto", "DIRECT" ] },
+    { "tag": "Adblock", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "REJECT", "Proxy", "DIRECT" ] },
+    { "tag": "Final", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "Proxy", "Auto", "DIRECT" ] },
+    { "tag": "GLOBAL", "type": "selector", "providers": [ "SNTP" ], "outbounds": [ "Proxy", "DIRECT", "Telegram", "Adblock" ] },
+    { "tag": "REJECT", "type": "block" },
+    { "tag": "DIRECT", "type": "direct" },
+    
+    { "tag": "Auto", "type": "urltest", "providers": [ "SNTP" ] }
+  ],
+  
+  "route": {
+    "default_domain_resolver": { "server": "dns_direct" },
+    "rules": [
+      { "action": "sniff" },
+      { "protocol": [ "dns" ], "action": "hijack-dns" },
+      { "clash_mode": [ "Direct" ], "outbound": "DIRECT" },
+      { "clash_mode": [ "Global" ], "outbound": "GLOBAL" },
+      
+      { "rule_set": [ "Private_Domain" ], "outbound": "Direct" },
+      { "rule_set": [ "Adblock_Domain" ], "outbound": "Adblock" },
+      { "rule_set": [ "Telegram_Domain" ], "outbound": "Telegram" },
+      { "rule_set": [ "CN_Domain" ], "outbound": "Direct" },
+      { "rule_set": [ "Proxy" ], "outbound": "Proxy" },
+      { "rule_set": [ "Private_ip" ], "outbound": "Direct" },
+      { "rule_set": [ "Telegram_ip" ], "outbound": "Telegram" },
+      { "action": "resolve", "match_only": true },
+      { "rule_set": [ "CN_ip" ], "outbound": "Direct" }
+    ],
+    
+    "rule_set": [
+      {
+        "tag": "Adblock_Domain",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Adblock_Domain.srs",
+        "url": "https://gh-proxy.com/github.com/privacy-protection-tools/anti-ad.github.io/raw/master/docs/mihomo.mrs"
+      },
+      {
+        "tag": "Private_Domain",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Private_Domain.srs",
+        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/private.srs"
+      },
+      {
+        "tag": "Proxy",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Proxy.srs",
+        "url": "https://github.com/QuixoticHeart/rule-set/raw/refs/heads/ruleset/singbox/version1/proxy.srs"
+      },
+      {
+        "tag": "Private_ip",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Private_ip.srs",
+        "url": "https://github.com/DustinWin/ruleset_geodata/releases/download/sing-box-ruleset/privateip.srs"
+      },
+      {
+        "tag": "Telegram_ip",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Telegram_ip.srs",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/telegram.srs"
+      },
+      {
+        "tag": "Telegram_Domain",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/Telegram_Domain.srs",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/telegram.srs"
+      },
+      {
+        "tag": "CN_Domain",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/CN_Domain.srs",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/cn.srs"
+      },
+      {
+        "tag": "CN_ip",
+        "type": "remote",
+        "format": "binary",
+        "path": "./ruleset/CN_ip.srs",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/cn.srs"
+      }
+    ],
+    "final": "Final",
+    "auto_detect_interface": true
+  },
+  
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": true
+    },
+    "clash_api": {
+      "external_controller": "0.0.0.0:9090",
+      "external_ui": "WebUI",
+      "external_ui_download_url": "https://github.com/Zephyruso/zashboard/archive/gh-pages.zip",
+      "secret": ""
+    }
+  }
+}

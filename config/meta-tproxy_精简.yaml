@@ -54,8 +54,8 @@ sniffer:
   parse-pure-ip: true
   override-destination: false
   sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
-  skip-domain: ['RULE-SET:Private_Domain']
-  skip-src-address: ['RULE-SET:Private_IP']
+  force-domain: ['+.v2ex.com']
+  skip-domain: ['Mijia Cloud']
 
 # DNS配置
 dns:

@@ -104,7 +104,7 @@ proxies:
 
 # 策略组
 proxy-groups:
-  - {name: 'Auto', <<: [*UrlTest, *FilterSelect], include-all-providers: true, icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png'}
+  - {name: 'Auto', <<: *UrlTest, include-all-providers: true, icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Auto.png'}
   - {name: 'AutoHK', <<: [*UrlTest, *FilterHK], icon: 'https://gh-proxy.com/github.com/MissToT/Picture/raw/main/icon/HK.svg'}
   - {name: 'AutoTW', <<: [*UrlTest, *FilterTW], icon: 'https://gh-proxy.com/github.com/MissToT/Picture/raw/main/icon/TW.svg'}
   - {name: 'AutoJP', <<: [*UrlTest, *FilterJP], icon: 'https://gh-proxy.com/github.com/MissToT/Picture/raw/main/icon/JP.svg'}

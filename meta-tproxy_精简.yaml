@@ -52,10 +52,10 @@ sniffer:
   enable: true
   force-dns-mapping: true
   parse-pure-ip: true
-  override-destination: true
-  sniff: {HTTP: {ports: [80, 8080-8880]}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
-  force-domain: ['+.v2ex.com']
-  skip-domain: ['Mijia Cloud']
+  override-destination: false
+  sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
+  skip-domain: ['RULE-SET:Private_Domain']
+  skip-src-address: ['RULE-SET:Private_IP']
 
 # DNS配置
 dns:
@@ -66,7 +66,7 @@ dns:
   cache-algorithm: arc
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-range6: fc00::/18
   fake-ip-filter-mode: blacklist
   fake-ip-filter: ['RULE-SET:Fakeip-Filter,Private_Domain,Games-CN_Domain,CN_Domain']
   default-nameserver: [223.5.5.5, 119.29.29.29]
@@ -84,7 +84,7 @@ tun:
   auto-redirect: false
   auto-detect-interface: true
 
-# 出站代理
+# 出站节点
 proxies:
   - {name: '🌐 本地直连', type: direct, udp: true}
   - {name: '⛔️ 拒绝连接', type: reject}

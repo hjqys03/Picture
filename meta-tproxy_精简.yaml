@@ -14,7 +14,7 @@ Classical: &Classical {type: http, interval: 86400, behavior: classical, format:
 Providers: &Providers {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://captive.apple.com/generate_204', interval: 600}, <<: *FilterOthers}
 ############################################## - ⚓️ 锚点区结束 - ##############################################
 
-# 远程订阅组
+# 节点订阅
 proxy-providers:
   机场1: 
     <<: *Providers
@@ -105,7 +105,7 @@ proxy-groups:
   - {name: '国内代理', <<: *Select, icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/China_Map.png'}
   - {name: '广告拦截', <<: *Select, proxies: ['手动选择', '自动选择', '🌐 本地直连', '⛔️ 拒绝连接', 'REJECT-DROP', 'PASS'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Hijacking.png'}
   - {name: '漏网之鱼', <<: *Select, icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png'}
-  - {name: 'GLOBAL', <<: *Select, proxies: ['手动选择','自动选择', '谷歌推送', 'Telegram', 'Twitter', 'YouTube', 'TikTok', 'AI', 'Games', '国外代理', '国内代理', '广告拦截', '漏网之鱼'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png'}
+  - {name: 'GLOBAL', <<: *Select, proxies: ['手动选择', '自动选择', '谷歌推送', 'Telegram', 'Twitter', 'YouTube', 'TikTok', 'AI', 'Games', '国外代理', '国内代理', '广告拦截', '漏网之鱼'], icon: 'https://gh-proxy.com/github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png'}
 
 # 规则集
 rule-providers:

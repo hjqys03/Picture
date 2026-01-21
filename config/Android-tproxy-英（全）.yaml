@@ -50,11 +50,11 @@ profile:
 # 域名嗅探配置
 sniffer:
   enable: true
-  force-dns-mapping: true
   parse-pure-ip: true
-  override-destination: false
-  sniff: {HTTP: {ports: [80, 8080-8880], override-destination: true}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
-  skip-domain: ['RULE-SET:Private_Domain']
+  force-dns-mapping: true
+  override-destination: true
+  sniff: {HTTP: {ports: [80, 8080-8880]}, TLS: {ports: [443, 8443]}, QUIC: {ports: [443, 8443]}}
+  skip-domain: ['Mijia Cloud']
 
 # Hosts配置
 hosts:

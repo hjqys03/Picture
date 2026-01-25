@@ -20,8 +20,8 @@ Providers: &Providers {type: http, interval: 86400, proxy: DIRECT, health-check:
 
 # 节点订阅
 proxy-providers:
-  SNTP: {<<: *Providers, url: 'http://127.0.0.1:3000/download/SNTP', path: ./providers/SNTP.yaml, override: {additional-prefix: 'STP '}}
-  SakuraCat: {<<: *Providers, url: 'http://127.0.0.1:3000/download/SakuraCat', path: ./providers/SakuraCat.yaml, override: {additional-prefix: 'SC '}}
+  SNTP: {<<: *Providers, url: 'http://localhost:3000/download/SNTP', path: ./providers/SNTP.yaml, override: {additional-prefix: 'STP '}}
+  SakuraCat: {<<: *Providers, url: 'http://localhost:3000/download/SakuraCat', path: ./providers/SakuraCat.yaml, override: {additional-prefix: 'SC '}}
 
 # 基础配置
 mixed-port: 7890

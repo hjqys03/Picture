@@ -18,7 +18,7 @@ Providers: &Providers {type: http, interval: 86400, proxy: DIRECT, health-check:
 proxy-providers:
   机场1: 
     <<: *Providers
-    url: 'http://127.0.0.1:3000/download/SNTP' # 机场的 Clash / Meta / Mihomo 订阅链接
+    url: 'http://localhost:3000/download/SNTP' # 机场的 Clash / Meta / Mihomo 订阅链接
     path: ./providers/机场1.yaml # 订阅文件存放位置
     override: {additional-prefix: '机场1 '} # 给出站代理节点添加前缀
   # 机场2: {<<: *Providers, url: '🔗订阅链接', path: ./providers/机场2.yaml, override: {additional-prefix: '机场2 '}}

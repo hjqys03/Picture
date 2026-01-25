@@ -78,7 +78,7 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: rule
-  fake-ip-filter: ['RULE-SET,Fakeip-Filter,real-ip', 'RULE-SET,Private_Domain,real-ip', 'RULE-SET,China_Domain,real-ip', 'RULE-SET,CN_Domain,real-ip', 'MATCH,fake-ip']
+  fake-ip-filter: ['RULE-SET,Fakeip-Filter,real-ip', 'MATCH,fake-ip']
   default-nameserver: [223.5.5.5, 119.29.29.29]
   nameserver: ['https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query']
 

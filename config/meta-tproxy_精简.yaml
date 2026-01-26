@@ -5,7 +5,7 @@ FilterOthers: &FilterOthers {filter: '^(?!.*(DIRECT|Traffic|TRAFFIC|Expire|EXPIR
 # 锚点 - 选择组
 Select: &Select {type: select, include-all-providers: true, proxies: ['手动选择', '自动选择', '🌐 本地直连', '⛔️ 拒绝连接']}
 # 锚点 - 自动组
-UrlTest: &UrlTest {type: url-test, hidden: true, include-all-providers: true}
+UrlTest: &UrlTest {type: url-test, tolerance: 50, hidden: true, include-all-providers: true}
 # 锚点 - 规则集
 IPCIDR: &IPCIDR {type: http, interval: 86400, behavior: ipcidr, format: mrs}
 Domain: &Domain {type: http, interval: 86400, behavior: domain, format: mrs}

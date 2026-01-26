@@ -9,7 +9,7 @@ FilterUS: &FilterUS {filter: '^(?=.*(?i)(美国|🇺🇸|US|USA))(?!.*(2.00x|排
 # 锚点 - 选择组
 Select: &Select {type: select, include-all-providers: true, proxies: ['手动选择', '自动选择', '香港自动', '台湾自动', '日本自动', '美国自动', '🌐 本地直连', '⛔️ 拒绝连接']}
 # 锚点 - 自动组
-UrlTest: &UrlTest {type: url-test, hidden: true, use: ['SNTP']}
+UrlTest: &UrlTest {type: url-test, tolerance: 50, hidden: true, use: ['SNTP']}
 # 锚点 - 规则集
 IPCIDR: &IPCIDR {type: http, interval: 86400, behavior: ipcidr, format: mrs}
 Domain: &Domain {type: http, interval: 86400, behavior: domain, format: mrs}
